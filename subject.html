@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>HEADFACE Study - รายวิชาทั้งหมด</title>
+  
+  <!-- Google Fonts: Prompt -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Prompt', 'sans-serif'],
+          },
+          colors: {
+            mint: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              200: '#a7f3d0',
+              300: '#6ee7b7',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+            },
+            sky: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              300: '#7dd3fc',
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+  
+  <script>
+    window.handleCardImgError = window.handleCardImgError || function(img, id, altName) {
+      if (!img) return;
+      const step = parseInt(img.dataset.errStep || '0', 10);
+      img.dataset.errStep = step + 1;
+      if (step === 0) img.src = 'assets/' + id + '.webp';
+      else if (step === 1 && altName) img.src = 'assets/' + altName + '.webp';
+      else if (step === 2) img.src = 'assets/subject-' + id + '.png';
+      else if (step === 3) img.src = 'assets/subject-' + id + '.jpg';
+      else if (step === 4) img.src = 'assets/' + id + '.png';
+      else img.style.display = 'none';
+    };
+  </script>
+  
+  <!-- Instant Preload for Smooth Barba Transitions -->
+  <link rel="prefetch" href="index.html">
+  <link rel="prefetch" href="progress.html">
+</head>
+<body class="bg-[#EEF4F8] text-slate-800 antialiased selection:bg-mint-200">
+
+  <!-- Full-Width Fluid Desktop Outer Wrapper -->
+  <div class="min-h-screen w-full bg-[#EEF4F8] flex flex-col relative overflow-x-hidden" data-barba="wrapper">
+
+    <!-- 🛡️ PERSISTENT HEADER BACKGROUND (สูง 92px สำหรับหน้าวิชา ตามที่ผู้ใช้กำหนด) -->
+    <div id="mainBlueBg" class="header-bg-shell bg-curve" style="height: 92px;"></div>
+
+    <!-- 🛡️ PERSISTENT TOP APP BAR (อยู่นอก Barba Container เพื่อไม่ให้มีแอนิเมชันเวลาเปลี่ยนหน้า เป็น component ร่วมกัน) -->
+    <header id="shared-top-header" class="w-full max-w-4xl mx-auto pt-5 pb-2 px-5 text-white relative z-30">
+      <div class="flex items-center justify-between">
+        
+        <!-- ซ้าย: โลโก้แบรนด์ HEADFACE STUDY และ ชื่อหน้า (ติดกันตามแบบเดิม) -->
+        <div>
+          <div class="flex items-center gap-1.5 mb-0.5">
+            <span class="text-xs font-black uppercase tracking-wider text-emerald-100">
+              HEADFACE
+            </span>
+            <span class="bg-white/25 px-2 py-0.5 rounded-full text-[9px] font-black text-white tracking-wide">
+              STUDY
+            </span>
+            <span id="header-page-badge" class="bg-white/20 px-2 py-0.5 rounded-full text-[9px] font-bold text-white tracking-wide">10 วิชา 🎒</span>
+          </div>
+          <h1 id="header-page-title" class="text-xl font-extrabold tracking-tight leading-tight">คลังรายวิชาทั้งหมด</h1>
+        </div>
+
+        <!-- ขวา: ไอคอนตั้งค่า และ โปรไฟล์ (อยู่ในแนวเดียวกับชื่อหน้า และอยู่นิ่งไม่ขยับ) -->
+        <div class="flex items-center gap-2.5">
+          <!-- ปุ่มการตั้งค่า (Settings) -->
+          <button class="w-9 h-9 flex items-center justify-center text-white hover:scale-110 active:scale-95 transition-transform cursor-pointer" title="การตั้งค่า" aria-label="การตั้งค่า">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#ffffff" class="icon icon-tabler icons-tabler-filled icon-tabler-settings"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M14.647 4.081a.724 .724 0 0 0 1.08 .448c2.439 -1.485 5.23 1.305 3.745 3.744a.724 .724 0 0 0 .447 1.08c2.775 .673 2.775 4.62 0 5.294a.724 .724 0 0 0 -.448 1.08c1.485 2.439 -1.305 5.23 -3.744 3.745a.724 .724 0 0 0 -1.08 .447c-.673 2.775 -4.62 2.775 -5.294 0a.724 .724 0 0 0 -1.08 -.448c-2.439 1.485 -5.23 -1.305 -3.745 -3.744a.724 .724 0 0 0 -.447 -1.08c-2.775 -.673 -2.775 -4.62 0 -5.294a.724 .724 0 0 0 .448 -1.08c-1.485 -2.439 1.305 -5.23 3.744 -3.745a.722 .722 0 0 0 1.08 -.447c.673 -2.775 4.62 -2.775 5.294 0zm-2.647 4.919a3 3 0 1 0 0 6a3 3 0 0 0 0 -6" /></svg>
+          </button>
+          
+          <!-- รูปโปรไฟล์ผู้ใช้ (วงกลมพร้อมขอบขาวตามแบบภาพ) -->
+          <div class="w-10 h-10 rounded-full border-2 border-white shadow-sm overflow-hidden bg-[#DCE4EC] hover:scale-105 active:scale-95 transition-transform cursor-pointer flex items-center justify-center shrink-0" title="โปรไฟล์ผู้ใช้" aria-label="โปรไฟล์ผู้ใช้">
+            <img src="assets/avatar.webp" alt="User Avatar" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='assets/avatar.png';">
+          </div>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- Barba Container: Subject -->
+    <main class="barba-container flex-1 pb-28 w-full max-w-4xl mx-auto" data-barba="container" data-barba-namespace="subject">
+
+      <!-- ============================================== -->
+      <!-- SEARCH BAR (ดันลงมาตามที่กำหนด) -->
+      <!-- ============================================== -->
+      <section class="mt-[20px] px-5 relative z-20">
+        <div class="relative rounded-2xl border-2 border-slate-300 shadow-[0_4px_0_0_#CBD5E1] bg-white transition-all focus-within:border-emerald-400 focus-within:shadow-[0_4px_0_0_#A7F3D0]">
+          <input id="subject-search-input" type="text" placeholder="ค้นหาวิชา, บทเรียน หรือเนื้อหาที่อยากติว..." class="w-full pl-10 pr-4 py-3 rounded-2xl bg-transparent text-slate-700 text-xs font-semibold placeholder-slate-400 focus:outline-none transition-all">
+          <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- FILTER CATEGORIES (หมวดหมู่วิชา) -->
+      <!-- ============================================== -->
+      <section class="mt-4 px-5">
+        <div class="flex gap-2.5 overflow-x-auto no-scrollbar py-1">
+          <button class="subject-filter-btn game-btn game-btn-mint px-4 py-2 text-xs font-bold shrink-0" data-filter="all">
+            ทั้งหมด (10)
+          </button>
+          <button class="subject-filter-btn game-btn game-btn-white px-4 py-2 text-xs font-semibold shrink-0" data-filter="science">
+            วิทย์-คณิต 🔬
+          </button>
+          <button class="subject-filter-btn game-btn game-btn-white px-4 py-2 text-xs font-semibold shrink-0" data-filter="language">
+            ภาษา 🗣️
+          </button>
+          <button class="subject-filter-btn game-btn game-btn-white px-4 py-2 text-xs font-semibold shrink-0" data-filter="social">
+            สังคม & อื่นๆ 🌏
+          </button>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- ALL SUBJECT CARDS LIST (Responsive Grid) -->
+      <!-- ============================================== -->
+      <section class="mt-4 px-5">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          <!-- 1. วิทยาศาสตร์พื้นฐาน (วิทย์พื้น) -->
+          <div class="subject-card-item relative overflow-hidden rounded-3xl p-4 text-white border-2 border-emerald-300 shadow-[0_6px_0_0_#047857] hover:-translate-y-0.5 hover:shadow-[0_8px_0_0_#047857] active:translate-y-1 active:shadow-[0_2px_0_0_#047857] bg-gradient-to-r from-emerald-600 to-teal-700 bouncy transition-all group" data-category="science">
+            <img src="assets/subject-1.webp" alt="วิทยาศาสตร์พื้นฐาน" class="subject-card-bg group-hover:scale-105" onerror="handleCardImgError(this, 1, 'science-basic')">
+            <div class="subject-card-overlay bg-gradient-to-r from-emerald-700/70 via-teal-700/60 to-emerald-800/70"></div>
+            <div class="flex items-start justify-between relative z-10">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl shadow-inner border border-white/30 game-wiggle">
+                  🔬
+                </div>
+                <div class="card-text-shadow">
+                  <span class="text-[11px] font-semibold text-emerald-100 uppercase tracking-wider">วิชาหลัก 1 • วิทยาศาสตร์</span>
+                  <h3 class="text-base font-black leading-tight">วิทยาศาสตร์พื้นฐาน (วิทย์พื้น)</h3>
+                  <span class="text-xs text-emerald-100/90 font-medium">16 บทเรียน • 110 แบบฝึกหัด</span>
+                </div>
+              </div>
+              <span class="px-2.5 py-1 rounded-xl bg-white/25 backdrop-blur-sm text-[11px] font-black border border-white/30 card-text-shadow">
+                75%
+              </span>
+            </div>
+            <div class="mt-3.5 relative z-10 flex items-center gap-3">
+              <div class="flex-1 h-2 bg-black/25 rounded-full overflow-hidden p-0.5 shimmer-glow border border-white/20">
+                <div class="h-full bg-white rounded-full" style="width: 75%"></div>
+              </div>
+              <button class="game-btn game-btn-white px-3.5 py-1.5 text-teal-700 text-xs font-black shrink-0">
+                เข้าเรียน
+              </button>
+            </div>
+          </div>
+
+          <!-- 2. คณิตศาสตร์พื้นฐาน (คณิตพื้น) -->
+          <div class="subject-card-item relative overflow-hidden rounded-3xl p-4 text-white border-2 border-sky-300 shadow-[0_6px_0_0_#0284C7] hover:-translate-y-0.5 hover:shadow-[0_8px_0_0_#0284C7] active:translate-y-1 active:shadow-[0_2px_0_0_#0284C7] bg-gradient-to-r from-sky-500 to-indigo-600 bouncy transition-all group" data-category="science">
+            <img src="assets/subject-2.webp" alt="คณิตศาสตร์พื้นฐาน" class="subject-card-bg group-hover:scale-105" onerror="handleCardImgError(this, 2, 'math-basic')">
+            <div class="subject-card-overlay bg-gradient-to-r from-sky-600/70 via-indigo-600/60 to-sky-700/70"></div>
+            <div class="flex items-start justify-between relative z-10">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl shadow-inner border border-white/30 game-wiggle">
+                  📐
+                </div>
+                <div class="card-text-shadow">
+                  <span class="text-[11px] font-semibold text-sky-100 uppercase tracking-wider">วิชาหลัก 2 • คณิตศาสตร์</span>
+                  <h3 class="text-base font-black leading-tight">คณิตศาสตร์พื้นฐาน (คณิตพื้น)</h3>
+                  <span class="text-xs text-sky-100/90 font-medium">18 บทเรียน • 120 แบบฝึกหัด</span>
+                </div>
+              </div>
+              <span class="px-2.5 py-1 rounded-xl bg-white/25 backdrop-blur-sm text-[11px] font-black border border-white/30 card-text-shadow">
+                65%
+              </span>
+            </div>
+            <div class="mt-3.5 relative z-10 flex items-center gap-3">
+              <div class="flex-1 h-2 bg-black/25 rounded-full overflow-hidden p-0.5 shimmer-glow border border-white/20">
+                <div class="h-full bg-white rounded-full" style="width: 65%"></div>
+              </div>
+              <button class="game-btn game-btn-white px-3.5 py-1.5 text-sky-700 text-xs font-black shrink-0">
+                เข้าเรียน
+              </button>
+            </div>
+          </div>
+
+          <!-- 3. ภาษาอังกฤษพื้นฐาน (ภาษาอังกฤษ) -->
+          <div class="subject-card-item relative overflow-hidden rounded-3xl p-4 text-white border-2 border-violet-300 shadow-[0_6px_0_0_#5B21B6] hover:-translate-y-0.5 hover:shadow-[0_8px_0_0_#5B21B6] active:translate-y-1 active:shadow-[0_2px_0_0_#5B21B6] bg-gradient-to-r from-violet-500 to-purple-600 bouncy transition-all group" data-category="language">
+            <img src="assets/subject-3.webp" alt="ภาษาอังกฤษพื้นฐาน" class="subject-card-bg group-hover:scale-105" onerror="handleCardImgError(this, 3, 'english-basic')">
+            <div class="subject-card-overlay bg-gradient-to-r from-violet-600/70 via-purple-600/60 to-violet-700/70"></div>
+            <div class="flex items-start justify-between relative z-10">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl shadow-inner border border-white/30 game-float">
+                  🌍
+                </div>
+                <div class="card-text-shadow">
+                  <span class="text-[11px] font-semibold text-violet-100 uppercase tracking-wider">วิชาหลัก 3 • ภาษาต่างประเทศ</span>
+                  <h3 class="text-base font-black leading-tight">ภาษาอังกฤษพื้นฐาน (ภาษาอังกฤษ)</h3>
+                  <span class="text-xs text-violet-100/90 font-medium">20 บทเรียน • คลังศัพท์ 450 คำ</span>
+                </div>
+              </div>
+              <span class="px-2.5 py-1 rounded-xl bg-white/25 backdrop-blur-sm text-[11px] font-black border border-white/30 card-text-shadow">
+                55%
+              </span>
+            </div>
+            <div class="mt-3.5 relative z-10 flex items-center gap-3">
+              <div class="flex-1 h-2 bg-black/25 rounded-full overflow-hidden p-0.5 shimmer-glow border border-white/20">
+                <div class="h-full bg-white rounded-full" style="width: 55%"></div>
+              </div>
+              <button class="game-btn game-btn-white px-3.5 py-1.5 text-purple-700 text-xs font-black shrink-0">
+                เข้าเรียน
+              </button>
+            </div>
+          </div>
+
+          <!-- 4. ภาษาไทยพื้นฐาน (ภาษาไทย) -->
+          <div class="subject-card-item relative overflow-hidden rounded-3xl p-4 text-white border-2 border-pink-300 shadow-[0_6px_0_0_#9F1239] hover:-translate-y-0.5 hover:shadow-[0_8px_0_0_#9F1239] active:translate-y-1 active:shadow-[0_2px_0_0_#9F1239] bg-gradient-to-r from-pink-500 to-rose-600 bouncy transition-all group" data-category="language">
+            <img src="assets/subject-4.webp" alt="ภาษาไทยพื้นฐาน" class="subject-card-bg group-hover:scale-105" onerror="handleCardImgError(this, 4, 'thai-basic')">
+            <div class="subject-card-overlay bg-gradient-to-r from-pink-600/70 via-rose-600/60 to-pink-700/70"></div>
+            <div class="flex items-start justify-between relative z-10">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl shadow-inner border border-white/30 game-wiggle">
+                  ✍️
+                </div>
+                <div class="card-text-shadow">
+                  <span class="text-[11px] font-semibold text-pink-100 uppercase tracking-wider">วิชาหลัก 4 • ภาษาไทย</span>
+                  <h3 class="text-base font-black leading-tight">ภาษาไทยพื้นฐาน (ภาษาไทย)</h3>
+                  <span class="text-xs text-pink-100/90 font-medium">12 บทเรียน • 80 ข้อสอบวิเคราะห์</span>
+                </div>
+              </div>
+              <span class="px-2.5 py-1 rounded-xl bg-white/25 backdrop-blur-sm text-[11px] font-black border border-white/30 card-text-shadow">
+                85%
+              </span>
+            </div>
+            <div class="mt-3.5 relative z-10 flex items-center gap-3">
+              <div class="flex-1 h-2 bg-black/25 rounded-full overflow-hidden p-0.5 shimmer-glow border border-white/20">
+                <div class="h-full bg-white rounded-full" style="width: 85%"></div>
+              </div>
+              <button class="game-btn game-btn-white px-3.5 py-1.5 text-rose-700 text-xs font-black shrink-0">
+                เข้าเรียน
+              </button>
+            </div>
+          </div>
+
+          <!-- 5. สังคมศึกษา ศาสนา และวัฒนธรรมพื้นฐาน (สังคมศึกษา) -->
+          <div class="subject-card-item relative overflow-hidden rounded-3xl p-4 text-white border-2 border-amber-300 shadow-[0_6px_0_0_#C2410C] hover:-translate-y-0.5 hover:shadow-[0_8px_0_0_#C2410C] active:translate-y-1 active:shadow-[0_2px_0_0_#C2410C] bg-gradient-to-r from-amber-500 to-orange-600 bouncy transition-all group" data-category="social">
+            <img src="assets/subject-5.webp" alt="สังคมศึกษา" class="subject-card-bg group-hover:scale-105" onerror="handleCardImgError(this, 5, 'social-basic')">
+            <div class="subject-card-overlay bg-gradient-to-r from-amber-600/70 via-orange-600/60 to-amber-700/70"></div>
+            <div class="flex items-start justify-between relative z-10">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl shadow-inner border border-white/30 game-sparkle">
+                  🏛️
+                </div>
+                <div class="card-text-shadow">
+                  <span class="text-[11px] font-semibold text-amber-100 uppercase tracking-wider">วิชาหลัก 5 • สังคมศาสตร์</span>
+                  <h3 class="text-base font-black leading-tight">สังคมศึกษา ศาสนา และวัฒนธรรมพื้นฐาน (สังคมศึกษา)</h3>
+                  <span class="text-xs text-amber-100/90 font-medium">15 บทเรียน • 90 แนวข้อสอบ</span>
+                </div>
+              </div>
+              <span class="px-2.5 py-1 rounded-xl bg-white/25 backdrop-blur-sm text-[11px] font-black border border-white/30 card-text-shadow">
+                40%
+              </span>
+            </div>
+            <div class="mt-3.5 relative z-10 flex items-center gap-3">
+              <div class="flex-1 h-2 bg-black/25 rounded-full overflow-hidden p-0.5 shimmer-glow border border-white/20">
+                <div class="h-full bg-white rounded-full" style="width: 40%"></div>
+              </div>
+              <button class="game-btn game-btn-white px-3.5 py-1.5 text-orange-700 text-xs font-black shrink-0">
+                เข้าเรียน
+              </button>
+            </div>
+          </div>
+
+          <!-- 6. ประวัติศาสตร์ -->
+          <div class="subject-card-item relative overflow-hidden rounded-3xl p-4 text-white border-2 border-rose-300 shadow-[0_6px_0_0_#991B1B] hover:-translate-y-0.5 hover:shadow-[0_8px_0_0_#991B1B] active:translate-y-1 active:shadow-[0_2px_0_0_#991B1B] bg-gradient-to-r from-rose-500 to-red-600 bouncy transition-all group" data-category="social">
+            <img src="assets/subject-6.webp" alt="ประวัติศาสตร์" class="subject-card-bg group-hover:scale-105" onerror="handleCardImgError(this, 6, 'history')">
+            <div class="subject-card-overlay bg-gradient-to-r from-rose-600/70 via-red-600/60 to-rose-700/70"></div>
+            <div class="flex items-start justify-between relative z-10">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl shadow-inner border border-white/30 game-float">
+                  📜
+                </div>
+                <div class="card-text-shadow">
+                  <span class="text-[11px] font-semibold text-rose-100 uppercase tracking-wider">วิชาหลัก 6 • ประวัติศาสตร์</span>
+                  <h3 class="text-base font-black leading-tight">ประวัติศาสตร์</h3>
+                  <span class="text-xs text-rose-100/90 font-medium">10 บทเรียน • 60 แบบทดสอบ</span>
+                </div>
+              </div>
+              <span class="px-2.5 py-1 rounded-xl bg-white/25 backdrop-blur-sm text-[11px] font-black border border-white/30 card-text-shadow">
+                50%
+              </span>
+            </div>
+            <div class="mt-3.5 relative z-10 flex items-center gap-3">
+              <div class="flex-1 h-2 bg-black/25 rounded-full overflow-hidden p-0.5 shimmer-glow border border-white/20">
+                <div class="h-full bg-white rounded-full" style="width: 50%"></div>
+              </div>
+              <button class="game-btn game-btn-white px-3.5 py-1.5 text-red-700 text-xs font-black shrink-0">
+                เข้าเรียน
+              </button>
+            </div>
+          </div>
+
+          <!-- 7. คณิตศาสตร์สากล (Math) -->
+          <div class="subject-card-item relative overflow-hidden rounded-3xl p-4 text-white border-2 border-blue-300 shadow-[0_6px_0_0_#1E40AF] hover:-translate-y-0.5 hover:shadow-[0_8px_0_0_#1E40AF] active:translate-y-1 active:shadow-[0_2px_0_0_#1E40AF] bg-gradient-to-r from-blue-600 to-indigo-700 bouncy transition-all group" data-category="science">
+            <img src="assets/subject-7.webp" alt="คณิตศาสตร์สากล" class="subject-card-bg group-hover:scale-105" onerror="handleCardImgError(this, 7, 'math-inter')">
+            <div class="subject-card-overlay bg-gradient-to-r from-blue-700/70 via-indigo-700/60 to-blue-800/70"></div>
+            <div class="flex items-start justify-between relative z-10">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl shadow-inner border border-white/30 game-wiggle">
+                  🔢
+                </div>
+                <div class="card-text-shadow">
+                  <span class="text-[11px] font-semibold text-blue-100 uppercase tracking-wider">หลักสูตรสากล • International</span>
+                  <h3 class="text-base font-black leading-tight">คณิตศาสตร์สากล (Math)</h3>
+                  <span class="text-xs text-blue-100/90 font-medium">14 บทเรียน • Math for Global Curriculums</span>
+                </div>
+              </div>
+              <span class="px-2.5 py-1 rounded-xl bg-white/25 backdrop-blur-sm text-[11px] font-black border border-white/30 card-text-shadow">
+                35%
+              </span>
+            </div>
+            <div class="mt-3.5 relative z-10 flex items-center gap-3">
+              <div class="flex-1 h-2 bg-black/25 rounded-full overflow-hidden p-0.5 shimmer-glow border border-white/20">
+                <div class="h-full bg-white rounded-full" style="width: 35%"></div>
+              </div>
+              <button class="game-btn game-btn-white px-3.5 py-1.5 text-blue-700 text-xs font-black shrink-0">
+                เข้าเรียน
+              </button>
+            </div>
+          </div>
+
+          <!-- 8. วิทยาศาสตร์สากล (Science) -->
+          <div class="subject-card-item relative overflow-hidden rounded-3xl p-4 text-white border-2 border-teal-300 shadow-[0_6px_0_0_#0F766E] hover:-translate-y-0.5 hover:shadow-[0_8px_0_0_#0F766E] active:translate-y-1 active:shadow-[0_2px_0_0_#0F766E] bg-gradient-to-r from-teal-500 to-cyan-600 bouncy transition-all group" data-category="science">
+            <img src="assets/subject-8.webp" alt="วิทยาศาสตร์สากล" class="subject-card-bg group-hover:scale-105" onerror="handleCardImgError(this, 8, 'science-inter')">
+            <div class="subject-card-overlay bg-gradient-to-r from-teal-600/70 via-cyan-600/60 to-teal-700/70"></div>
+            <div class="flex items-start justify-between relative z-10">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl shadow-inner border border-white/30 game-float">
+                  🪐
+                </div>
+                <div class="card-text-shadow">
+                  <span class="text-[11px] font-semibold text-teal-100 uppercase tracking-wider">หลักสูตรสากล • International</span>
+                  <h3 class="text-base font-black leading-tight">วิทยาศาสตร์สากล (Science)</h3>
+                  <span class="text-xs text-teal-100/90 font-medium">16 บทเรียน • General Science & Inquiry</span>
+                </div>
+              </div>
+              <span class="px-2.5 py-1 rounded-xl bg-white/25 backdrop-blur-sm text-[11px] font-black border border-white/30 card-text-shadow">
+                20%
+              </span>
+            </div>
+            <div class="mt-3.5 relative z-10 flex items-center gap-3">
+              <div class="flex-1 h-2 bg-black/25 rounded-full overflow-hidden p-0.5 shimmer-glow border border-white/20">
+                <div class="h-full bg-white rounded-full" style="width: 20%"></div>
+              </div>
+              <button class="game-btn game-btn-white px-3.5 py-1.5 text-teal-700 text-xs font-black shrink-0">
+                เข้าเรียน
+              </button>
+            </div>
+          </div>
+
+          <!-- 9. ภาษาอังกฤษเพิ่มเติม (ENS) -->
+          <div class="subject-card-item relative overflow-hidden rounded-3xl p-4 text-white border-2 border-indigo-300 shadow-[0_6px_0_0_#3730A3] hover:-translate-y-0.5 hover:shadow-[0_8px_0_0_#3730A3] active:translate-y-1 active:shadow-[0_2px_0_0_#3730A3] bg-gradient-to-r from-indigo-500 to-purple-600 bouncy transition-all group" data-category="language">
+            <img src="assets/subject-9.webp" alt="ภาษาอังกฤษเพิ่มเติม" class="subject-card-bg group-hover:scale-105" onerror="handleCardImgError(this, 9, 'english-adv')">
+            <div class="subject-card-overlay bg-gradient-to-r from-indigo-600/70 via-purple-600/60 to-indigo-700/70"></div>
+            <div class="flex items-start justify-between relative z-10">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl shadow-inner border border-white/30 game-wiggle">
+                  🗣️
+                </div>
+                <div class="card-text-shadow">
+                  <span class="text-[11px] font-semibold text-indigo-100 uppercase tracking-wider">ภาษาต่างประเทศ • เพิ่มเติม</span>
+                  <h3 class="text-base font-black leading-tight">ภาษาอังกฤษเพิ่มเติม (ENS)</h3>
+                  <span class="text-xs text-indigo-100/90 font-medium">15 บทเรียน • English for Specific Purposes</span>
+                </div>
+              </div>
+              <span class="px-2.5 py-1 rounded-xl bg-white/25 backdrop-blur-sm text-[11px] font-black border border-white/30 card-text-shadow">
+                45%
+              </span>
+            </div>
+            <div class="mt-3.5 relative z-10 flex items-center gap-3">
+              <div class="flex-1 h-2 bg-black/25 rounded-full overflow-hidden p-0.5 shimmer-glow border border-white/20">
+                <div class="h-full bg-white rounded-full" style="width: 45%"></div>
+              </div>
+              <button class="game-btn game-btn-white px-3.5 py-1.5 text-indigo-700 text-xs font-black shrink-0">
+                เข้าเรียน
+              </button>
+            </div>
+          </div>
+
+          <!-- 10. ภาษาจีน -->
+          <div class="subject-card-item relative overflow-hidden rounded-3xl p-4 text-white border-2 border-red-300 shadow-[0_6px_0_0_#B91C1C] hover:-translate-y-0.5 hover:shadow-[0_8px_0_0_#B91C1C] active:translate-y-1 active:shadow-[0_2px_0_0_#B91C1C] bg-gradient-to-r from-rose-500 to-red-600 bouncy transition-all group md:col-span-2" data-category="language">
+            <img src="assets/subject-10.webp" alt="ภาษาจีน" class="subject-card-bg group-hover:scale-105" onerror="handleCardImgError(this, 10, 'chinese')">
+            <div class="subject-card-overlay bg-gradient-to-r from-red-600/70 via-rose-600/60 to-red-700/70"></div>
+            <div class="flex items-start justify-between relative z-10">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl shadow-inner border border-white/30 game-sparkle">
+                  🏮
+                </div>
+                <div class="card-text-shadow">
+                  <span class="text-[11px] font-semibold text-rose-100 uppercase tracking-wider">ภาษาต่างประเทศ • ภาษาที่ 3</span>
+                  <h3 class="text-base font-black leading-tight">ภาษาจีน</h3>
+                  <span class="text-xs text-rose-100/90 font-medium">12 บทเรียน • พินอิน & คำศัพท์ HSK</span>
+                </div>
+              </div>
+              <span class="px-2.5 py-1 rounded-xl bg-white/25 backdrop-blur-sm text-[11px] font-black border border-white/30 card-text-shadow">
+                30%
+              </span>
+            </div>
+            <div class="mt-3.5 relative z-10 flex items-center gap-3">
+              <div class="flex-1 h-2 bg-black/25 rounded-full overflow-hidden p-0.5 shimmer-glow border border-white/20">
+                <div class="h-full bg-white rounded-full" style="width: 30%"></div>
+              </div>
+              <button class="game-btn game-btn-white px-3.5 py-1.5 text-red-700 text-xs font-black shrink-0">
+                เข้าเรียน
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ============================================== -->
+    <!-- BOTTOM NAVBAR (ยืดเต็มจอ Desktop) -->
+    <!-- ============================================== -->
+    <nav id="bottom-navbar" class="fixed bottom-0 left-0 right-0 w-full z-50 glass-nav border-t border-slate-200/80 px-6 py-2.5 rounded-t-3xl transition-all">
+      <div class="max-w-md mx-auto flex items-center justify-around">
+
+        <!-- 1. หน้าแรก (Home) -->
+        <a href="index.html" data-nav="home" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600 transition-all active:scale-95 group">
+          <div class="nav-icon-box w-11 h-9 rounded-2xl flex items-center justify-center transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-home">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path d="M5 12l-2 0l9 -9l9 9l-2 0" />
+              <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+              <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+            </svg>
+          </div>
+          <span class="nav-label text-[11px] font-medium text-slate-400">หน้าแรก</span>
+        </a>
+
+        <!-- 2. รายวิชา (Subject - Active) -->
+        <a href="subject.html" data-nav="subject" class="flex flex-col items-center gap-1 text-emerald-600 transition-all active:scale-95 group">
+          <div class="nav-icon-box w-11 h-9 rounded-2xl bg-emerald-50 flex items-center justify-center transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-book">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path d="M21.5 5.134a1 1 0 0 1 .493 .748l.007 .118v13a1 1 0 0 1 -1.5 .866a8 8 0 0 0 -7.5 -.266v-15.174a10 10 0 0 1 8.5 .708m-10.5 -.707l.001 15.174a8 8 0 0 0 -7.234 .117l-.327 .18l-.103 .044l-.049 .016l-.11 .026l-.061 .01l-.117 .006h-.042l-.11 -.012l-.077 -.014l-.108 -.032l-.126 -.056l-.095 -.056l-.089 -.067l-.06 -.056l-.073 -.082l-.064 -.089l-.022 -.036l-.032 -.06l-.044 -.103l-.016 -.049l-.026 -.11l-.01 -.061l-.004 -.049l-.002 -13.068a1 1 0 0 1 .5 -.866a10 10 0 0 1 8.5 -.707" />
+            </svg>
+          </div>
+          <span class="nav-label text-[11px] font-bold text-emerald-700">รายวิชา</span>
+        </a>
+
+        <!-- 3. ความคืบหน้า (Progress) -->
+        <a href="progress.html" data-nav="progress" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600 transition-all active:scale-95 group">
+          <div class="nav-icon-box w-11 h-9 rounded-2xl flex items-center justify-center transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-chart-bar-popular">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path d="M3 13a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -6" />
+              <path d="M9 9a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -10" />
+              <path d="M15 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -14" />
+              <path d="M4 20h14" />
+            </svg>
+          </div>
+          <span class="nav-label text-[11px] font-medium text-slate-400">ความคืบหน้า</span>
+        </a>
+
+      </div>
+    </nav>
+
+  </div>
+
+  <!-- Scripts: GSAP + Barba.js + App Core -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://unpkg.com/@barba/core"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

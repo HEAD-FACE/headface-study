@@ -1,0 +1,487 @@
+/* HEADFACE STUDY - Modern, Friendly & Playful Theme */
+@import url('https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+
+:root {
+  --font-main: 'Prompt', sans-serif;
+  --color-mint-primary: #10B981;
+  --color-mint-light: #E6FBF5;
+  --color-mint-dark: #059669;
+  --color-sky-primary: #0EA5E9;
+  --color-sky-light: #E0F2FE;
+  --color-sky-dark: #0284C7;
+  --color-bg-light: #EEF4F8;
+  --color-card-bg: #FFFFFF;
+}
+
+* {
+  font-family: var(--font-main);
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ซ่อนแถบ Scrollbar ค่าเริ่มต้นของหน้าจอทั้งหมด แต่ยังเลื่อนได้ตามปกติ */
+html, body, * {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+  display: none;             /* Chrome, Safari, Edge, Opera */
+}
+
+body {
+  background-color: #EEF4F8;
+  color: #1E293B;
+  overflow-x: hidden;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+/* ซ่อน Scrollbar แนวนอน / แนวตั้งแต่ยังเลื่อนได้ */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ======================================================== */
+/* 🎯 รูปทรงโค้งนุ่มนวลแบบ Wave/Curve สำหรับขอบล่างของพื้นที่สีเขียวฟ้า */
+/* ======================================================== */
+.bg-curve {
+  border-radius: 0 0 50% 50% / 0 0 24px 24px;
+}
+
+/* ======================================================== */
+/* 🌟 PERSISTENT HEADER BACKGROUND (ปรับยืด-หดได้ด้วย GSAP) */
+/* ======================================================== */
+#mainBlueBg,
+.header-bg-shell {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 285px; /* ความสูงเริ่มต้นของหน้าแรก (Home) */
+  background: #10B981; /* สีเขียวมิ้นเพียงสีเดียว */
+  border-radius: 0 0 50% 50% / 0 0 24px 24px;
+  z-index: 0;
+  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.28), 0 8px 10px -6px rgba(16, 185, 129, 0.18);
+  pointer-events: none;
+  will-change: height;
+}
+
+/* Barba.js Container */
+[data-barba="wrapper"] {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #EEF4F8;
+}
+
+.barba-container {
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+  z-index: 10;
+  will-change: opacity, transform;
+}
+
+/* ======================================================== */
+/* 🎮 CARTOON 3D GAME CARDS & SHADOWS (สไตล์กล่อง 3D ตามภาพตัวอย่าง) */
+/* ======================================================== */
+.game-card {
+  background: #FFFFFF;
+  border-radius: 24px;
+  border: 2px solid #E2E8F0;
+  box-shadow: 0 6px 0 0 #CBD5E1;
+  transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.12s ease;
+}
+.game-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 0 0 #CBD5E1;
+}
+.game-card:active {
+  transform: translateY(3px);
+  box-shadow: 0 3px 0 0 #CBD5E1;
+}
+
+/* ธีมสีการ์ตูนสำหรับกล่องต่างๆ ตามภาพตัวอย่าง */
+.game-card-mint {
+  border: 2.5px solid #10B981 !important;
+  box-shadow: 0 6px 0 0 #A7F3D0 !important;
+}
+.game-card-mint:hover {
+  box-shadow: 0 8px 0 0 #A7F3D0 !important;
+}
+.game-card-mint:active {
+  transform: translateY(3px);
+  box-shadow: 0 3px 0 0 #A7F3D0 !important;
+}
+
+.game-card-sky {
+  border: 2.5px solid #0EA5E9 !important;
+  box-shadow: 0 6px 0 0 #BAE6FD !important;
+}
+.game-card-sky:hover {
+  box-shadow: 0 8px 0 0 #BAE6FD !important;
+}
+.game-card-sky:active {
+  transform: translateY(3px);
+  box-shadow: 0 3px 0 0 #BAE6FD !important;
+}
+
+.game-card-rose {
+  border: 2.5px solid #F43F5E !important;
+  box-shadow: 0 6px 0 0 #FECDD3 !important;
+}
+.game-card-rose:hover {
+  box-shadow: 0 8px 0 0 #FECDD3 !important;
+}
+.game-card-rose:active {
+  transform: translateY(3px);
+  box-shadow: 0 3px 0 0 #FECDD3 !important;
+}
+
+.game-card-amber {
+  border: 2.5px solid #F59E0B !important;
+  box-shadow: 0 6px 0 0 #FDE68A !important;
+}
+.game-card-amber:hover {
+  box-shadow: 0 8px 0 0 #FDE68A !important;
+}
+.game-card-amber:active {
+  transform: translateY(3px);
+  box-shadow: 0 3px 0 0 #FDE68A !important;
+}
+
+.game-card-purple {
+  border: 2.5px solid #8B5CF6 !important;
+  box-shadow: 0 6px 0 0 #DDD6FE !important;
+}
+.game-card-purple:hover {
+  box-shadow: 0 8px 0 0 #DDD6FE !important;
+}
+.game-card-purple:active {
+  transform: translateY(3px);
+  box-shadow: 0 3px 0 0 #DDD6FE !important;
+}
+
+.game-card-neutral {
+  border: 2px solid #E2E8F0 !important;
+  box-shadow: 0 6px 0 0 #CBD5E1 !important;
+}
+.game-card-neutral:hover {
+  box-shadow: 0 8px 0 0 #CBD5E1 !important;
+}
+.game-card-neutral:active {
+  transform: translateY(3px);
+  box-shadow: 0 3px 0 0 #CBD5E1 !important;
+}
+
+/* ======================================================== */
+/* 🕹️ 3D GAME PUSH BUTTONS (ปุ่มนูนสไตล์เกม กดแล้วยุบตัว ฟิลเกม) */
+/* ======================================================== */
+.game-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  border-radius: 16px;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.08s ease-in-out, box-shadow 0.08s ease-in-out, background-color 0.15s ease;
+}
+
+/* ปุ่มเขียวมินต์นูน */
+.game-btn-mint {
+  background-color: #10B981 !important;
+  color: #FFFFFF !important;
+  border: 2px solid #059669 !important;
+  box-shadow: 0 4px 0 0 #047857 !important;
+}
+.game-btn-mint:hover {
+  background-color: #059669 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 0 0 #047857 !important;
+}
+.game-btn-mint:active {
+  transform: translateY(4px) !important;
+  box-shadow: 0 0 0 0 #047857 !important;
+}
+
+/* ปุ่มส้มนูน (ลุยต่อ) */
+.game-btn-orange {
+  background-color: #F97316 !important;
+  color: #FFFFFF !important;
+  border: 2px solid #EA580C !important;
+  box-shadow: 0 4px 0 0 #C2410C !important;
+}
+.game-btn-orange:hover {
+  background-color: #EA580C !important;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 0 0 #C2410C !important;
+}
+.game-btn-orange:active {
+  transform: translateY(4px) !important;
+  box-shadow: 0 0 0 0 #C2410C !important;
+}
+
+/* ปุ่มฟ้านูน */
+.game-btn-sky {
+  background-color: #0EA5E9 !important;
+  color: #FFFFFF !important;
+  border: 2px solid #0284C7 !important;
+  box-shadow: 0 4px 0 0 #0369A1 !important;
+}
+.game-btn-sky:hover {
+  background-color: #0284C7 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 0 0 #0369A1 !important;
+}
+.game-btn-sky:active {
+  transform: translateY(4px) !important;
+  box-shadow: 0 0 0 0 #0369A1 !important;
+}
+
+/* ปุ่มขาวนูน */
+.game-btn-white {
+  background-color: #FFFFFF !important;
+  color: #334155 !important;
+  border: 2px solid #CBD5E1 !important;
+  box-shadow: 0 3.5px 0 0 #94A3B8 !important;
+}
+.game-btn-white:hover {
+  background-color: #F8FAFC !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4.5px 0 0 #94A3B8 !important;
+}
+.game-btn-white:active {
+  transform: translateY(3.5px) !important;
+  box-shadow: 0 0 0 0 #94A3B8 !important;
+}
+
+/* ปุ่มไอคอนหัวบาร์กลมมน กดแล้วยุบ */
+.game-icon-btn {
+  border: 2px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 3px 0 0 rgba(0, 0, 0, 0.15) !important;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+.game-icon-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.15) !important;
+}
+.game-icon-btn:active {
+  transform: translateY(3px) !important;
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.15) !important;
+}
+
+/* ======================================================== */
+/* ✨ PROGRESS BAR SHIMMER & GLOW (แสงวับๆ วิ่งผ่านแถบ) */
+/* ======================================================== */
+.shimmer-glow {
+  position: relative;
+  overflow: hidden !important;
+}
+
+.shimmer-glow::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.8) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-25deg);
+  animation: shineSweep 2.2s infinite ease-in-out;
+  pointer-events: none;
+}
+
+@keyframes shineSweep {
+  0% {
+    left: -120%;
+  }
+  45%, 100% {
+    left: 220%;
+  }
+}
+
+/* Wiggle / Idle Playful Animation สำหรับไอคอนน่ารักๆ */
+@keyframes cuteWiggle {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(-6deg) scale(1.08); }
+  75% { transform: rotate(6deg) scale(1.08); }
+}
+.game-wiggle {
+  animation: cuteWiggle 3s infinite ease-in-out;
+  display: inline-block;
+  transform-origin: center bottom;
+}
+
+/* Gentle Bobbing / Floating Animation */
+@keyframes cuteFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+}
+.game-float {
+  animation: cuteFloat 2.6s infinite ease-in-out;
+}
+
+/* Star / Lightning Sparkle Animation */
+@keyframes starSparkle {
+  0%, 100% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 2px rgba(245, 158, 11, 0.5)); }
+  50% { transform: scale(1.18) rotate(10deg); filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.9)); }
+}
+.game-sparkle {
+  animation: starSparkle 2s infinite ease-in-out;
+  display: inline-block;
+}
+
+/* Animation เด้งดึ๋ง น่ารัก Friendly */
+.bouncy {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+}
+.bouncy:active {
+  transform: scale(0.94);
+}
+.bouncy:hover {
+  transform: translateY(-2px);
+}
+
+/* Card Illustration Patterns */
+.pattern-math {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.2) 1.5px, transparent 1.5px),
+                    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 25h10M15 20v10M35 22h8M35 28h8M45 40l8 8M53 40l-8 8' stroke='rgba(255,255,255,0.18)' stroke-width='2' stroke-linecap='round' fill='none'/%3E%3C/svg%3E");
+  background-size: 24px 24px, 60px 60px;
+}
+
+.pattern-physics {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.2) 1.5px, transparent 1.5px),
+                    url("data:image/svg+xml,%3Csvg width='70' height='70' viewBox='0 0 70 70' xmlns='http://www.w3.org/2000/svg'%3E%3Cellipse cx='35' cy='35' rx='25' ry='10' stroke='rgba(255,255,255,0.18)' stroke-width='1.8' fill='none' transform='rotate(30 35 35)'/%3E%3Cellipse cx='35' cy='35' rx='25' ry='10' stroke='rgba(255,255,255,0.18)' stroke-width='1.8' fill='none' transform='rotate(-30 35 35)'/%3E%3Ccircle cx='35' cy='35' r='4' fill='rgba(255,255,255,0.3)'/%3E%3C/svg%3E");
+  background-size: 20px 20px, 70px 70px;
+}
+
+.pattern-chemistry {
+  background-image: url("data:image/svg+xml,%3Csvg width='64' height='64' viewBox='0 0 64 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M26 14h12M32 14v16l10 16a4 4 0 0 1-3.4 6H25.4A4 4 0 0 1 22 46l10-16V14' stroke='rgba(255,255,255,0.2)' stroke-width='1.8' stroke-linecap='round' fill='none'/%3E%3Ccircle cx='30' cy='44' r='2' fill='rgba(255,255,255,0.3)'/%3E%3Ccircle cx='36' cy='40' r='1.5' fill='rgba(255,255,255,0.3)'/%3E%3C/svg%3E");
+  background-size: 64px 64px;
+}
+
+.pattern-biology {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15 45c5-20 25-20 30-30M45 15c-5 20-25 20-30 30M18 30h24M22 22h16M24 38h12' stroke='rgba(255,255,255,0.2)' stroke-width='1.8' stroke-linecap='round' fill='none'/%3E%3C/svg%3E");
+  background-size: 60px 60px;
+}
+
+.pattern-english {
+  background-image: url("data:image/svg+xml,%3Csvg width='70' height='70' viewBox='0 0 70 70' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='15' y='32' font-family='sans-serif' font-weight='bold' font-size='22' fill='rgba(255,255,255,0.18)'%3EA%3C/text%3E%3Ctext x='38' y='54' font-family='sans-serif' font-weight='bold' font-size='20' fill='rgba(255,255,255,0.18)'%3E?%3C/text%3E%3Cpath d='M10 50h16M18 42v16' stroke='rgba(255,255,255,0.16)' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-size: 70px 70px;
+}
+
+.pattern-social {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='30' r='18' stroke='rgba(255,255,255,0.18)' stroke-width='1.8' fill='none'/%3E%3Cellipse cx='30' cy='30' rx='8' ry='18' stroke='rgba(255,255,255,0.18)' stroke-width='1.8' fill='none'/%3E%3Cpath d='M12 30h36' stroke='rgba(255,255,255,0.18)' stroke-width='1.8'/%3E%3C/svg%3E");
+  background-size: 60px 60px;
+}
+
+/* ======================================================== */
+/* 🖼️ SUBJECT CARDS BACKGROUND IMAGES & OVERLAYS */
+/* ======================================================== */
+.subject-card-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+}
+
+.group:hover .subject-card-bg,
+.subject-card-item:hover .subject-card-bg {
+  transform: scale(1.06);
+}
+
+.subject-card-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* ======================================================== */
+/* 🔤 SUBJECT CARDS TEXT DROP SHADOW (เงาดำหลังข้อความให้อ่านง่าย คมชัด) */
+/* ======================================================== */
+.card-text-shadow,
+.subject-card-text {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85), 0 2px 5px rgba(0, 0, 0, 0.65);
+}
+
+.card-text-shadow span,
+.card-text-shadow h3,
+.card-text-shadow h4,
+.card-text-shadow p,
+.subject-card-text span,
+.subject-card-text h3,
+.subject-card-text h4,
+.subject-card-text p {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85), 0 2px 5px rgba(0, 0, 0, 0.65);
+}
+
+/* Also auto-apply drop shadow to headers inside .subject-card-item */
+.subject-card-item h3,
+.subject-card-item h4 {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85), 0 2px 5px rgba(0, 0, 0, 0.65);
+}
+
+/* Ensure button texts keep clean appearance without dark shadow */
+.game-btn,
+.game-btn * {
+  text-shadow: none !important;
+}
+
+/* Glassmorphism Effect */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.glass-nav {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 -6px 25px rgba(15, 23, 42, 0.08);
+}
+
+/* บังคับให้ลูกๆ ของเมนู Nav ทะลุการคลิก */
+nav a * {
+  pointer-events: none !important;
+}
+
+/* Badge Pulse Animation */
+@keyframes softPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.06); opacity: 0.9; }
+}
+.pulse-badge {
+  animation: softPulse 2.5s infinite ease-in-out;
+}
+
+/* Floating animation */
+@keyframes floatAnim {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+.floating-element {
+  animation: floatAnim 3s ease-in-out infinite;
+}
