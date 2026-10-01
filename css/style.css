@@ -71,7 +71,7 @@ body {
   background: #10B981; /* สีเขียวมิ้นเพียงสีเดียว */
   border-radius: 0 0 50% 50% / 0 0 24px 24px;
   z-index: 0;
-  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.28), 0 8px 10px -6px rgba(16, 185, 129, 0.18);
+  box-shadow: none;
   pointer-events: none;
   will-change: height;
 }
