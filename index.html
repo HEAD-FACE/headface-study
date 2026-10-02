@@ -71,8 +71,8 @@
   <!-- Full-Width Fluid Desktop Outer Wrapper -->
   <div class="min-h-screen w-full bg-[#EEF4F8] flex flex-col relative overflow-x-hidden" data-barba="wrapper">
 
-    <!-- 🛡️ PERSISTENT HEADER BACKGROUND (สูง 285px ตามที่ผู้ใช้กำหนด) -->
-    <div id="mainBlueBg" class="header-bg-shell bg-curve" style="height: 285px;"></div>
+    <!-- 🛡️ PERSISTENT HEADER BACKGROUND (สูง 310px เพิ่ม 5px ให้ครอบคลุมการ์ดอย่างสมบูรณ์) -->
+    <div id="mainBlueBg" class="header-bg-shell bg-curve" style="height: 310px;"></div>
 
     <!-- 🛡️ PERSISTENT TOP APP BAR (อยู่นอก Barba Container เพื่อไม่ให้มีแอนิเมชันเวลาเปลี่ยนหน้า เป็น component ร่วมกัน) -->
     <header id="shared-top-header" class="w-full max-w-4xl mx-auto pt-5 pb-3 px-5 text-white relative z-30">
@@ -114,81 +114,96 @@
       <!-- ============================================== -->
       <!-- TOP STATUS & CARDS SECTION -->
       <!-- ============================================== -->
-      <div class="text-white px-5 pb-4 relative z-20">
+      <div class="text-white px-5 pb-4 pt-1 sm:pt-1.5 relative z-20">
 
-        <!-- 1. Greeting ทักทาย -->
-        <div class="mb-3.5">
-          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/25 backdrop-blur-sm border border-white/40 text-xs font-semibold text-white shadow-sm">
-            <span>🌟 สวัสดีตอนกลางวัน</span>
-            <span class="inline-flex items-center gap-1 text-[10px] bg-emerald-800/40 px-2.5 py-0.5 rounded-full font-bold">
-              <span>Streak 5 วัน</span>
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 inline-block game-wiggle" viewBox="0 0 24 24">
-                <defs>
-                  <linearGradient id="flameGradHome" x1="0%" y1="100%" x2="0%" y2="0%">
-                    <stop offset="0%" stop-color="#EA580C" />
-                    <stop offset="45%" stop-color="#F97316" />
-                    <stop offset="80%" stop-color="#FBBF24" />
-                    <stop offset="100%" stop-color="#FDE047" />
-                  </linearGradient>
-                </defs>
-                <path d="M10 2c0 -.88 1.056 -1.331 1.692 -.722c1.958 1.876 3.096 5.995 1.75 9.12l-.08 .174l.012 .003c.625 .133 1.203 -.43 2.303 -2.173l.14 -.224a1 1 0 0 1 1.582 -.153c1.334 1.435 2.601 4.377 2.601 6.27c0 4.265 -3.591 7.705 -8 7.705s-8 -3.44 -8 -7.706c0 -2.252 1.022 -4.716 2.632 -6.301l.605 -.589c.241 -.236 .434 -.43 .618 -.624c1.43 -1.512 2.145 -2.924 2.145 -4.78" fill="url(#flameGradHome)" />
-                <path d="M12 12c.9 1.6 2 2.5 2 4.2a2 2 0 0 1 -4 0c0-1.7 1.1-2.6 2-4.2z" fill="#FFF7ED" opacity="0.85" />
-              </svg>
-            </span>
-          </div>
-        </div>
-
-        <!-- 2. EXP & 3. สอบที่ใกล้มาถึง (สไตล์กล่อง 3D การ์ตูนตามภาพ) -->
-        <div class="grid grid-cols-2 gap-3">
+        <!-- กล่องการ์ดสถิติและการสอบ (แยก 2 แถวพร้อมระยะห่าง) -->
+        <div class="flex flex-col gap-3.5 sm:gap-4">
           
-          <!-- การ์ด EXP สะสม (สไตล์ 3D Cartoon Box พร้อมแถบ Shimmer) -->
-          <div class="game-card game-card-mint p-3.5 text-slate-800 flex flex-col justify-between">
-            <div class="flex items-center justify-between mb-1.5">
-              <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wide">ค่าพลังสะสม</span>
-              <span class="w-6 h-6 rounded-xl bg-amber-100 text-amber-500 flex items-center justify-center shadow-inner game-sparkle">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                  <path d="M13 2l.018 .001l.016 .001l.083 .005l.011 .002h.011l.038 .009l.052 .008l.016 .006l.011 .001l.029 .011l.052 .014l.019 .009l.015 .004l.028 .014l.04 .017l.021 .012l.022 .01l.023 .015l.031 .017l.034 .024l.018 .011l.013 .012l.024 .017l.038 .034l.022 .017l.008 .01l.014 .012l.036 .041l.026 .027l.006 .009c.12 .147 .196 .322 .218 .513l.001 .012l.002 .041l.004 .064v6h5a1 1 0 0 1 .868 1.497l-.06 .091l-8 11c-.568 .783 -1.808 .38 -1.808 -.588v-6h-5a1 1 0 0 1 -.868 -1.497l.06 -.091l8 -11l.01 -.013l.018 -.024l.033 -.038l.018 -.022l.009 -.008l.013 -.014l.04 -.036l.028 -.026l.008 -.006a1 1 0 0 1 .402 -.199l.011 -.001l.027 -.005l.074 -.013l.011 -.001l.041 -.002z" />
-                </svg>
-              </span>
-            </div>
-            <div>
-              <div class="flex items-baseline gap-1">
-                <span class="text-2xl font-black text-emerald-600 leading-none">2,480</span>
-                <span class="text-[11px] font-semibold text-slate-400">EXP</span>
-              </div>
-              <div class="mt-2">
-                <div class="flex justify-between text-[10px] font-medium text-slate-400 mb-1">
-                  <span>Lv. 14</span>
-                  <span>สู่ Lv. 15 (82%)</span>
+          <!-- แถวที่ 1: EXP (70%) & Streak (30%) ในแนวนอน -->
+          <div class="grid grid-cols-10 gap-2.5 sm:gap-3 items-stretch">
+            
+            <!-- การ์ด EXP สะสม (70% แถวบน พร้อมแถบ Shimmer) -->
+            <div class="col-span-7 game-card game-card-mint p-2.5 sm:p-3 text-slate-800 flex flex-col justify-between">
+              <div class="flex items-center justify-between gap-2 mb-1.5">
+                <div class="flex items-center gap-2 min-w-0">
+                  <span class="w-8 h-8 rounded-xl bg-amber-100 text-amber-500 flex items-center justify-center shadow-inner shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <path d="M13 2l.018 .001l.016 .001l.083 .005l.011 .002h.011l.038 .009l.052 .008l.016 .006l.011 .001l.029 .011l.052 .014l.019 .009l.015 .004l.028 .014l.04 .017l.021 .012l.022 .01l.023 .015l.031 .017l.034 .024l.018 .011l.013 .012l.024 .017l.038 .034l.022 .017l.008 .01l.014 .012l.036 .041l.026 .027l.006 .009c.12 .147 .196 .322 .218 .513l.001 .012l.002 .041l.004 .064v6h5a1 1 0 0 1 .868 1.497l-.06 .091l-8 11c-.568 .783 -1.808 .38 -1.808 -.588v-6h-5a1 1 0 0 1 -.868 -1.497l.06 -.091l8 -11l.01 -.013l.018 -.024l.033 -.038l.018 -.022l.009 -.008l.013 -.014l.04 -.036l.028 -.026l.008 -.006a1 1 0 0 1 .402 -.199l.011 -.001l.027 -.005l.074 -.013l.011 -.001l.041 -.002z" />
+                    </svg>
+                  </span>
+                  <div class="min-w-0">
+                    <span class="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wide block truncate">ค่าพลังสะสม</span>
+                    <div class="flex items-baseline gap-1">
+                      <span class="text-lg sm:text-xl font-black text-emerald-600 leading-none">2,480</span>
+                      <span class="text-[10px] sm:text-xs font-bold text-slate-400">EXP</span>
+                    </div>
+                  </div>
                 </div>
-                <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden shimmer-glow border border-slate-200/60">
-                  <div class="h-full bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full" style="width: 82%"></div>
+                <div class="text-right shrink-0">
+                  <span class="inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 text-[10px] sm:text-xs font-black border border-emerald-200/90 shadow-2xs">
+                    Lv. 14
+                  </span>
+                  <div class="text-[9px] font-semibold text-slate-400 mt-0.5">สู่ Lv. 15 (82%)</div>
+                </div>
+              </div>
+              <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden shimmer-glow border border-slate-200/60 p-0.5">
+                <div class="h-full bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full" style="width: 82%"></div>
+              </div>
+            </div>
+
+            <!-- การ์ด Streak ความต่อเนื่อง (30% แถวบน สไตล์ 3D Cartoon) -->
+            <div class="col-span-3 game-card game-card-amber p-2 sm:p-2.5 text-slate-800 flex flex-col items-center justify-center text-center">
+              <span class="text-[10px] sm:text-[11px] font-black text-amber-600 uppercase tracking-wider mb-1">STREAK</span>
+              <div class="flex items-center justify-center gap-1.5">
+                <span class="w-6 h-6 rounded-lg bg-amber-100 text-amber-500 flex items-center justify-center shadow-inner shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 game-wiggle" viewBox="0 0 24 24">
+                    <defs>
+                      <linearGradient id="flameGradStreakHome" x1="0%" y1="100%" x2="0%" y2="0%">
+                        <stop offset="0%" stop-color="#EA580C" />
+                        <stop offset="45%" stop-color="#F97316" />
+                        <stop offset="80%" stop-color="#FBBF24" />
+                        <stop offset="100%" stop-color="#FDE047" />
+                      </linearGradient>
+                    </defs>
+                    <path d="M10 2c0 -.88 1.056 -1.331 1.692 -.722c1.958 1.876 3.096 5.995 1.75 9.12l-.08 .174l.012 .003c.625 .133 1.203 -.43 2.303 -2.173l.14 -.224a1 1 0 0 1 1.582 -.153c1.334 1.435 2.601 4.377 2.601 6.27c0 4.265 -3.591 7.705 -8 7.705s-8 -3.44 -8 -7.706c0 -2.252 1.022 -4.716 2.632 -6.301l.605 -.589c.241 -.236 .434 -.43 .618 -.624c1.43 -1.512 2.145 -2.924 2.145 -4.78" fill="url(#flameGradStreakHome)" />
+                    <path d="M12 12c.9 1.6 2 2.5 2 4.2a2 2 0 0 1 -4 0c0-1.7 1.1-2.6 2-4.2z" fill="#FFF7ED" opacity="0.85" />
+                  </svg>
+                </span>
+                <div class="flex items-baseline gap-0.5">
+                  <span class="text-xl sm:text-2xl font-black text-amber-500 leading-none">5</span>
+                  <span class="text-[10px] sm:text-xs font-bold text-slate-400">วัน</span>
                 </div>
               </div>
             </div>
+
           </div>
 
-          <!-- การ์ด สอบที่ใกล้มาถึง (สไตล์ 3D Cartoon Box) -->
-          <div class="game-card game-card-rose p-3.5 text-slate-800 flex flex-col justify-between">
-            <div class="flex items-center justify-between mb-1.5">
-              <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wide">สอบใกล้ถึง</span>
-              <span class="w-6 h-6 rounded-xl bg-rose-100 text-rose-500 flex items-center justify-center shadow-inner game-wiggle">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                  <path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-5 2.66a1 1 0 0 0 -.993 .883l-.007 .117v5l.009 .131a1 1 0 0 0 .197 .477l.087 .1l3 3l.094 .082a1 1 0 0 0 1.226 0l.094 -.083l.083 -.094a1 1 0 0 0 0 -1.226l-.083 -.094l-2.707 -2.708v-4.585l-.007 -.117a1 1 0 0 0 -.993 -.883z" />
-                </svg>
+          <!-- แถวที่ 2: การ์ด สอบที่ใกล้มาถึง (แนวยาวเต็มแถว 100% สไตล์ 3D Cartoon) -->
+          <div class="game-card game-card-rose p-3 sm:p-3.5 text-slate-800">
+            <div class="flex items-center justify-between gap-3 mb-2">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <span class="w-9 h-9 rounded-xl bg-rose-100 text-rose-500 flex items-center justify-center shadow-inner shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-5 2.66a1 1 0 0 0 -.993 .883l-.007 .117v5l.009 .131a1 1 0 0 0 .197 .477l.087 .1l3 3l.094 .082a1 1 0 0 0 1.226 0l.094 -.083l.083 -.094a1 1 0 0 0 0 -1.226l-.083 -.094l-2.707 -2.708v-4.585l-.007 -.117a1 1 0 0 0 -.993 -.883z" />
+                  </svg>
+                </span>
+                <div class="min-w-0">
+                  <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wide block">สอบใกล้ถึง</span>
+                  <div class="flex items-baseline gap-1.5">
+                    <span class="text-xl font-black text-rose-500 leading-none">3</span>
+                    <span class="text-xs font-bold text-slate-400">วันข้างหน้า</span>
+                  </div>
+                </div>
+              </div>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-lg bg-rose-100/70 text-rose-700 text-xs font-black border border-rose-200/90 shadow-2xs shrink-0">
+                กลางภาค
               </span>
             </div>
-            <div>
-              <div class="flex items-baseline gap-1">
-                <span class="text-2xl font-black text-rose-500 leading-none">3</span>
-                <span class="text-[11px] font-semibold text-slate-400">วันข้างหน้า</span>
-              </div>
-              <div class="mt-2 bg-rose-50 border border-rose-200/80 rounded-xl px-2 py-1">
-                <div class="text-[11px] font-bold text-rose-700 truncate">กลางภาค คณิต ม.5</div>
-                <div class="text-[9px] text-rose-500 font-medium">2 ต.ค. • 3 บทเรียน</div>
-              </div>
+            <div class="bg-rose-50/90 border border-rose-200/80 rounded-lg px-2.5 py-1 flex items-center justify-between text-xs">
+              <span class="font-bold text-rose-700 truncate">กลางภาค คณิต ม.5</span>
+              <span class="text-[10px] text-rose-500 font-medium shrink-0 ml-2">2 ต.ค. • 3 บทเรียน</span>
             </div>
           </div>
 
@@ -197,9 +212,9 @@
 
       <!-- ============================================== -->
       <!-- 4. ส่วนทำต่อ (CONTINUED LESSONS) -->
-      <!-- เว้นระยะห่างการ์ดแรกจากขอบจอ ดันลงมา 10px ตามที่กำหนด -->
+      <!-- ดันเนื้อหาลงมาอีก 5px ตามที่ผู้ใช้กำหนด (จากเดิม 26px เป็น 31px) -->
       <!-- ============================================== -->
-      <section class="mt-[26px] px-5">
+      <section class="mt-[31px] px-5">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-2">
             <div class="w-7 h-7 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center text-sm shadow-sm font-bold">
@@ -338,173 +353,310 @@
         <!-- Cards Grid ของ 6 วิชาหลัก (แยกกล่องอิสระ ไม่ซ้อนกัน พร้อมภาพพื้นหลัง) -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
 
-          <!-- วิชา 1: วิทยาศาสตร์พื้นฐาน (วิทย์พื้น) -->
-          <div class="subject-card-item relative overflow-hidden rounded-3xl p-4 text-white border-2 border-emerald-400 shadow-[0_6px_0_0_#047857] hover:-translate-y-0.5 hover:shadow-[0_8px_0_0_#047857] active:translate-y-1 active:shadow-[0_2px_0_0_#047857] bg-gradient-to-r from-emerald-600 to-teal-700 bouncy transition-all group">
-            <!-- Background Image from assets/ with Gradient Overlay -->
-            <img src="assets/subject-1.webp" alt="วิทยาศาสตร์พื้นฐาน" class="subject-card-bg group-hover:scale-105" onerror="handleCardImgError(this, 1, 'science-basic')">
-            <div class="subject-card-overlay bg-gradient-to-r from-emerald-700/70 via-teal-700/60 to-emerald-800/70"></div>
+          <!-- วิชา 1: วิทยาศาสตร์ -->
+          <a href="subject.html" class="subject-card-item block relative overflow-hidden rounded-3xl p-4 min-h-[135px] bg-[#F0FDF4] border-2 border-emerald-300 shadow-[0_5px_0_0_#A7F3D0] hover:-translate-y-0.5 hover:shadow-[0_7px_0_0_#A7F3D0] active:translate-y-1 active:shadow-[0_2px_0_0_#A7F3D0] bouncy transition-all group">
+            <!-- Handcrafted SVG Illustration: Single Scientific Test Tube with Rising Bubbles -->
+            <div class="absolute right-0 bottom-0 pointer-events-none select-none z-0 overflow-hidden flex items-end justify-end">
+              <svg viewBox="0 0 170 130" fill="none" xmlns="http://www.w3.org/2000/svg" class="subject-card-backdrop w-48 h-36 sm:w-60 sm:h-44 transition-all duration-300 ease-out group-hover:scale-105 group-hover:-translate-y-1 opacity-30 group-hover:opacity-45">
+                <g transform="translate(65, 15) rotate(22 30 60)">
+                  <!-- Test Tube Glass Body -->
+                  <path d="M18 20 V 96 C 18 106 38 106 38 96 V 20" stroke="#059669" stroke-width="2.2" stroke-linecap="round" fill="#10B981" fill-opacity="0.08"/>
+                  <!-- Glass Rim Lip -->
+                  <ellipse cx="28" cy="20" rx="13" ry="3.5" stroke="#059669" stroke-width="2" fill="#D1FAE5" fill-opacity="0.5"/>
+                  <!-- Liquid inside Tube -->
+                  <path d="M19 58 Q 28 55 37 58 V 95 C 37 104 19 104 19 95 Z" fill="#10B981" fill-opacity="0.22"/>
+                  <path d="M19 58 Q 28 55 37 58" stroke="#047857" stroke-width="1.6" stroke-opacity="0.45"/>
+                  <!-- Measurement Graduation Marks -->
+                  <line x1="19" y1="42" x2="25" y2="42" stroke="#059669" stroke-width="1.5" stroke-linecap="round" stroke-opacity="0.5"/>
+                  <line x1="19" y1="52" x2="28" y2="52" stroke="#059669" stroke-width="1.5" stroke-linecap="round" stroke-opacity="0.5"/>
+                  <line x1="19" y1="62" x2="25" y2="62" stroke="#059669" stroke-width="1.5" stroke-linecap="round" stroke-opacity="0.5"/>
+                  <line x1="19" y1="72" x2="28" y2="72" stroke="#059669" stroke-width="1.5" stroke-linecap="round" stroke-opacity="0.5"/>
+                  <line x1="19" y1="82" x2="25" y2="82" stroke="#059669" stroke-width="1.5" stroke-linecap="round" stroke-opacity="0.5"/>
+                  <!-- Inner Submerged Bubbles -->
+                  <circle cx="26" cy="88" r="2.2" fill="#059669" fill-opacity="0.45"/>
+                  <circle cx="31" cy="74" r="1.8" fill="#059669" fill-opacity="0.45"/>
+                  <!-- Animated Rising Bubbles Leaving the Lip -->
+                  <circle cx="28" cy="14" r="3.2" fill="#10B981" fill-opacity="0.6" stroke="#059669" stroke-width="1" class="anim-bubble-1"/>
+                  <circle cx="23" cy="8" r="2.2" fill="#34D399" fill-opacity="0.55" stroke="#059669" stroke-width="0.8" class="anim-bubble-2"/>
+                  <circle cx="33" cy="2" r="2.6" fill="#10B981" fill-opacity="0.5" stroke="#059669" stroke-width="0.8" class="anim-bubble-3"/>
+                </g>
+              </svg>
+            </div>
             
             <div class="flex items-start justify-between relative z-10">
               <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl shadow-inner border border-white/30 game-wiggle">
+                <div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-2xl shadow-sm border border-emerald-100">
                   🔬
                 </div>
-                <div class="card-text-shadow">
-                  <span class="text-[11px] font-semibold text-emerald-100 uppercase tracking-wider">วิชาหลัก • วิทยาศาสตร์</span>
-                  <h4 class="text-base font-black leading-tight">วิทยาศาสตร์พื้นฐาน (วิทย์พื้น)</h4>
-                  <span class="text-xs text-emerald-100/90 font-medium">16 บทเรียน • 110 แบบฝึกหัด</span>
+                <div>
+                  <span class="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">วิชาหลัก 1 • วิทยาศาสตร์</span>
+                  <h4 class="text-base font-black text-slate-800 leading-tight">วิทยาศาสตร์</h4>
+                  <span class="text-xs text-slate-500 font-medium">16 บทเรียน • 110 แบบฝึกหัด</span>
                 </div>
               </div>
-              <span class="px-2.5 py-1 rounded-xl bg-white/25 backdrop-blur-sm text-[11px] font-bold border border-white/30 card-text-shadow">
+              <span class="px-2.5 py-1 rounded-xl bg-white text-emerald-700 text-[11px] font-black border border-emerald-200/90 shadow-sm">
                 75%
               </span>
             </div>
             <div class="mt-3.5 relative z-10">
-              <div class="w-full h-2 bg-black/25 rounded-full overflow-hidden p-0.5 shimmer-glow border border-white/20">
-                <div class="h-full bg-white rounded-full shadow-sm" style="width: 75%"></div>
+              <div class="w-full h-2.5 bg-slate-200/70 rounded-full overflow-hidden p-0.5 shimmer-glow border border-slate-300/40">
+                <div class="h-full bg-emerald-500 rounded-full shadow-sm" style="width: 75%"></div>
               </div>
             </div>
-          </div>
+          </a>
 
-          <!-- วิชา 2: คณิตศาสตร์พื้นฐาน (คณิตพื้น) -->
-          <div class="subject-card-item relative overflow-hidden rounded-3xl p-4 text-white border-2 border-sky-400 shadow-[0_6px_0_0_#0284C7] hover:-translate-y-0.5 hover:shadow-[0_8px_0_0_#0284C7] active:translate-y-1 active:shadow-[0_2px_0_0_#0284C7] bg-gradient-to-r from-sky-500 to-indigo-600 bouncy transition-all group">
-            <!-- Background Image from assets/ with Gradient Overlay -->
-            <img src="assets/subject-2.webp" alt="คณิตศาสตร์พื้นฐาน" class="subject-card-bg group-hover:scale-105" onerror="handleCardImgError(this, 2, 'math-basic')">
-            <div class="subject-card-overlay bg-gradient-to-r from-sky-600/70 via-indigo-600/60 to-sky-700/70"></div>
+          <!-- วิชา 2: คณิตศาสตร์ -->
+          <a href="subject.html" class="subject-card-item block relative overflow-hidden rounded-3xl p-4 min-h-[135px] bg-[#F0F9FF] border-2 border-sky-300 shadow-[0_5px_0_0_#BAE6FD] hover:-translate-y-0.5 hover:shadow-[0_7px_0_0_#BAE6FD] active:translate-y-1 active:shadow-[0_2px_0_0_#BAE6FD] bouncy transition-all group">
+            <!-- Handcrafted SVG Illustration: Single Geometry Compass & Arc -->
+            <div class="absolute right-0 bottom-0 pointer-events-none select-none z-0 overflow-hidden flex items-end justify-end">
+              <svg viewBox="0 0 170 130" fill="none" xmlns="http://www.w3.org/2000/svg" class="subject-card-backdrop w-48 h-36 sm:w-60 sm:h-44 transition-all duration-300 ease-out group-hover:scale-105 group-hover:-translate-y-1 opacity-30 group-hover:opacity-45">
+                <!-- Circular Dashed Drawn Arc -->
+                <path d="M42 112 A 68 68 0 0 1 146 84" stroke="#0284C7" stroke-width="1.8" stroke-dasharray="4 4" stroke-opacity="0.35"/>
+                <!-- Compass Group with pivot animation -->
+                <g class="anim-compass">
+                  <!-- Compass Top Handle -->
+                  <rect x="103" y="10" width="5" height="12" rx="2" stroke="#0369A1" stroke-width="1.6" fill="#BAE6FD" fill-opacity="0.6"/>
+                  <!-- Center Hinge Joint -->
+                  <circle cx="105.5" cy="26" r="6.5" stroke="#0369A1" stroke-width="1.8" fill="#E0F2FE"/>
+                  <circle cx="105.5" cy="26" r="2.5" fill="#0284C7"/>
+                  <!-- Adjustment Crossbar & Knurled Wheel -->
+                  <path d="M92 56 H 122" stroke="#0284C7" stroke-width="1.4" stroke-opacity="0.5"/>
+                  <circle cx="107" cy="56" r="3" stroke="#0369A1" stroke-width="1.2" fill="#BAE6FD"/>
+                  <!-- Left Needle Leg -->
+                  <path d="M101 30 L 76 102 L 74 110 L 77 108 L 103 32" stroke="#0369A1" stroke-width="1.8" stroke-linejoin="round" fill="#0EA5E9" fill-opacity="0.14"/>
+                  <circle cx="74" cy="110" r="1.5" fill="#0369A1"/>
+                  <!-- Right Pencil Leg -->
+                  <path d="M109 30 L 132 86 L 136 94 L 133 96 L 129 90 L 107 32" stroke="#0369A1" stroke-width="1.8" stroke-linejoin="round" fill="#0EA5E9" fill-opacity="0.14"/>
+                  <!-- Pencil Lead Tip -->
+                  <polygon points="136,94 140,102 133,96" fill="#0284C7"/>
+                </g>
+              </svg>
+            </div>
             
             <div class="flex items-start justify-between relative z-10">
               <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl shadow-inner border border-white/30 game-wiggle">
+                <div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-2xl shadow-sm border border-sky-100">
                   📐
                 </div>
-                <div class="card-text-shadow">
-                  <span class="text-[11px] font-semibold text-sky-100 uppercase tracking-wider">วิชาหลัก • คณิตศาสตร์</span>
-                  <h4 class="text-base font-black leading-tight">คณิตศาสตร์พื้นฐาน (คณิตพื้น)</h4>
-                  <span class="text-xs text-sky-100/90 font-medium">18 บทเรียน • 120 แบบฝึกหัด</span>
+                <div>
+                  <span class="text-[11px] font-bold text-sky-700 uppercase tracking-wider">วิชาหลัก 2 • คณิตศาสตร์</span>
+                  <h4 class="text-base font-black text-slate-800 leading-tight">คณิตศาสตร์</h4>
+                  <span class="text-xs text-slate-500 font-medium">18 บทเรียน • 120 แบบฝึกหัด</span>
                 </div>
               </div>
-              <span class="px-2.5 py-1 rounded-xl bg-white/25 backdrop-blur-sm text-[11px] font-bold border border-white/30 card-text-shadow">
+              <span class="px-2.5 py-1 rounded-xl bg-white text-sky-700 text-[11px] font-black border border-sky-200/90 shadow-sm">
                 65%
               </span>
             </div>
             <div class="mt-3.5 relative z-10">
-              <div class="w-full h-2 bg-black/25 rounded-full overflow-hidden p-0.5 shimmer-glow border border-white/20">
-                <div class="h-full bg-white rounded-full shadow-sm" style="width: 65%"></div>
+              <div class="w-full h-2.5 bg-slate-200/70 rounded-full overflow-hidden p-0.5 shimmer-glow border border-slate-300/40">
+                <div class="h-full bg-sky-500 rounded-full shadow-sm" style="width: 65%"></div>
               </div>
             </div>
-          </div>
+          </a>
 
-          <!-- วิชา 3: ภาษาอังกฤษพื้นฐาน (ภาษาอังกฤษ) -->
-          <div class="subject-card-item relative overflow-hidden rounded-3xl p-4 text-white border-2 border-violet-400 shadow-[0_6px_0_0_#5B21B6] hover:-translate-y-0.5 hover:shadow-[0_8px_0_0_#5B21B6] active:translate-y-1 active:shadow-[0_2px_0_0_#5B21B6] bg-gradient-to-r from-violet-500 to-purple-600 bouncy transition-all group">
-            <!-- Background Image from assets/ with Gradient Overlay -->
-            <img src="assets/subject-3.webp" alt="ภาษาอังกฤษพื้นฐาน" class="subject-card-bg group-hover:scale-105" onerror="handleCardImgError(this, 3, 'english-basic')">
-            <div class="subject-card-overlay bg-gradient-to-r from-violet-600/70 via-purple-600/60 to-violet-700/70"></div>
+          <!-- วิชา 3: ภาษาไทย -->
+          <a href="subject.html" class="subject-card-item block relative overflow-hidden rounded-3xl p-4 min-h-[135px] bg-[#FFF1F2] border-2 border-rose-300 shadow-[0_5px_0_0_#FECDD3] hover:-translate-y-0.5 hover:shadow-[0_7px_0_0_#FECDD3] active:translate-y-1 active:shadow-[0_2px_0_0_#FECDD3] bouncy transition-all group">
+            <!-- Handcrafted SVG Illustration: Single Thai Folding Manuscript (สมุดข่อย) -->
+            <div class="absolute right-0 bottom-0 pointer-events-none select-none z-0 overflow-hidden flex items-end justify-end">
+              <svg viewBox="0 0 170 130" fill="none" xmlns="http://www.w3.org/2000/svg" class="subject-card-backdrop w-48 h-36 sm:w-60 sm:h-44 transition-all duration-300 ease-out group-hover:scale-105 group-hover:-translate-y-1 opacity-30 group-hover:opacity-45">
+                <g class="anim-thai-manuscript" transform="translate(18, 16)">
+                  <!-- Bottom Folded Layer (Base depth) -->
+                  <path d="M12 78 L 48 64 L 104 64 L 140 78 L 136 86 L 102 74 L 46 74 L 8 86 Z" stroke="#BE123C" stroke-width="1.5" stroke-linejoin="round" fill="#FDA4AF" fill-opacity="0.25"/>
+                  <!-- Middle Folded Page -->
+                  <path d="M8 84 L 46 70 L 102 70 L 138 84 L 134 94 L 100 82 L 44 82 L 4 94 Z" stroke="#BE123C" stroke-width="1.6" stroke-linejoin="round" fill="#FFF1F2" fill-opacity="0.7"/>
+                  <!-- Top Open Page (Main Canvas) -->
+                  <path d="M4 92 L 44 78 L 100 78 L 136 92 L 132 104 L 98 90 L 42 90 L 0 104 Z" stroke="#9F1239" stroke-width="2" stroke-linejoin="round" fill="#FFFFFF" fill-opacity="0.9"/>
+                  <!-- Calligraphic Text Lines on Samut Khoi -->
+                  <line x1="20" y1="94" x2="42" y2="86" stroke="#E11D48" stroke-width="1.4" stroke-linecap="round" stroke-opacity="0.45"/>
+                  <line x1="48" y1="86" x2="94" y2="86" stroke="#E11D48" stroke-width="1.4" stroke-linecap="round" stroke-opacity="0.45"/>
+                  <line x1="100" y1="86" x2="122" y2="94" stroke="#E11D48" stroke-width="1.4" stroke-linecap="round" stroke-opacity="0.45"/>
+                  <line x1="16" y1="99" x2="42" y2="90" stroke="#E11D48" stroke-width="1.4" stroke-linecap="round" stroke-opacity="0.45"/>
+                  <line x1="48" y1="90" x2="94" y2="90" stroke="#E11D48" stroke-width="1.4" stroke-linecap="round" stroke-opacity="0.45"/>
+                  <line x1="100" y1="90" x2="126" y2="99" stroke="#E11D48" stroke-width="1.4" stroke-linecap="round" stroke-opacity="0.45"/>
+                  <!-- Center Seal Gem on Spine Fold -->
+                  <circle cx="71" cy="88" r="2.8" fill="#E11D48" fill-opacity="0.6"/>
+                  <!-- Elegant Thai Letter "ก" Hovering Above Manuscript -->
+                  <g transform="translate(56, 14)">
+                    <path d="M12 42 V 18 C 12 11 18 5 25 5 C 29 5 33 8 35 12 C 34 14 31 16 28 16 C 33 16 38 12 37 5 C 33 2 28 0 23 0 C 13 0 5 8 5 20 V 42" stroke="#BE123C" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.4"/>
+                  </g>
+                </g>
+              </svg>
+            </div>
             
             <div class="flex items-start justify-between relative z-10">
               <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl shadow-inner border border-white/30 game-float">
-                  🌍
-                </div>
-                <div class="card-text-shadow">
-                  <span class="text-[11px] font-semibold text-violet-100 uppercase tracking-wider">วิชาหลัก • ภาษาต่างประเทศ</span>
-                  <h4 class="text-base font-black leading-tight">ภาษาอังกฤษพื้นฐาน (ภาษาอังกฤษ)</h4>
-                  <span class="text-xs text-violet-100/90 font-medium">20 บทเรียน • คลังศัพท์ 450 คำ</span>
-                </div>
-              </div>
-              <span class="px-2.5 py-1 rounded-xl bg-white/25 backdrop-blur-sm text-[11px] font-bold border border-white/30 card-text-shadow">
-                55%
-              </span>
-            </div>
-            <div class="mt-3.5 relative z-10">
-              <div class="w-full h-2 bg-black/25 rounded-full overflow-hidden p-0.5 shimmer-glow border border-white/20">
-                <div class="h-full bg-white rounded-full shadow-sm" style="width: 55%"></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- วิชา 4: ภาษาไทยพื้นฐาน (ภาษาไทย) -->
-          <div class="subject-card-item relative overflow-hidden rounded-3xl p-4 text-white border-2 border-pink-400 shadow-[0_6px_0_0_#9F1239] hover:-translate-y-0.5 hover:shadow-[0_8px_0_0_#9F1239] active:translate-y-1 active:shadow-[0_2px_0_0_#9F1239] bg-gradient-to-r from-pink-500 to-rose-600 bouncy transition-all group">
-            <!-- Background Image from assets/ with Gradient Overlay -->
-            <img src="assets/subject-4.webp" alt="ภาษาไทยพื้นฐาน" class="subject-card-bg group-hover:scale-105" onerror="handleCardImgError(this, 4, 'thai-basic')">
-            <div class="subject-card-overlay bg-gradient-to-r from-pink-600/70 via-rose-600/60 to-pink-700/70"></div>
-            
-            <div class="flex items-start justify-between relative z-10">
-              <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl shadow-inner border border-white/30 game-wiggle">
+                <div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-2xl shadow-sm border border-rose-100">
                   ✍️
                 </div>
-                <div class="card-text-shadow">
-                  <span class="text-[11px] font-semibold text-pink-100 uppercase tracking-wider">วิชาหลัก • ภาษาไทย</span>
-                  <h4 class="text-base font-black leading-tight">ภาษาไทยพื้นฐาน (ภาษาไทย)</h4>
-                  <span class="text-xs text-pink-100/90 font-medium">12 บทเรียน • 80 ข้อสอบวิเคราะห์</span>
+                <div>
+                  <span class="text-[11px] font-bold text-rose-700 uppercase tracking-wider">วิชาหลัก 3 • ภาษาไทย</span>
+                  <h4 class="text-base font-black text-slate-800 leading-tight">ภาษาไทย</h4>
+                  <span class="text-xs text-slate-500 font-medium">12 บทเรียน • 80 ข้อสอบวิเคราะห์</span>
                 </div>
               </div>
-              <span class="px-2.5 py-1 rounded-xl bg-white/25 backdrop-blur-sm text-[11px] font-bold border border-white/30 card-text-shadow">
+              <span class="px-2.5 py-1 rounded-xl bg-white text-rose-700 text-[11px] font-black border border-rose-200/90 shadow-sm">
                 85%
               </span>
             </div>
             <div class="mt-3.5 relative z-10">
-              <div class="w-full h-2 bg-black/25 rounded-full overflow-hidden p-0.5 shimmer-glow border border-white/20">
-                <div class="h-full bg-white rounded-full shadow-sm" style="width: 85%"></div>
+              <div class="w-full h-2.5 bg-slate-200/70 rounded-full overflow-hidden p-0.5 shimmer-glow border border-slate-300/40">
+                <div class="h-full bg-rose-500 rounded-full shadow-sm" style="width: 85%"></div>
               </div>
             </div>
-          </div>
+          </a>
 
-          <!-- วิชา 5: สังคมศึกษา ศาสนา และวัฒนธรรมพื้นฐาน (สังคมศึกษา) -->
-          <div class="subject-card-item relative overflow-hidden rounded-3xl p-4 text-white border-2 border-amber-400 shadow-[0_6px_0_0_#C2410C] hover:-translate-y-0.5 hover:shadow-[0_8px_0_0_#C2410C] active:translate-y-1 active:shadow-[0_2px_0_0_#C2410C] bg-gradient-to-r from-amber-500 to-orange-600 bouncy transition-all group">
-            <!-- Background Image from assets/ with Gradient Overlay -->
-            <img src="assets/subject-5.webp" alt="สังคมศึกษา" class="subject-card-bg group-hover:scale-105" onerror="handleCardImgError(this, 5, 'social-basic')">
-            <div class="subject-card-overlay bg-gradient-to-r from-amber-600/70 via-orange-600/60 to-amber-700/70"></div>
+          <!-- วิชา 4: ภาษาอังกฤษ -->
+          <a href="subject.html" class="subject-card-item block relative overflow-hidden rounded-3xl p-4 min-h-[135px] bg-[#F5F3FF] border-2 border-violet-300 shadow-[0_5px_0_0_#DDD6FE] hover:-translate-y-0.5 hover:shadow-[0_7px_0_0_#DDD6FE] active:translate-y-1 active:shadow-[0_2px_0_0_#DDD6FE] bouncy transition-all group">
+            <!-- Handcrafted SVG Illustration: Single Open English Dictionary with Floating ABC -->
+            <div class="absolute right-0 bottom-0 pointer-events-none select-none z-0 overflow-hidden flex items-end justify-end">
+              <svg viewBox="0 0 170 130" fill="none" xmlns="http://www.w3.org/2000/svg" class="subject-card-backdrop w-48 h-36 sm:w-60 sm:h-44 transition-all duration-300 ease-out group-hover:scale-105 group-hover:-translate-y-1 opacity-30 group-hover:opacity-45">
+                <g transform="translate(18, 12)">
+                  <!-- Animated Floating Vocab "ABC" -->
+                  <g class="anim-english-abc" transform="translate(48, 10)">
+                    <text x="0" y="24" font-family="'Prompt', -apple-system, sans-serif" font-size="19" font-weight="900" fill="#6D28D9" fill-opacity="0.38" letter-spacing="2">A B C</text>
+                  </g>
+                  <!-- Dictionary Base Hardcover Backing -->
+                  <path d="M18 64 Q 68 56 74 64 Q 80 56 130 64 L 134 94 Q 80 84 74 94 Q 68 84 14 94 Z" stroke="#5B21B6" stroke-width="2.2" stroke-linejoin="round" fill="#DDD6FE" fill-opacity="0.35"/>
+                  <!-- Left Open Pages Block -->
+                  <path d="M20 62 Q 68 55 74 62 L 74 90 Q 68 82 16 88 Z" stroke="#6D28D9" stroke-width="1.8" stroke-linejoin="round" fill="#FFFFFF" fill-opacity="0.85"/>
+                  <!-- Right Open Pages Block -->
+                  <path d="M74 62 Q 80 55 128 62 L 132 88 Q 80 82 74 90 Z" stroke="#6D28D9" stroke-width="1.8" stroke-linejoin="round" fill="#FFFFFF" fill-opacity="0.85"/>
+                  <!-- Left Page Text Lines -->
+                  <line x1="28" y1="69" x2="62" y2="67" stroke="#8B5CF6" stroke-width="1.3" stroke-linecap="round" stroke-opacity="0.45"/>
+                  <line x1="28" y1="74" x2="64" y2="72" stroke="#8B5CF6" stroke-width="1.3" stroke-linecap="round" stroke-opacity="0.45"/>
+                  <line x1="28" y1="79" x2="58" y2="77" stroke="#8B5CF6" stroke-width="1.3" stroke-linecap="round" stroke-opacity="0.45"/>
+                  <!-- Right Page Text Lines -->
+                  <line x1="84" y1="67" x2="118" y2="69" stroke="#8B5CF6" stroke-width="1.3" stroke-linecap="round" stroke-opacity="0.45"/>
+                  <line x1="84" y1="72" x2="120" y2="74" stroke="#8B5CF6" stroke-width="1.3" stroke-linecap="round" stroke-opacity="0.45"/>
+                  <line x1="84" y1="77" x2="114" y2="79" stroke="#8B5CF6" stroke-width="1.3" stroke-linecap="round" stroke-opacity="0.45"/>
+                  <!-- Center Ribbon Bookmark -->
+                  <path d="M74 62 V 102 L 78 98 L 82 102 V 62" fill="#8B5CF6" fill-opacity="0.6" stroke="#6D28D9" stroke-width="1.4" stroke-linejoin="round"/>
+                </g>
+              </svg>
+            </div>
             
             <div class="flex items-start justify-between relative z-10">
               <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl shadow-inner border border-white/30 game-sparkle">
-                  🏛️
+                <div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-2xl shadow-sm border border-violet-100">
+                  🌍
                 </div>
-                <div class="card-text-shadow">
-                  <span class="text-[11px] font-semibold text-amber-100 uppercase tracking-wider">วิชาหลัก • สังคมศาสตร์</span>
-                  <h4 class="text-base font-black leading-tight">สังคมศึกษา ศาสนา และวัฒนธรรมฯ</h4>
-                  <span class="text-xs text-amber-100/90 font-medium">15 บทเรียน • 90 แนวข้อสอบ</span>
+                <div>
+                  <span class="text-[11px] font-bold text-violet-700 uppercase tracking-wider">วิชาหลัก 4 • ภาษาต่างประเทศ</span>
+                  <h4 class="text-base font-black text-slate-800 leading-tight">ภาษาอังกฤษ</h4>
+                  <span class="text-xs text-slate-500 font-medium">20 บทเรียน • คลังศัพท์ 450 คำ</span>
                 </div>
               </div>
-              <span class="px-2.5 py-1 rounded-xl bg-white/25 backdrop-blur-sm text-[11px] font-bold border border-white/30 card-text-shadow">
+              <span class="px-2.5 py-1 rounded-xl bg-white text-violet-700 text-[11px] font-black border border-violet-200/90 shadow-sm">
+                55%
+              </span>
+            </div>
+            <div class="mt-3.5 relative z-10">
+              <div class="w-full h-2.5 bg-slate-200/70 rounded-full overflow-hidden p-0.5 shimmer-glow border border-slate-300/40">
+                <div class="h-full bg-violet-500 rounded-full shadow-sm" style="width: 55%"></div>
+              </div>
+            </div>
+          </a>
+
+          <!-- วิชา 5: สังคมศึกษา -->
+          <a href="subject.html" class="subject-card-item block relative overflow-hidden rounded-3xl p-4 min-h-[135px] bg-[#FFFBEB] border-2 border-amber-300 shadow-[0_5px_0_0_#FDE68A] hover:-translate-y-0.5 hover:shadow-[0_7px_0_0_#FDE68A] active:translate-y-1 active:shadow-[0_2px_0_0_#FDE68A] bouncy transition-all group">
+            <!-- Handcrafted SVG Illustration: Single Geographic Desk Globe on Stand -->
+            <div class="absolute right-0 bottom-0 pointer-events-none select-none z-0 overflow-hidden flex items-end justify-end">
+              <svg viewBox="0 0 170 130" fill="none" xmlns="http://www.w3.org/2000/svg" class="subject-card-backdrop w-48 h-36 sm:w-60 sm:h-44 transition-all duration-300 ease-out group-hover:scale-105 group-hover:-translate-y-1 opacity-30 group-hover:opacity-45">
+                <g transform="translate(68, 16)">
+                  <!-- Curved Mounting Arc & Stand (Fixed Base) -->
+                  <path d="M12 20 A 42 42 0 0 0 42 86 V 96" stroke="#B45309" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M26 96 H 58" stroke="#B45309" stroke-width="3" stroke-linecap="round"/>
+                  <ellipse cx="42" cy="96" rx="20" ry="4" stroke="#B45309" stroke-width="2" fill="#FDE68A" fill-opacity="0.5"/>
+                  <!-- Top Axis Pin -->
+                  <circle cx="42" cy="12" r="3" fill="#B45309"/>
+                  <!-- Globe Sphere (Animated Subtle Axis Tilt) -->
+                  <g class="anim-globe-sphere">
+                    <circle cx="42" cy="48" r="36" stroke="#B45309" stroke-width="2.2" fill="#FDE68A" fill-opacity="0.2"/>
+                    <!-- Equator & Parallels -->
+                    <line x1="6" y1="48" x2="78" y2="48" stroke="#D97706" stroke-width="1.6" stroke-linecap="round" stroke-opacity="0.45"/>
+                    <path d="M12 32 Q 42 40 72 32" stroke="#D97706" stroke-width="1.4" stroke-linecap="round" stroke-opacity="0.4"/>
+                    <path d="M12 64 Q 42 56 72 64" stroke="#D97706" stroke-width="1.4" stroke-linecap="round" stroke-opacity="0.4"/>
+                    <!-- Prime Meridian Ellipse & Axis Line -->
+                    <ellipse cx="42" cy="48" rx="16" ry="36" stroke="#D97706" stroke-width="1.6" stroke-opacity="0.45"/>
+                    <line x1="42" y1="12" x2="42" y2="84" stroke="#D97706" stroke-width="1.6" stroke-dasharray="2 3" stroke-opacity="0.45"/>
+                  </g>
+                </g>
+              </svg>
+            </div>
+            
+            <div class="flex items-start justify-between relative z-10">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-2xl shadow-sm border border-amber-100">
+                  🏛️
+                </div>
+                <div>
+                  <span class="text-[11px] font-bold text-amber-800 uppercase tracking-wider">วิชาหลัก 5 • สังคมศึกษา</span>
+                  <h4 class="text-base font-black text-slate-800 leading-tight">สังคมศึกษา</h4>
+                  <span class="text-xs text-slate-500 font-medium">15 บทเรียน • 90 แนวข้อสอบ</span>
+                </div>
+              </div>
+              <span class="px-2.5 py-1 rounded-xl bg-white text-amber-800 text-[11px] font-black border border-amber-200/90 shadow-sm">
                 40%
               </span>
             </div>
             <div class="mt-3.5 relative z-10">
-              <div class="w-full h-2 bg-black/25 rounded-full overflow-hidden p-0.5 shimmer-glow border border-white/20">
-                <div class="h-full bg-white rounded-full shadow-sm" style="width: 40%"></div>
+              <div class="w-full h-2.5 bg-slate-200/70 rounded-full overflow-hidden p-0.5 shimmer-glow border border-slate-300/40">
+                <div class="h-full bg-amber-500 rounded-full shadow-sm" style="width: 40%"></div>
               </div>
             </div>
-          </div>
+          </a>
 
           <!-- วิชา 6: ประวัติศาสตร์ -->
-          <div class="subject-card-item relative overflow-hidden rounded-3xl p-4 text-white border-2 border-rose-400 shadow-[0_6px_0_0_#991B1B] hover:-translate-y-0.5 hover:shadow-[0_8px_0_0_#991B1B] active:translate-y-1 active:shadow-[0_2px_0_0_#991B1B] bg-gradient-to-r from-rose-500 to-red-600 bouncy transition-all group">
-            <!-- Background Image from assets/ with Gradient Overlay -->
-            <img src="assets/subject-6.webp" alt="ประวัติศาสตร์" class="subject-card-bg group-hover:scale-105" onerror="handleCardImgError(this, 6, 'history')">
-            <div class="subject-card-overlay bg-gradient-to-r from-rose-600/70 via-red-600/60 to-rose-700/70"></div>
+          <a href="subject.html" class="subject-card-item block relative overflow-hidden rounded-3xl p-4 min-h-[135px] bg-[#FFF7ED] border-2 border-orange-300 shadow-[0_5px_0_0_#FED7AA] hover:-translate-y-0.5 hover:shadow-[0_7px_0_0_#FED7AA] active:translate-y-1 active:shadow-[0_2px_0_0_#FED7AA] bouncy transition-all group">
+            <!-- Handcrafted SVG Illustration: Single Vintage Hourglass with Flowing Sand -->
+            <div class="absolute right-0 bottom-0 pointer-events-none select-none z-0 overflow-hidden flex items-end justify-end">
+              <svg viewBox="0 0 170 130" fill="none" xmlns="http://www.w3.org/2000/svg" class="subject-card-backdrop w-48 h-36 sm:w-60 sm:h-44 transition-all duration-300 ease-out group-hover:scale-105 group-hover:-translate-y-1 opacity-30 group-hover:opacity-45">
+                <g transform="translate(85, 14)">
+                  <!-- Top & Bottom Wooden Plates -->
+                  <rect x="0" y="8" width="58" height="7" rx="3.5" stroke="#9A3412" stroke-width="2" fill="#F97316" fill-opacity="0.25"/>
+                  <rect x="0" y="87" width="58" height="7" rx="3.5" stroke="#9A3412" stroke-width="2" fill="#F97316" fill-opacity="0.25"/>
+                  <!-- Wooden Support Pillars (Left & Right) -->
+                  <line x1="6" y1="15" x2="6" y2="87" stroke="#C2410C" stroke-width="2" stroke-linecap="round"/>
+                  <line x1="52" y1="15" x2="52" y2="87" stroke="#C2410C" stroke-width="2" stroke-linecap="round"/>
+                  <circle cx="6" cy="51" r="2.5" fill="#C2410C"/>
+                  <circle cx="52" cy="51" r="2.5" fill="#C2410C"/>
+                  <!-- Glass Hourglass Bulb -->
+                  <path d="M12 15 L 46 15 C 46 34 35 45 31 51 C 35 57 46 68 46 87 L 12 87 C 12 68 23 57 27 51 C 23 45 12 34 12 15 Z" stroke="#9A3412" stroke-width="2.2" stroke-linejoin="round" fill="#FFEDD5" fill-opacity="0.25"/>
+                  <!-- Sand in Upper Chamber -->
+                  <path d="M16 28 Q 29 35 42 28 L 31 49 Z" fill="#F97316" fill-opacity="0.5"/>
+                  <!-- Animated Flowing Sand Droplets -->
+                  <g transform="translate(29, 50)">
+                    <circle cx="0" cy="0" r="1.5" fill="#EA580C" class="anim-sand-grain-1"/>
+                    <circle cx="0" cy="0" r="1.5" fill="#EA580C" class="anim-sand-grain-2"/>
+                  </g>
+                  <!-- Pooled Sand Mound in Lower Chamber -->
+                  <path d="M15 87 Q 29 70 43 87 Z" fill="#F97316" fill-opacity="0.6"/>
+                </g>
+              </svg>
+            </div>
             
             <div class="flex items-start justify-between relative z-10">
               <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl shadow-inner border border-white/30 game-float">
+                <div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-2xl shadow-sm border border-orange-100">
                   📜
                 </div>
-                <div class="card-text-shadow">
-                  <span class="text-[11px] font-semibold text-rose-100 uppercase tracking-wider">วิชาหลัก • ประวัติศาสตร์</span>
-                  <h4 class="text-base font-black leading-tight">ประวัติศาสตร์</h4>
-                  <span class="text-xs text-rose-100/90 font-medium">10 บทเรียน • 60 แบบทดสอบ</span>
+                <div>
+                  <span class="text-[11px] font-bold text-orange-800 uppercase tracking-wider">วิชาหลัก 6 • ประวัติศาสตร์</span>
+                  <h4 class="text-base font-black text-slate-800 leading-tight">ประวัติศาสตร์</h4>
+                  <span class="text-xs text-slate-500 font-medium">10 บทเรียน • 60 แบบทดสอบ</span>
                 </div>
               </div>
-              <span class="px-2.5 py-1 rounded-xl bg-white/25 backdrop-blur-sm text-[11px] font-bold border border-white/30 card-text-shadow">
+              <span class="px-2.5 py-1 rounded-xl bg-white text-orange-800 text-[11px] font-black border border-orange-200/90 shadow-sm">
                 50%
               </span>
             </div>
             <div class="mt-3.5 relative z-10">
-              <div class="w-full h-2 bg-black/25 rounded-full overflow-hidden p-0.5 shimmer-glow border border-white/20">
-                <div class="h-full bg-white rounded-full shadow-sm" style="width: 50%"></div>
+              <div class="w-full h-2.5 bg-slate-200/70 rounded-full overflow-hidden p-0.5 shimmer-glow border border-slate-300/40">
+                <div class="h-full bg-orange-500 rounded-full shadow-sm" style="width: 50%"></div>
               </div>
             </div>
-          </div>
+          </a>
 
         </div>
 

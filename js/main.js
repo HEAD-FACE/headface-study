@@ -3,7 +3,7 @@
 // ความสูงของพื้นที่สีเขียวมิ้น (Header Background Shell: #mainBlueBg) ในแต่ละหน้า
 // ปรับให้อยู่ในตำแหน่งที่พอดี ครอบคลุมกล่องข้อมูลตามที่ผู้ใช้กำหนด
 const HEADER_HEIGHTS = {
-  'home': 285,      // ปรับเป็น 285px ตามที่ผู้ใช้กำหนด
+  'home': 310,      // ปรับเพิ่มอีก 5px เป็น 310px ให้ครอบคลุมการ์ดทั้งหมดอย่างพอดีตามที่ผู้ใช้กำหนด
   'subject': 92,     // ปรับเป็น 92px ตามที่ผู้ใช้กำหนด
   'progress': 235    // ปรับเป็น 235px ตามที่ผู้ใช้กำหนด
 };
@@ -127,49 +127,177 @@ function initPageFeatures(container) {
     });
   }
 
-  // หน้า Subject: Filter Categories
+  // หน้า Subject: Filter Categories & Live Search
   const filterBtns = container.querySelectorAll('.subject-filter-btn');
   const subjectCards = container.querySelectorAll('.subject-card-item');
+  const searchInput = container.querySelector('#subject-search-input') || container.querySelector('input[type="text"]');
+  const searchClearBtn = container.querySelector('#subject-search-clear');
+  const emptyState = container.querySelector('#subject-empty-state');
+  const resetFiltersBtn = container.querySelector('#subject-reset-filters-btn');
+
+  function applyFilters() {
+    const activeBtn = container.querySelector('.subject-filter-btn.game-btn-mint');
+    const category = activeBtn ? activeBtn.getAttribute('data-filter') : 'all';
+    const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+    if (searchClearBtn) {
+      if (query.length > 0) {
+        searchClearBtn.classList.remove('hidden');
+      } else {
+        searchClearBtn.classList.add('hidden');
+      }
+    }
+
+    let matchCount = 0;
+    subjectCards.forEach(card => {
+      const cardCategory = card.getAttribute('data-category');
+      const text = card.textContent.toLowerCase();
+      const matchesCategory = (category === 'all' || cardCategory === category);
+      const matchesSearch = (!query || text.includes(query));
+
+      if (matchesCategory && matchesSearch) {
+        matchCount++;
+        gsap.to(card, {
+          opacity: 1,
+          scale: 1,
+          duration: 0.2,
+          display: 'block',
+          overwrite: 'auto',
+          clearProps: 'transform'
+        });
+      } else {
+        gsap.to(card, {
+          opacity: 0,
+          scale: 0.95,
+          duration: 0.15,
+          display: 'none',
+          overwrite: 'auto'
+        });
+      }
+    });
+
+    if (emptyState) {
+      if (matchCount === 0) {
+        emptyState.classList.remove('hidden');
+        gsap.to(emptyState, {
+          opacity: 1,
+          y: 0,
+          duration: 0.2,
+          display: 'block',
+          overwrite: 'auto'
+        });
+      } else {
+        gsap.to(emptyState, {
+          opacity: 0,
+          y: 5,
+          duration: 0.15,
+          display: 'none',
+          overwrite: 'auto',
+          onComplete: () => {
+            emptyState.classList.add('hidden');
+          }
+        });
+      }
+    }
+  }
+
   if (filterBtns.length > 0) {
     filterBtns.forEach(btn => {
       btn.addEventListener('click', () => {
         filterBtns.forEach(b => {
-          b.classList.remove('game-btn-mint');
-          b.classList.add('game-btn-white');
+          b.classList.remove('game-btn-mint', 'font-bold');
+          b.classList.add('game-btn-white', 'font-semibold');
         });
-        btn.classList.add('game-btn-mint');
-        btn.classList.remove('game-btn-white');
-
-        const category = btn.getAttribute('data-filter');
-        subjectCards.forEach(card => {
-          const cardCategory = card.getAttribute('data-category');
-          if (category === 'all' || cardCategory === category) {
-            gsap.to(card, { opacity: 1, scale: 1, duration: 0.2, display: 'block' });
-          } else {
-            gsap.to(card, { opacity: 0, scale: 0.95, duration: 0.15, display: 'none' });
-          }
-        });
+        btn.classList.add('game-btn-mint', 'font-bold');
+        btn.classList.remove('game-btn-white', 'font-semibold');
+        applyFilters();
       });
     });
   }
 
-  // หน้า Subject: Live Search Filter
-  const searchInput = container.querySelector('#subject-search-input') || container.querySelector('input[type="text"]');
   if (searchInput && subjectCards.length > 0) {
-    searchInput.addEventListener('input', (e) => {
-      const query = e.target.value.toLowerCase().trim();
-      subjectCards.forEach(card => {
-        const text = card.textContent.toLowerCase();
-        if (!query || text.includes(query)) {
-          card.style.display = 'block';
-          card.style.opacity = '1';
-        } else {
-          card.style.display = 'none';
-          card.style.opacity = '0';
-        }
-      });
+    searchInput.addEventListener('input', applyFilters);
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        searchInput.value = '';
+        applyFilters();
+      }
     });
   }
+
+  if (searchClearBtn) {
+    searchClearBtn.addEventListener('click', () => {
+      if (searchInput) {
+        searchInput.value = '';
+        searchInput.focus();
+      }
+      applyFilters();
+    });
+  }
+
+  if (resetFiltersBtn) {
+    resetFiltersBtn.addEventListener('click', () => {
+      if (searchInput) searchInput.value = '';
+      if (filterBtns.length > 0) {
+        filterBtns.forEach(b => {
+          b.classList.remove('game-btn-mint', 'font-bold');
+          b.classList.add('game-btn-white', 'font-semibold');
+        });
+        const allBtn = container.querySelector('.subject-filter-btn[data-filter="all"]');
+        if (allBtn) {
+          allBtn.classList.add('game-btn-mint', 'font-bold');
+          allBtn.classList.remove('game-btn-white', 'font-semibold');
+        }
+      }
+      applyFilters();
+    });
+  }
+
+  // Initial filter sync if controls are present
+  if (subjectCards.length > 0 && (filterBtns.length > 0 || searchInput)) {
+    applyFilters();
+  }
+
+  // หน้า Subject: Card Action & Button Feedback (เข้าเรียน)
+  subjectCards.forEach(card => {
+    // If card is an anchor link (like in index.html), allow normal link routing
+    if (card.tagName.toLowerCase() !== 'a') {
+      card.addEventListener('click', () => {
+        const title = card.querySelector('h3, h4')?.textContent || 'วิชาเรียน';
+        showLearningToast(title.trim());
+      });
+    }
+  });
+
+  const enterBtns = container.querySelectorAll('.subject-card-item button');
+  enterBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const card = btn.closest('.subject-card-item');
+      const title = card ? (card.querySelector('h3, h4')?.textContent || 'วิชาเรียน') : 'วิชาเรียน';
+      showLearningToast(title.trim());
+    });
+  });
+}
+
+// Floating Feedback Toast for Card Action
+function showLearningToast(subjectTitle) {
+  let toast = document.getElementById('study-action-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'study-action-toast';
+    toast.className = 'fixed bottom-20 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-2xl bg-slate-900/90 text-white text-xs font-bold shadow-xl backdrop-blur-md border border-slate-700/50 flex items-center gap-2 pointer-events-none transition-all duration-300 opacity-0 translate-y-2';
+    document.body.appendChild(toast);
+  }
+  toast.innerHTML = `<span class="text-base">🚀</span><span>กำลังเตรียมห้องเรียน <strong>${subjectTitle}</strong>...</span>`;
+  toast.classList.remove('opacity-0', 'translate-y-2');
+  toast.classList.add('opacity-100', 'translate-y-0');
+
+  clearTimeout(toast._timeout);
+  toast._timeout = setTimeout(() => {
+    toast.classList.remove('opacity-100', 'translate-y-0');
+    toast.classList.add('opacity-0', 'translate-y-2');
+  }, 2200);
 }
 
 // อัปเดตชื่อหน้าและ Badge ใน Persistent Shared Header
