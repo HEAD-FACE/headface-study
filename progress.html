@@ -103,11 +103,11 @@
       <div class="text-white px-5 pb-4 relative z-20">
         <div class="grid grid-cols-2 gap-3">
 
-          <!-- 1. กล่อง EXP สะสม -->
+          <!-- 1. กล่อง EXP สะสม (ไอคอนอยู่นิ่งตามที่กำหนด) -->
           <div class="game-card game-card-mint p-3.5 text-slate-800 flex flex-col justify-between">
             <div class="flex items-center justify-between mb-1.5">
               <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wide">ค่าพลังสะสม</span>
-              <span class="w-6 h-6 rounded-xl bg-amber-100 text-amber-500 flex items-center justify-center shadow-inner game-sparkle">
+              <span class="w-6 h-6 rounded-xl bg-amber-100 text-amber-500 flex items-center justify-center shadow-inner">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
                   <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                   <path d="M13 2l.018 .001l.016 .001l.083 .005l.011 .002h.011l.038 .009l.052 .008l.016 .006l.011 .001l.029 .011l.052 .014l.019 .009l.015 .004l.028 .014l.04 .017l.021 .012l.022 .01l.023 .015l.031 .017l.034 .024l.018 .011l.013 .012l.024 .017l.038 .034l.022 .017l.008 .01l.014 .012l.036 .041l.026 .027l.006 .009c.12 .147 .196 .322 .218 .513l.001 .012l.002 .041l.004 .064v6h5a1 1 0 0 1 .868 1.497l-.06 .091l-8 11c-.568 .783 -1.808 .38 -1.808 -.588v-6h-5a1 1 0 0 1 -.868 -1.497l.06 -.091l8 -11l.01 -.013l.018 -.024l.033 -.038l.018 -.022l.009 -.008l.013 -.014l.04 -.036l.028 -.026l.008 -.006a1 1 0 0 1 .402 -.199l.011 -.001l.027 -.005l.074 -.013l.011 -.001l.041 -.002z" />
@@ -131,12 +131,34 @@
             </div>
           </div>
 
-          <!-- 2. กล่อง จำนวน STARS (ดาวจากการเล่น Mock Exam เท่านั้น) -->
+          <!-- 2. กล่อง จำนวน STARS (ดาวสะสม พร้อมปุ่ม Info เปิดป๊อปอัป) -->
           <div class="game-card game-card-amber p-3.5 text-slate-800 flex flex-col justify-between relative overflow-hidden">
-            <div class="absolute -right-2 -bottom-2 text-4xl opacity-10 pointer-events-none">⭐</div>
+            <div class="absolute -right-2 -bottom-2 w-12 h-12 text-amber-500 opacity-10 pointer-events-none">
+              <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-star">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" />
+              </svg>
+            </div>
             <div class="flex items-center justify-between mb-1.5">
-              <span class="text-[11px] font-bold text-amber-800 uppercase tracking-wide">Mock Exam Stars</span>
-              <span class="w-6 h-6 rounded-xl bg-amber-400 text-white flex items-center justify-center text-xs font-black shadow-inner pulse-badge game-sparkle">⭐</span>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <span class="text-[11px] font-bold text-amber-800 uppercase tracking-wide">STAR</span>
+                <!-- ปุ่มไอคอน Information เปิดป๊อปอัปคำอธิบายกติการะบบดาว -->
+                <button id="btn-star-info" type="button" class="w-[18px] h-[18px] rounded-full bg-amber-100 hover:bg-amber-200 text-amber-700 flex items-center justify-center transition-transform hover:scale-110 active:scale-95 cursor-pointer shadow-2xs shrink-0" title="รายละเอียดระบบดาว" aria-label="รายละเอียดระบบดาว">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-info-circle">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" />
+                    <path d="M12 9h.01" />
+                    <path d="M11 12h1v4h1" />
+                  </svg>
+                </button>
+              </div>
+              <!-- ไอคอนดาว SVG Tabler Filled -->
+              <span class="w-6 h-6 rounded-xl bg-amber-400 text-white flex items-center justify-center shadow-inner shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#ffffff" class="icon icon-tabler icons-tabler-filled icon-tabler-star">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" />
+                </svg>
+              </span>
             </div>
             <div>
               <div class="flex items-baseline gap-1">
@@ -173,23 +195,9 @@
       </div>
 
       <!-- ============================================== -->
-      <!-- NOTE กติการะบบดาว (ดันลงมาอีก 5px ตามที่กำหนด) -->
-      <!-- ============================================== -->
-      <section class="mt-[29px] px-5">
-        <div class="game-card game-card-neutral p-3.5 flex items-center gap-3">
-          <div class="w-9 h-9 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg shrink-0 border border-emerald-200 shadow-sm game-wiggle">
-            💡
-          </div>
-          <p class="text-xs text-slate-600 leading-snug">
-            <strong class="text-emerald-700 font-bold">ระบบดาว (Stars):</strong> ได้จากการประลอง <strong class="text-slate-800 font-bold">Mock Exam Ranking</strong> เท่านั้น ยิ่งสอบได้คะแนนสูงและเร็ว ยิ่งได้ดาวเพิ่ม!
-          </p>
-        </div>
-      </section>
-
-      <!-- ============================================== -->
       <!-- 2. QUICK STATS (สถิติการเรียนรู้ภาพรวม) -->
       <!-- ============================================== -->
-      <section class="mt-4 px-5">
+      <section class="mt-[29px] px-5">
         <div class="game-card game-card-neutral p-4 flex items-center justify-around text-center">
           <div>
             <span class="text-lg font-black text-slate-800">5 วัน</span>
@@ -257,8 +265,9 @@
                 </span>
               </div>
               <span class="text-xs font-bold text-slate-700 truncate max-w-[85px]">น้องกัปตัน</span>
-              <span class="inline-flex items-center gap-0.5 text-[11px] font-black text-amber-700 bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-full mt-1 shadow-sm">
-                ⭐ 115
+              <span class="inline-flex items-center gap-1 text-[11px] font-black text-amber-700 bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-full mt-1 shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="text-amber-500 shrink-0"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg>
+                <span>115</span>
               </span>
               <div class="w-full h-16 bg-slate-200 border-2 border-slate-300 rounded-t-2xl mt-2 flex items-center justify-center text-slate-500 font-black text-sm shadow-[0_4px_0_0_#94A3B8]">
                 🥈
@@ -277,8 +286,9 @@
                 </span>
               </div>
               <span class="text-xs font-extrabold text-slate-800 truncate max-w-[90px]">น้องฟ้าใส</span>
-              <span class="inline-flex items-center gap-0.5 text-xs font-black text-amber-800 bg-amber-200 border border-amber-300 px-2.5 py-0.5 rounded-full mt-1 shadow-sm">
-                ⭐ 128
+              <span class="inline-flex items-center gap-1 text-xs font-black text-amber-800 bg-amber-200 border border-amber-300 px-2.5 py-0.5 rounded-full mt-1 shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" class="text-amber-600 shrink-0"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg>
+                <span>128</span>
               </span>
               <div class="w-full h-24 bg-gradient-to-t from-amber-400 to-amber-300 border-2 border-amber-400 rounded-t-2xl mt-2 flex items-center justify-center text-white font-black text-lg shadow-[0_4px_0_0_#D97706]">
                 🥇
@@ -296,8 +306,9 @@
                 </span>
               </div>
               <span class="text-xs font-bold text-slate-700 truncate max-w-[85px]">น้องไทเกอร์</span>
-              <span class="inline-flex items-center gap-0.5 text-[11px] font-black text-amber-700 bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-full mt-1 shadow-sm">
-                ⭐ 98
+              <span class="inline-flex items-center gap-1 text-[11px] font-black text-amber-700 bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-full mt-1 shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="text-amber-500 shrink-0"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg>
+                <span>98</span>
               </span>
               <div class="w-full h-12 bg-amber-100 border-2 border-amber-200 rounded-t-2xl mt-2 flex items-center justify-center text-amber-800 font-black text-sm shadow-[0_4px_0_0_#FCD34D]">
                 🥉
@@ -325,7 +336,10 @@
             </div>
           </div>
           <div class="text-right">
-            <span class="text-base font-black text-amber-300">⭐ 74</span>
+            <span class="inline-flex items-center gap-1 text-base font-black text-amber-300">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" class="text-amber-300 shrink-0"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg>
+              <span>74</span>
+            </span>
             <p class="text-[9px] text-emerald-100">ดาวสะสม</p>
           </div>
         </div>
@@ -345,7 +359,10 @@
                 <span class="text-[10px] text-slate-400">โรงเรียนเตรียมฯ</span>
               </div>
             </div>
-            <span class="text-xs font-black text-amber-700 bg-amber-100/80 border border-amber-200 px-2.5 py-1 rounded-xl shadow-xs">⭐ 91</span>
+            <span class="inline-flex items-center gap-1 text-xs font-black text-amber-700 bg-amber-100/80 border border-amber-200 px-2.5 py-1 rounded-xl shadow-xs">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="text-amber-500 shrink-0"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg>
+              <span>91</span>
+            </span>
           </div>
 
           <!-- อันดับ 5 -->
@@ -360,7 +377,10 @@
                 <span class="text-[10px] text-slate-400">ม.5 ห้องกิฟต์</span>
               </div>
             </div>
-            <span class="text-xs font-black text-amber-700 bg-amber-100/80 border border-amber-200 px-2.5 py-1 rounded-xl shadow-xs">⭐ 85</span>
+            <span class="inline-flex items-center gap-1 text-xs font-black text-amber-700 bg-amber-100/80 border border-amber-200 px-2.5 py-1 rounded-xl shadow-xs">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="text-amber-500 shrink-0"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg>
+              <span>85</span>
+            </span>
           </div>
 
           <!-- อันดับ 6 -->
@@ -375,7 +395,10 @@
                 <span class="text-[10px] text-slate-400">สายวิทย์-คณิต</span>
               </div>
             </div>
-            <span class="text-xs font-black text-amber-700 bg-amber-100/80 border border-amber-200 px-2.5 py-1 rounded-xl shadow-xs">⭐ 78</span>
+            <span class="inline-flex items-center gap-1 text-xs font-black text-amber-700 bg-amber-100/80 border border-amber-200 px-2.5 py-1 rounded-xl shadow-xs">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="text-amber-500 shrink-0"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg>
+              <span>78</span>
+            </span>
           </div>
 
           <!-- อันดับ 8 -->
@@ -390,7 +413,10 @@
                 <span class="text-[10px] text-slate-400">เด็กสายศิลป์</span>
               </div>
             </div>
-            <span class="text-xs font-black text-amber-700 bg-amber-100/80 border border-amber-200 px-2.5 py-1 rounded-xl shadow-xs">⭐ 70</span>
+            <span class="inline-flex items-center gap-1 text-xs font-black text-amber-700 bg-amber-100/80 border border-amber-200 px-2.5 py-1 rounded-xl shadow-xs">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="text-amber-500 shrink-0"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg>
+              <span>70</span>
+            </span>
           </div>
 
           <!-- อันดับ 9 -->
@@ -405,7 +431,10 @@
                 <span class="text-[10px] text-slate-400">ม.5 ชายล้วน</span>
               </div>
             </div>
-            <span class="text-xs font-black text-amber-700 bg-amber-100/80 border border-amber-200 px-2.5 py-1 rounded-xl shadow-xs">⭐ 66</span>
+            <span class="inline-flex items-center gap-1 text-xs font-black text-amber-700 bg-amber-100/80 border border-amber-200 px-2.5 py-1 rounded-xl shadow-xs">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="text-amber-500 shrink-0"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg>
+              <span>66</span>
+            </span>
           </div>
 
           <!-- อันดับ 10 -->
@@ -420,7 +449,10 @@
                 <span class="text-[10px] text-slate-400">ม.ปลายขยันขันแข็ง</span>
               </div>
             </div>
-            <span class="text-xs font-black text-amber-700 bg-amber-100/80 border border-amber-200 px-2.5 py-1 rounded-xl shadow-xs">⭐ 62</span>
+            <span class="inline-flex items-center gap-1 text-xs font-black text-amber-700 bg-amber-100/80 border border-amber-200 px-2.5 py-1 rounded-xl shadow-xs">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="text-amber-500 shrink-0"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg>
+              <span>62</span>
+            </span>
           </div>
 
         </div>
@@ -428,14 +460,85 @@
         <!-- Action Button -->
         <div class="mt-4 mb-2">
           <button class="game-btn game-btn-orange w-full py-3.5 text-sm font-extrabold gap-2">
-            <span>เข้าสอบ Mock Exam ล่าดาวเพิ่ม ⭐</span>
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+            <span>เข้าสอบ Mock Exam ล่าดาวเพิ่ม</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#ffffff" class="icon icon-tabler icons-tabler-filled icon-tabler-star">
               <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <path d="M7 6l-.112 .006a1 1 0 0 0 -.669 1.619l3.501 4.375l-3.5 4.375a1 1 0 0 0 .78 1.625h6a1 1 0 0 0 .78 -.375l4 -5a1 1 0 0 0 0 -1.25l-4 -5a1 1 0 0 0 -.78 -.375h-6z" />
+              <path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" />
             </svg>
           </button>
         </div>
       </section>
+
+      <!-- ============================================== -->
+      <!-- 🌟 MODAL: คำอธิบายระบบดาว (STARS INFO MODAL POPUP) -->
+      <!-- ============================================== -->
+      <div id="star-info-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-xs transition-opacity duration-200 opacity-0 pointer-events-none" aria-hidden="true" role="dialog" aria-modal="true">
+        <div id="star-info-modal-card" class="game-card game-card-amber bg-white w-full max-w-sm p-5 text-slate-800 shadow-2xl relative transform transition-all duration-200 scale-95 opacity-0 max-h-[90vh] overflow-y-auto">
+          
+          <!-- Header: ไอคอนดาว + ชื่อหัวข้อ + ปุ่มปิด ✕ -->
+          <div class="flex items-center justify-between pb-3 border-b border-amber-100 mb-3.5">
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-xl bg-amber-400 text-white flex items-center justify-center shadow-inner shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#ffffff" class="icon icon-tabler icons-tabler-filled icon-tabler-star">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" />
+                </svg>
+              </span>
+              <div>
+                <h3 class="font-extrabold text-sm text-slate-800">ระบบดาว (Stars)</h3>
+                <span class="text-[10px] font-semibold text-amber-600 block">กติกาการสะสมและการแข่งขัน</span>
+              </div>
+            </div>
+            <button id="btn-close-star-modal" type="button" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 flex items-center justify-center transition-colors cursor-pointer text-sm font-bold" aria-label="ปิด">
+              ✕
+            </button>
+          </div>
+
+          <!-- เนื้อหาคำอธิบายระบบดาว -->
+          <div class="space-y-2.5 text-xs text-slate-600 leading-relaxed">
+            <div class="p-2.5 rounded-xl bg-amber-50/90 border border-amber-200/70 flex items-start gap-2.5">
+              <span class="w-6 h-6 rounded-lg bg-amber-100 text-amber-500 flex items-center justify-center shrink-0 mt-0.5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-star">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" />
+                </svg>
+              </span>
+              <div>
+                <strong class="text-amber-900 block font-bold text-[11px]">ที่มาของระบบดาว</strong>
+                <span>ดาวสะสมจะได้รับจากการทำข้อสอบประลอง <strong class="text-slate-800 font-bold">Mock Exam Ranking</strong> เท่านั้น ไม่ได้รับจากบทเรียนหรือแบบฝึกหัดทั่วไป</span>
+              </div>
+            </div>
+
+            <div class="p-2.5 rounded-xl bg-emerald-50/90 border border-emerald-200/70 flex items-start gap-2.5">
+              <span class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
+                ⚡
+              </span>
+              <div>
+                <strong class="text-emerald-900 block font-bold text-[11px]">เกณฑ์การได้รับดาว</strong>
+                <span>ยิ่งทำคะแนนสอบได้สูง และใช้เวลาน้อยลงเท่าใด ยิ่งได้รับดาวสะสมเพิ่มขึ้นตามสัดส่วน</span>
+              </div>
+            </div>
+
+            <div class="p-2.5 rounded-xl bg-sky-50/90 border border-sky-200/70 flex items-start gap-2.5">
+              <span class="w-6 h-6 rounded-lg bg-sky-100 text-sky-600 flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
+                🏆
+              </span>
+              <div>
+                <strong class="text-sky-900 block font-bold text-[11px]">การชิงอันดับ Leaderboard</strong>
+                <span>จำนวนดาวสะสมทั้งหมดจะนำมาจัดอันดับในตารางผู้นำ เพื่อชิงตำแหน่ง <strong class="text-amber-600 font-bold">Top 10</strong> ประจำซีซัน</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ปุ่มเข้าใจแล้ว -->
+          <div class="mt-4">
+            <button id="btn-confirm-star-modal" type="button" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 active:scale-98 text-white font-bold text-xs shadow-md shadow-amber-500/20 transition-all cursor-pointer">
+              เข้าใจแล้ว 👍
+            </button>
+          </div>
+
+        </div>
+      </div>
 
     </main>
 

@@ -663,3 +663,19 @@ nav a * {
   transform-origin: 100px 52px;
   animation: gradCapTassel 2.9s infinite ease-in-out;
 }
+
+/* ======================================================== */
+/* 🌟 STAR INFO MODAL OVERLAY & POPUP (Z-Index สูงสุด เหนือ Header และ Navbar) */
+/* ======================================================== */
+#star-info-modal {
+  position: fixed !important;
+  inset: 0 !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 100 !important;
+}
+

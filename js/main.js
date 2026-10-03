@@ -278,6 +278,12 @@ function initPageFeatures(container) {
       showLearningToast(title.trim());
     });
   });
+
+  // หน้า Progress: จัดการ Modal กติการะบบดาวให้อยู่ใต้ body เพื่อให้ครอบคลุมทั้งหน้าจอ 100%
+  const starModal = container.querySelector('#star-info-modal') || document.getElementById('star-info-modal');
+  if (starModal && starModal.parentElement !== document.body) {
+    document.body.appendChild(starModal);
+  }
 }
 
 // Floating Feedback Toast for Card Action
@@ -340,13 +346,75 @@ function updateSharedHeader(ns) {
   }
 }
 
-// ⚡ ดักคลิกที่แถบ Nav ด้านล่างเพื่ออัปเดตไอคอนแท็บทันที ตอบสนองเร็วระดับ 0ms
+// 🌟 Function จัดการ Modal กติการะบบดาว (Stars Info Modal)
+function openStarInfoModal() {
+  const modal = document.getElementById('star-info-modal');
+  const card = document.getElementById('star-info-modal-card');
+  if (!modal || !card) return;
+
+  // ย้าย Modal ออกมาอยู่ใต้ document.body เพื่อให้อยู่เหนือ header และ navbar ครอบคลุมทั้งหน้าจอ 100%
+  if (modal.parentElement !== document.body) {
+    document.body.appendChild(modal);
+  }
+
+  modal.classList.remove('pointer-events-none');
+  modal.setAttribute('aria-hidden', 'false');
+  gsap.to(modal, { opacity: 1, duration: 0.2 });
+  gsap.fromTo(card, { opacity: 0, scale: 0.92, y: 10 }, { opacity: 1, scale: 1, y: 0, duration: 0.25, ease: "back.out(1.5)" });
+}
+
+function closeStarInfoModal() {
+  const modal = document.getElementById('star-info-modal');
+  const card = document.getElementById('star-info-modal-card');
+  if (!modal || !card) return;
+  gsap.to(card, { opacity: 0, scale: 0.94, y: 8, duration: 0.15 });
+  gsap.to(modal, {
+    opacity: 0,
+    duration: 0.2,
+    onComplete: () => {
+      modal.classList.add('pointer-events-none');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+  });
+}
+
+// ⚡ ดักคลิกเปิด/ปิด Modal ระบบดาว และ แถบ Nav ด้านล่าง
 document.addEventListener('click', (e) => {
+  // เปิด Modal ระบบดาว
+  if (e.target.closest('#btn-star-info')) {
+    e.preventDefault();
+    openStarInfoModal();
+    return;
+  }
+  // ปิด Modal ระบบดาว (ปุ่ม ✕ หรือ ปุ่ม เข้าใจแล้ว)
+  if (e.target.closest('#btn-close-star-modal') || e.target.closest('#btn-confirm-star-modal')) {
+    e.preventDefault();
+    closeStarInfoModal();
+    return;
+  }
+  // คลิกที่พื้นหลัง Backdrop ภายนอกการ์ด Modal
+  const modal = document.getElementById('star-info-modal');
+  if (modal && e.target === modal) {
+    closeStarInfoModal();
+    return;
+  }
+
+  // ดักคลิกที่แถบ Nav ด้านล่างเพื่ออัปเดตไอคอนแท็บทันที ตอบสนองเร็วระดับ 0ms
   const link = e.target.closest('#bottom-navbar a[data-nav]');
   if (!link) return;
   const targetNs = link.getAttribute('data-nav');
   if (targetNs) {
     updateActiveNav(targetNs);
+  }
+});
+
+// กดปุ่ม ESC เพื่อปิด Modal
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const modal = document.getElementById('star-info-modal');
+    if (modal && modal.getAttribute('aria-hidden') === 'false') {
+      closeStarInfoModal();
+    }
   }
 });
 
@@ -379,6 +447,12 @@ document.addEventListener('DOMContentLoaded', () => {
             '#mainBlueBg',
             '.header-bg-shell'
           ]);
+
+          // ปิดและลบ Modal ดาว หากค้างอยู่ใน body เมื่อเปลี่ยนหน้า
+          const starModal = document.getElementById('star-info-modal');
+          if (starModal && starModal.parentElement === document.body) {
+            starModal.remove();
+          }
 
           // เฟดหน้าเก่าออกอย่างนุ่มนวล
           return gsap.to(data.current.container, {
