@@ -418,6 +418,180 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
+// ========================================================
+// 👤 PROFILE DROPDOWN & AUTH USER DATA RENDERING
+// ========================================================
+
+/**
+ * อัปเดตข้อมูลผู้ใช้ลงใน Header และ Profile Dropdown DOM
+ */
+function renderUserProfileUI(user) {
+  if (!user) return;
+
+  const firstName = user.first_name || '';
+  const lastName = user.last_name || '';
+  const fullName = `${firstName} ${lastName}`.trim() || 'นักเรียน';
+  const number = user.number != null && user.number !== '' ? user.number : '-';
+  const studentId = user.student_id ? String(user.student_id) : '-';
+
+  // 1. อัปเดตข้อมูลบนปุ่ม Profile ใน Header
+  const headerName = document.getElementById('headerName');
+  if (headerName) headerName.textContent = fullName;
+
+  const headerStudentId = document.getElementById('headerStudentId');
+  if (headerStudentId) headerStudentId.textContent = `เลขประจำตัว: ${studentId}`;
+
+  // 2. อัปเดตรูป Avatar (ดึงจาก user หรือใช้ DiceBear Notionists ตาม student_id)
+  const headerAvatar = document.getElementById('headerAvatar');
+  if (headerAvatar) {
+    const seed = user.student_id || user.first_name || 'Felix';
+    const defaultAvatar = `https://api.dicebear.com/7.x/notionists/svg?seed=${seed}&backgroundColor=e2e8f0`;
+    headerAvatar.src = user.avatar || user.picture || defaultAvatar;
+  }
+
+  // 3. อัปเดตในการ์ด Dropdown
+  const dropdownName = document.getElementById('dropdownName');
+  if (dropdownName) dropdownName.textContent = fullName;
+
+  const dropdownNumber = document.getElementById('dropdownNumber');
+  if (dropdownNumber) dropdownNumber.textContent = `เลขที่ ${number}`;
+
+  const dropdownStudentId = document.getElementById('dropdownStudentId');
+  if (dropdownStudentId) dropdownStudentId.textContent = `เลขประจำตัว: ${studentId}`;
+}
+
+/**
+ * ควบคุมการเปิด / ปิด Profile Popup Dropdown
+ */
+function initProfileDropdown() {
+  const profileBtn = document.getElementById('profileBtn');
+  const profileDropdown = document.getElementById('profileDropdown');
+  const logoutBtn = document.getElementById('dropdownLogoutBtn');
+  let isOpen = false;
+
+  if (!profileBtn || !profileDropdown) return;
+  if (profileBtn._hasDropdownHandler) return;
+  profileBtn._hasDropdownHandler = true;
+
+  function openDropdown() {
+    isOpen = true;
+    profileDropdown.classList.remove('hidden');
+
+    if (typeof window.gsap !== 'undefined') {
+      gsap.fromTo(profileDropdown,
+        { opacity: 0, y: -8, scale: 0.95 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.2, ease: "power2.out" }
+      );
+    } else {
+      profileDropdown.style.opacity = '1';
+      profileDropdown.style.transform = 'translateY(0) scale(1)';
+    }
+  }
+
+  function closeDropdown() {
+    isOpen = false;
+    if (typeof window.gsap !== 'undefined') {
+      gsap.to(profileDropdown, {
+        opacity: 0,
+        scale: 0.95,
+        duration: 0.15,
+        ease: "power2.in",
+        onComplete: () => profileDropdown.classList.add('hidden')
+      });
+    } else {
+      profileDropdown.classList.add('hidden');
+    }
+  }
+
+  // เปิด/ปิด เมื่อคลิกปุ่ม
+  profileBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (isOpen) {
+      closeDropdown();
+    } else {
+      openDropdown();
+    }
+  });
+
+  // ปิดอัตโนมัติเมื่อคลิกพื้นที่อื่นบนหน้าจอ (Click Outside)
+  document.addEventListener('click', (e) => {
+    if (isOpen && !profileDropdown.contains(e.target) && !profileBtn.contains(e.target)) {
+      closeDropdown();
+    }
+  });
+
+  // ปิดเมื่อกด ESC
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isOpen) {
+      closeDropdown();
+    }
+  });
+
+  // ผูกปุ่ม Logout
+  if (logoutBtn && !logoutBtn._hasLogoutHandler) {
+    logoutBtn._hasLogoutHandler = true;
+    logoutBtn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      logoutBtn.disabled = true;
+      logoutBtn.innerHTML = `
+        <svg class="animate-spin -ml-1 mr-2 h-3.5 w-3.5 text-rose-600 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        กำลังออกจากระบบ...
+      `;
+      if (window.StudyAuth && typeof window.StudyAuth.logout === 'function') {
+        await window.StudyAuth.logout();
+      } else {
+        window.location.href = 'https://headface.app/login.html';
+      }
+    });
+  }
+}
+
+/**
+ * เริ่มต้นตรวจสอบสิทธิ์ (Strict Route Guard) และดึงข้อมูลผู้ใช้
+ */
+async function initAuth() {
+  initProfileDropdown();
+
+  const runAuthCheck = async () => {
+    if (!window.StudyAuth) return;
+
+    // 1. นำข้อมูลจากแคชมาแสดงก่อนทันทีเพื่อ UX ที่ลื่นไหลไร้รอยต่อ
+    const cached = window.StudyAuth.getAuthUser();
+    if (cached) {
+      renderUserProfileUI(cached);
+    }
+
+    // 2. ส่งคำขอ GET /api/auth/me (Strict Guard: หากไม่มีเซสชัน จะ Redirect ไป Login กลางทันที)
+    try {
+      const user = await window.StudyAuth.requireAuth();
+      if (user) {
+        renderUserProfileUI(user);
+      }
+    } catch (err) {
+      console.error('[StudyAuth] Authentication check failed:', err);
+    }
+  };
+
+  if (window.StudyAuth) {
+    runAuthCheck();
+  } else {
+    window.addEventListener('headface-auth-ready', (e) => {
+      if (e.detail?.user) renderUserProfileUI(e.detail.user);
+    }, { once: true });
+
+    const checkInterval = setInterval(() => {
+      if (window.StudyAuth) {
+        clearInterval(checkInterval);
+        runAuthCheck();
+      }
+    }, 40);
+    setTimeout(() => clearInterval(checkInterval), 2500);
+  }
+}
+
 // เริ่มต้นระบบเมื่อโหลดหน้า
 document.addEventListener('DOMContentLoaded', () => {
   const initialNs = document.querySelector('[data-barba="container"]')?.getAttribute('data-barba-namespace') || 'home';
@@ -431,6 +605,7 @@ document.addEventListener('DOMContentLoaded', () => {
   updateActiveNav(initialNs);
   updateSharedHeader(initialNs);
   initPageFeatures(document);
+  initAuth();
 
   // Preload หน้าทั้งหมดลงแคช เพื่อให้ Barba สลับหน้าได้ทันที 0ms ไร้ดีเลย์
   ['index.html', 'subject.html', 'progress.html'].forEach(page => {

@@ -20,6 +20,13 @@
             sans: ['Prompt', 'sans-serif'],
           },
           colors: {
+            brand: {
+              DEFAULT: '#10b981',
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              500: '#10b981',
+              600: '#059669',
+            },
             mint: {
               50: '#ecfdf5',
               100: '#d1fae5',
@@ -85,9 +92,72 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#ffffff" class="icon icon-tabler icons-tabler-filled icon-tabler-settings"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M14.647 4.081a.724 .724 0 0 0 1.08 .448c2.439 -1.485 5.23 1.305 3.745 3.744a.724 .724 0 0 0 .447 1.08c2.775 .673 2.775 4.62 0 5.294a.724 .724 0 0 0 -.448 1.08c1.485 2.439 -1.305 5.23 -3.744 3.745a.724 .724 0 0 0 -1.08 .447c-.673 2.775 -4.62 2.775 -5.294 0a.724 .724 0 0 0 -1.08 -.448c-2.439 1.485 -5.23 -1.305 -3.745 -3.744a.724 .724 0 0 0 -.447 -1.08c-2.775 -.673 -2.775 -4.62 0 -5.294a.724 .724 0 0 0 .448 -1.08c-1.485 -2.439 1.305 -5.23 3.744 -3.745a.722 .722 0 0 0 1.08 -.447c.673 -2.775 4.62 -2.775 5.294 0zm-2.647 4.919a3 3 0 1 0 0 6a3 3 0 0 0 0 -6" /></svg>
           </button>
           
-          <!-- รูปโปรไฟล์ผู้ใช้ (วงกลมพร้อมขอบขาวตามแบบภาพ) -->
-          <div class="w-10 h-10 rounded-full border-2 border-white shadow-sm overflow-hidden bg-[#DCE4EC] hover:scale-105 active:scale-95 transition-transform cursor-pointer flex items-center justify-center shrink-0" title="โปรไฟล์ผู้ใช้" aria-label="โปรไฟล์ผู้ใช้">
-            <img src="assets/avatar.webp" alt="User Avatar" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='assets/avatar.png';">
+          <!-- Container ของ Profile Button และ Popup Dropdown -->
+          <div class="relative">
+            <!-- 1. ปุ่ม Profile แสดงรูป Avatar และชื่อผู้ใช้ -->
+            <button id="profileBtn" type="button"
+              class="flex items-center gap-2.5 focus:outline-none rounded-full ring-2 ring-transparent focus:ring-white/40 transition-all cursor-pointer">
+              <!-- ชื่อและเลขประจำตัว (แสดงบนหน้าจอขนาด sm ขึ้นไป) -->
+              <div class="text-right hidden sm:block">
+                <p id="headerName" class="text-[13px] font-bold text-white leading-none">กำลังโหลด...</p>
+                <p id="headerStudentId" class="text-[11px] text-emerald-100 mt-1 font-medium">เลขประจำตัว: -</p>
+              </div>
+              <!-- รูป Avatar -->
+              <img id="headerAvatar" 
+                src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix&backgroundColor=e2e8f0" 
+                alt="Profile Avatar"
+                class="w-10 h-10 rounded-full border-2 border-white shadow-sm bg-slate-100 object-cover shrink-0">
+            </button>
+
+            <!-- 2. Profile Popup Dropdown Card -->
+            <div id="profileDropdown"
+              class="hidden absolute right-0 top-full mt-3 w-64 bg-white rounded-2xl shadow-[0_10px_35px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden origin-top-right z-50 transition-all duration-200 text-slate-800">
+              
+              <!-- ข้อมูลนักเรียนส่วนหัว -->
+              <div class="p-4 border-b border-slate-100/80 bg-slate-50/70">
+                <p id="dropdownName" class="text-sm font-bold text-slate-900 truncate">กำลังโหลด...</p>
+                <div class="flex items-center gap-2 mt-1">
+                  <span id="dropdownNumber" class="text-xs text-slate-500 font-medium">เลขที่ -</span>
+                  <span class="text-slate-300">•</span>
+                  <span id="dropdownStudentId" class="text-xs text-slate-500 font-medium">เลขประจำตัว: -</span>
+                </div>
+              </div>
+
+              <!-- รายการเมนู Action -->
+              <div class="p-2 space-y-1">
+                <!-- ลิงก์ไปยังหน้าโปรไฟล์หลักของ HEADFACE -->
+                <a href="https://headface.app/profile.html"
+                  class="flex items-center gap-2.5 px-3.5 py-2.5 text-xs text-emerald-600 font-bold hover:bg-emerald-50 rounded-xl transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"/>
+                    <path d="M12 10m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/>
+                    <path d="M6.168 18.849a4 4 0 0 1 3.832 -2.849h4a4 4 0 0 1 3.834 2.855"/>
+                  </svg>
+                  ดูโปรไฟล์ส่วนตัว
+                </a>
+
+                <!-- ลิงก์กลับหน้า Dashboard หลัก -->
+                <a href="https://headface.app/dashboard.html"
+                  class="flex items-center gap-2.5 px-3.5 py-2.5 text-xs text-slate-600 font-medium hover:bg-slate-50 rounded-xl transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 4h6v8h-6z"/><path d="M4 16h6v4h-6z"/><path d="M14 12h6v8h-6z"/><path d="M14 4h6v4h-6z"/>
+                  </svg>
+                  กลับสู่ HEADFACE หลัก
+                </a>
+
+                <div class="border-t border-slate-100 my-1"></div>
+
+                <!-- ปุ่มออกจากระบบ (Logout) ข้ามทุก Subdomain -->
+                <button id="dropdownLogoutBtn" type="button"
+                  class="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-xs text-rose-600 font-bold hover:bg-rose-50 rounded-xl transition-colors cursor-pointer text-left">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2"/>
+                    <path d="M9 12h12l-3 -3"/><path d="M18 15l3 -3"/>
+                  </svg>
+                  ออกจากระบบ
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -594,9 +664,11 @@
 
   </div>
 
-  <!-- Scripts: GSAP + Barba.js + App Core -->
+  <!-- Scripts: GSAP + Barba.js + Auth & App Core -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="https://unpkg.com/@barba/core"></script>
+  <script type="module" src="js/auth.js"></script>
+  <script type="module" src="js/api-client.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>
