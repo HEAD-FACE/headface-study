@@ -96,65 +96,41 @@
           <div class="relative">
             <!-- 1. ปุ่ม Profile แสดงรูป Avatar และชื่อผู้ใช้ -->
             <button id="profileBtn" type="button"
-              class="flex items-center gap-2.5 focus:outline-none rounded-full ring-2 ring-transparent focus:ring-white/40 transition-all cursor-pointer">
-              <!-- ชื่อและเลขประจำตัว (แสดงบนหน้าจอขนาด sm ขึ้นไป) -->
+              class="flex items-center gap-3 focus:outline-none rounded-full ring-2 ring-transparent focus:ring-white/50 transition-all cursor-pointer">
               <div class="text-right hidden sm:block">
                 <p id="headerName" class="text-[13px] font-bold text-white leading-none">กำลังโหลด...</p>
-                <p id="headerStudentId" class="text-[11px] text-emerald-100 mt-1 font-medium">เลขประจำตัว: -</p>
+                <p id="headerStudentId" class="text-[11px] text-white/80 mt-1 font-medium">เลขประจำตัว: -</p>
               </div>
-              <!-- รูป Avatar -->
-              <img id="headerAvatar" 
-                src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix&backgroundColor=e2e8f0" 
-                alt="Profile Avatar"
-                class="w-10 h-10 rounded-full border-2 border-white shadow-sm bg-slate-100 object-cover shrink-0">
+              <img id="headerAvatar" src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix&backgroundColor=e2e8f0" alt="Profile"
+                class="w-10 h-10 rounded-full border-2 border-white/30 bg-white shadow-sm object-cover shrink-0">
             </button>
 
             <!-- 2. Profile Popup Dropdown Card -->
             <div id="profileDropdown"
-              class="hidden absolute right-0 top-full mt-3 w-64 bg-white rounded-2xl shadow-[0_10px_35px_rgba(0,0,0,0.15)] border border-slate-100 overflow-hidden origin-top-right z-50 transition-all duration-200 text-slate-800">
-              
-              <!-- ข้อมูลนักเรียนส่วนหัว -->
-              <div class="p-4 border-b border-slate-100/80 bg-slate-50/70">
-                <p id="dropdownName" class="text-sm font-bold text-slate-900 truncate">กำลังโหลด...</p>
-                <div class="flex items-center gap-2 mt-1">
-                  <span id="dropdownNumber" class="text-xs text-slate-500 font-medium">เลขที่ -</span>
-                  <span class="text-slate-300">•</span>
-                  <span id="dropdownStudentId" class="text-xs text-slate-500 font-medium">เลขประจำตัว: -</span>
-                </div>
+              class="hidden absolute right-0 top-full mt-3 w-56 bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-slate-100 overflow-hidden origin-top-right z-50 text-slate-800">
+              <div class="p-4 border-b border-slate-100/80 bg-slate-50/50">
+                <p id="dropdownName" class="text-sm font-semibold text-slate-900 truncate">กำลังโหลด...</p>
+                <p id="dropdownNumber" class="text-xs text-slate-500">เลขที่ -</p>
+                <p id="dropdownStudentId" class="text-xs text-slate-500">เลขประจำตัว: -</p>
               </div>
-
-              <!-- รายการเมนู Action -->
               <div class="p-2 space-y-1">
-                <!-- ลิงก์ไปยังหน้าโปรไฟล์หลักของ HEADFACE -->
                 <a href="https://beta.headface.app/profile.html"
-                  class="flex items-center gap-2.5 px-3.5 py-2.5 text-xs text-emerald-600 font-bold hover:bg-emerald-50 rounded-xl transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"/>
-                    <path d="M12 10m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/>
-                    <path d="M6.168 18.849a4 4 0 0 1 3.832 -2.849h4a4 4 0 0 1 3.834 2.855"/>
+                  class="flex items-center gap-2.5 w-full px-3 py-2 text-sm text-slate-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl font-medium transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400">
+                    <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" />
+                    <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
                   </svg>
-                  ดูโปรไฟล์ส่วนตัว
+                  <span>ดูโปรไฟล์ส่วนตัว</span>
                 </a>
-
-                <!-- ลิงก์กลับหน้า Dashboard หลัก -->
-                <a href="https://beta.headface.app/dashboard.html"
-                  class="flex items-center gap-2.5 px-3.5 py-2.5 text-xs text-slate-600 font-medium hover:bg-slate-50 rounded-xl transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M4 4h6v8h-6z"/><path d="M4 16h6v4h-6z"/><path d="M14 12h6v8h-6z"/><path d="M14 4h6v4h-6z"/>
+                <button type="button" id="dropdownLogoutBtn"
+                  class="flex items-center gap-2.5 w-full px-3 py-2 text-sm text-rose-600 hover:bg-rose-50 rounded-xl font-medium transition-colors cursor-pointer">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
+                    <path d="M9 12h12l-3 -3" />
+                    <path d="M18 15l3 -3" />
                   </svg>
-                  กลับสู่ HEADFACE หลัก
-                </a>
-
-                <div class="border-t border-slate-100 my-1"></div>
-
-                <!-- ปุ่มออกจากระบบ (Logout) ข้ามทุก Subdomain -->
-                <button id="dropdownLogoutBtn" type="button"
-                  class="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-xs text-rose-600 font-bold hover:bg-rose-50 rounded-xl transition-colors cursor-pointer text-left">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2"/>
-                    <path d="M9 12h12l-3 -3"/><path d="M18 15l3 -3"/>
-                  </svg>
-                  ออกจากระบบ
+                  <span>ออกจากระบบ</span>
                 </button>
               </div>
             </div>
