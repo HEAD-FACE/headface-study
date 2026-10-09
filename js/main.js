@@ -543,7 +543,7 @@ function initProfileDropdown() {
       if (window.StudyAuth && typeof window.StudyAuth.logout === 'function') {
         await window.StudyAuth.logout();
       } else {
-        window.location.href = 'https://headface.app/login.html';
+        window.location.href = 'https://beta.headface.app/login';
       }
     });
   }
@@ -558,15 +558,9 @@ async function initAuth() {
   const runAuthCheck = async () => {
     if (!window.StudyAuth) return;
 
-    // 1. นำข้อมูลจากแคชมาแสดงก่อนทันทีเพื่อ UX ที่ลื่นไหลไร้รอยต่อ
-    const cached = window.StudyAuth.getAuthUser();
-    if (cached) {
-      renderUserProfileUI(cached);
-    }
-
-    // 2. ส่งคำขอ GET /api/auth/me (Strict Guard: หากไม่มีเซสชัน จะ Redirect ไป Login กลางทันที)
+    // ส่งคำขอ GET /api/auth/me ทุกครั้งที่โหลด/รีเฟรชหน้า (Strict Guard: หากไม่มีเซสชัน จะ Redirect ไป beta.headface.app/login ทันที)
     try {
-      const user = await window.StudyAuth.requireAuth();
+      const user = await window.StudyAuth.requireAuth(true);
       if (user) {
         renderUserProfileUI(user);
       }
@@ -675,8 +669,20 @@ document.addEventListener('DOMContentLoaded', () => {
           updateActiveNav(ns);
           window.scrollTo(0, 0);
         },
-        enter(data) {
+        async enter(data) {
           initPageFeatures(data.next.container);
+
+          // 🛡️ Request Auth ยืนยันตัวตนกับ Backend ทุกครั้งที่มีการเปลี่ยนหน้าภายในเว็บ (Strict Route Guard)
+          if (window.StudyAuth) {
+            try {
+              const user = await window.StudyAuth.requireAuth(true);
+              if (user) {
+                renderUserProfileUI(user);
+              }
+            } catch (err) {
+              console.error('[StudyAuth] Transition auth check failed:', err);
+            }
+          }
 
           // เฟดหน้าใหม่เข้ามาอย่างนุ่มนวล
           return gsap.to(data.next.container, {

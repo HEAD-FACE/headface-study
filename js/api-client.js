@@ -2,7 +2,7 @@
  * js/api-client.js — Centralized API Client สำหรับ Subdomain
  * จัดการ credentials: 'include' และ X-CSRF-Token อัตโนมัติทุกคำขอ
  */
-import { API_BASE_URL, getCookie, redirectToLogin } from './auth.js';
+import { API_BASE_URL, getCsrfToken, redirectToLogin } from './auth.js';
 
 export async function apiFetch(endpoint, options = {}) {
     const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
@@ -21,7 +21,7 @@ export async function apiFetch(endpoint, options = {}) {
     // 3. แนบ X-CSRF-Token สำหรับคำขอที่แก้ไขข้อมูล (POST, PUT, DELETE, PATCH)
     const method = (opts.method || 'GET').toUpperCase();
     if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(method)) {
-        const csrfToken = getCookie('hf_csrf');
+        const csrfToken = await getCsrfToken();
         if (csrfToken) {
             headers.set('X-CSRF-Token', csrfToken);
         }
