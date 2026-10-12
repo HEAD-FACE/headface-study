@@ -1,2 +1,0 @@
-# teamwork_preview_reviewer_r2
-Working directory initialized.

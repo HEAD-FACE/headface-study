@@ -542,11 +542,30 @@ function initProfileDropdown() {
       `;
       if (window.StudyAuth && typeof window.StudyAuth.logout === 'function') {
         await window.StudyAuth.logout();
-      } else {
-        window.location.href = 'https://beta.headface.app/login';
+      } else if (window.StudyEnv) {
+        window.location.href = window.StudyEnv.getLoginPageUrl();
       }
     });
   }
+}
+
+/**
+ * ตั้งปลายทางลิงก์ "ดูโปรไฟล์ส่วนตัว" ตาม environment ของหน้าที่เปิดอยู่ (ดู js/env.js)
+ */
+function initProfileLink() {
+  const profileLink = document.getElementById('dropdownProfileLink');
+  if (profileLink && window.StudyEnv) {
+    profileLink.href = window.StudyEnv.getProfilePageUrl();
+  }
+}
+
+/**
+ * ล้มเหลวแบบปิด (fail closed): เมื่อ guard ทำงานไม่ได้ ห้ามปล่อยให้ใช้หน้าได้โดยไม่ตรวจสิทธิ์
+ * ซ่อนเนื้อหาและบันทึก error เท่านั้น ไม่ redirect เพื่อไม่ให้เกิด loop ระหว่าง study กับหน้า login
+ */
+function failAuthGuardClosed(reason) {
+  console.error('[StudyAuth] Auth guard unavailable, page content hidden:', reason);
+  document.documentElement.style.display = 'none';
 }
 
 /**
@@ -554,35 +573,24 @@ function initProfileDropdown() {
  */
 async function initAuth() {
   initProfileDropdown();
+  initProfileLink();
 
-  const runAuthCheck = async () => {
-    if (!window.StudyAuth) return;
+  // <script type="module"> ทำงานเสร็จก่อน DOMContentLoaded เสมอ
+  // ถ้ายังไม่มี StudyAuth แปลว่า js/auth.js หรือ js/env.js โหลด/ทำงานไม่สำเร็จ
+  if (!window.StudyAuth) {
+    failAuthGuardClosed('window.StudyAuth is not defined (js/auth.js or js/env.js failed to load)');
+    return;
+  }
 
-    // ส่งคำขอ GET /api/auth/me ทุกครั้งที่โหลด/รีเฟรชหน้า (Strict Guard: หากไม่มีเซสชัน จะ Redirect ไป beta.headface.app/login ทันที)
-    try {
-      const user = await window.StudyAuth.requireAuth(true);
-      if (user) {
-        renderUserProfileUI(user);
-      }
-    } catch (err) {
-      console.error('[StudyAuth] Authentication check failed:', err);
+  // ส่งคำขอ GET /api/auth/me ทุกครั้งที่โหลด/รีเฟรชหน้า
+  // (Strict Guard: Backend ตอบ 401 จะ Redirect ไปหน้า login ของ environment นั้นทันที)
+  try {
+    const user = await window.StudyAuth.requireAuth(true);
+    if (user) {
+      renderUserProfileUI(user);
     }
-  };
-
-  if (window.StudyAuth) {
-    runAuthCheck();
-  } else {
-    window.addEventListener('headface-auth-ready', (e) => {
-      if (e.detail?.user) renderUserProfileUI(e.detail.user);
-    }, { once: true });
-
-    const checkInterval = setInterval(() => {
-      if (window.StudyAuth) {
-        clearInterval(checkInterval);
-        runAuthCheck();
-      }
-    }, 40);
-    setTimeout(() => clearInterval(checkInterval), 2500);
+  } catch (err) {
+    console.error('[StudyAuth] Authentication check failed:', err);
   }
 }
 

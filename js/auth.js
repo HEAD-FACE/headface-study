@@ -3,8 +3,11 @@
  * รองรับทั้ง ES Module (import/export) และ Global Window Object (window.StudyAuth)
  */
 
-export const API_BASE_URL = window.HEADFACE_API_BASE || 'https://beta-headface.ac-headface.workers.dev';
-export const LOGIN_PAGE_URL = 'https://beta.headface.app/login';
+import { getApiBaseUrl, getLoginPageUrl, getCsrfCookieName } from './env.js';
+
+// URL ทั้งหมดเลือกตามชื่อโดเมนของหน้าที่เปิดอยู่ (ดู js/env.js) ห้าม hard-code ที่นี่
+export const API_BASE_URL = getApiBaseUrl();
+export const LOGIN_PAGE_URL = getLoginPageUrl();
 
 let cachedUser = null;
 let activeAuthPromise = null;
@@ -37,7 +40,7 @@ export function getAuthUser() {
  * ดึงหรือขอ CSRF Token ล่าสุดจาก Backend (จะ Set-Cookie hf_csrf ให้ด้วย)
  */
 export async function getCsrfToken() {
-    let token = getCookie('hf_csrf') || sessionStorage.getItem('hf_csrf_token');
+    let token = getCookie(getCsrfCookieName()) || sessionStorage.getItem('hf_csrf_token');
     if (!token) {
         try {
             const res = await fetch(`${API_BASE_URL}/api/auth/csrf`, {
@@ -61,42 +64,80 @@ export async function getCsrfToken() {
 }
 
 /**
- * ตรวจสอบสถานะการล็อกอินกับ Backend Worker ทุกครั้ง
- * @param {boolean} force - บังคับยิงเช็กกับเซิร์ฟเวอร์จริงทุกครั้ง (ค่าเริ่มต้น: true)
- * @returns {Promise<object|null>} คืนค่า User Profile หรือ null
+ * ถาม Backend ว่ามีเซสชันหรือไม่ แล้วแยกผลเป็น 3 สถานะ
+ *   authenticated   - เซิร์ฟเวอร์ยืนยันตัวตนแล้ว (HTTP 200 พร้อม user)
+ *   unauthenticated - เซิร์ฟเวอร์ตอบ HTTP 401 เท่านั้น ถือว่าไม่มีเซสชันจริง
+ *   error           - ตรวจสอบไม่ได้ (5xx, 403/429, เครือข่ายหลุด, ติด CORS, JSON พัง)
+ *                     ห้ามตีความว่าผู้ใช้ออกจากระบบแล้ว
  */
-export async function checkSession(force = true) {
-    if (!force && cachedUser) return cachedUser;
+async function fetchSessionState() {
+    let res;
+    try {
+        res = await fetch(`${API_BASE_URL}/api/auth/me`, {
+            method: 'GET',
+            credentials: 'include', // 🔥 ส่ง hf_session ข้าม Subdomain อัตโนมัติ
+            headers: { 'Accept': 'application/json' },
+            cache: 'no-store'       // 🔥 บังคับยิงเช็กเซิร์ฟเวอร์จริง ห้ามแคช
+        });
+    } catch (err) {
+        console.error('[StudyAuth] Session check failed (network/CORS):', err);
+        return { status: 'error', user: null };
+    }
+
+    if (res.status === 401) {
+        return { status: 'unauthenticated', user: null };
+    }
+
+    if (!res.ok) {
+        console.warn('[StudyAuth] Session check responded with HTTP', res.status);
+        return { status: 'error', user: null };
+    }
+
+    try {
+        const data = await res.json();
+        if (data && data.success && data.user) {
+            return { status: 'authenticated', user: data.user };
+        }
+    } catch (err) {
+        console.error('[StudyAuth] Session check returned an unreadable body:', err);
+        return { status: 'error', user: null };
+    }
+
+    console.warn('[StudyAuth] Session check returned an unexpected payload');
+    return { status: 'error', user: null };
+}
+
+/**
+ * ตรวจสอบเซสชันแล้วคืนสถานะ { status, user }
+ * - authenticated: เก็บผู้ใช้ลงแคชและแจ้งเตือนทั้งหน้าเว็บ
+ * - unauthenticated (401): ล้างข้อมูลฝั่ง client
+ * - error: ไม่ล้างอะไร และคืนผู้ใช้ที่เคยตรวจสอบสำเร็จล่าสุด (ถ้ามี)
+ */
+async function resolveSession(force = true) {
+    if (!force && cachedUser) return { status: 'authenticated', user: cachedUser };
     if (activeAuthPromise && !force) return activeAuthPromise;
 
     activeAuthPromise = (async () => {
         try {
-            const res = await fetch(`${API_BASE_URL}/api/auth/me`, {
-                method: 'GET',
-                credentials: 'include', // 🔥 ส่ง hf_session ข้าม Subdomain อัตโนมัติ
-                headers: { 'Accept': 'application/json' },
-                cache: 'no-store'       // 🔥 บังคับยิงเช็กเซิร์ฟเวอร์จริง ห้ามแคช
-            });
+            const state = await fetchSessionState();
 
-            if (res.ok) {
-                const data = await res.json();
-                if (data.success && data.user) {
-                    cachedUser = data.user;
+            if (state.status === 'authenticated') {
+                cachedUser = state.user;
+                try {
                     sessionStorage.setItem('study_user', JSON.stringify(cachedUser));
-                    
-                    // Dispatch Custom Event แจ้งเตือนทั้งหน้าเว็บว่า Auth พร้อมแล้ว
-                    window.dispatchEvent(new CustomEvent('headface-auth-ready', { detail: { user: cachedUser } }));
-                    return cachedUser;
-                }
+                } catch (_) {}
+
+                // Dispatch Custom Event แจ้งเตือนทั้งหน้าเว็บว่า Auth พร้อมแล้ว
+                window.dispatchEvent(new CustomEvent('headface-auth-ready', { detail: { user: cachedUser } }));
+                return state;
             }
 
-            // ถ้า HTTP 401 หรือผลลัพธ์ไม่ถูกต้อง ถือว่าไม่มีเซสชัน
-            handleUnauthenticated();
-            return null;
-        } catch (err) {
-            console.error('[StudyAuth] Session check failed:', err);
-            handleUnauthenticated();
-            return null;
+            if (state.status === 'unauthenticated') {
+                handleUnauthenticated();
+                return state;
+            }
+
+            return { status: 'error', user: getAuthUser() };
         } finally {
             activeAuthPromise = null;
         }
@@ -106,20 +147,31 @@ export async function checkSession(force = true) {
 }
 
 /**
- * ป้องกันหน้าเว็บ (Route Guard): ตรวจสอบสิทธิ์กับ Backend หากไม่มีเซสชัน ให้พาไปหน้า Login กลางทันที
- * @param {boolean} force - บังคับยิงเช็กกับเซิร์ฟเวอร์จริง (ค่าเริ่มต้น: true)
+ * ตรวจสอบสถานะการล็อกอินกับ Backend Worker ทุกครั้ง
+ * @param {boolean} force - บังคับยิงเช็กกับเซิร์ฟเวอร์จริงทุกครั้ง (ค่าเริ่มต้น: true)
+ * @returns {Promise<object|null>} คืนค่า User Profile หรือ null
  */
-export function requireAuth(force = true) {
-    return checkSession(force).then(user => {
-        if (!user) {
-            redirectToLogin();
-        }
-        return user;
-    });
+export async function checkSession(force = true) {
+    const state = await resolveSession(force);
+    return state.user;
 }
 
 /**
- * Redirect ผู้ใช้ไปยังหน้าล็อกอินกลาง (beta.headface.app/login) พร้อมแนบ URL ปัจจุบัน
+ * ป้องกันหน้าเว็บ (Route Guard): ตรวจสอบสิทธิ์กับ Backend
+ * พาไปหน้า Login กลางเฉพาะเมื่อ Backend ยืนยันว่าไม่มีเซสชัน (HTTP 401) เท่านั้น
+ * หากตรวจสอบไม่ได้ชั่วคราว (เซิร์ฟเวอร์ล่ม/เครือข่ายหลุด) จะไม่เด้งผู้ใช้ออกและไม่ล้างเซสชัน
+ * @param {boolean} force - บังคับยิงเช็กกับเซิร์ฟเวอร์จริง (ค่าเริ่มต้น: true)
+ */
+export async function requireAuth(force = true) {
+    const state = await resolveSession(force);
+    if (state.status === 'unauthenticated') {
+        redirectToLogin();
+    }
+    return state.user;
+}
+
+/**
+ * Redirect ผู้ใช้ไปยังหน้าล็อกอินกลางของ environment ปัจจุบัน (ดู js/env.js) พร้อมแนบ URL ปัจจุบัน
  */
 export function redirectToLogin() {
     const currentUrl = window.location.href;
@@ -135,7 +187,7 @@ export function redirectToLogin() {
 export async function logout() {
     // 1. ทำ Handshake ขอ CSRF Token สดใหม่จาก Backend ก่อนเสมอ
     // ขั้นตอนนี้จะบังคับให้ backend ส่ง Set-Cookie hf_csrf และคืน token ออกมาใน JSON
-    let csrfToken = getCookie('hf_csrf') || sessionStorage.getItem('hf_csrf_token');
+    let csrfToken = getCookie(getCsrfCookieName()) || sessionStorage.getItem('hf_csrf_token');
     try {
         const csrfRes = await fetch(`${API_BASE_URL}/api/auth/csrf`, {
             method: 'GET',
