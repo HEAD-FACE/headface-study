@@ -8,6 +8,9 @@ const HEADER_HEIGHTS = {
   'progress': 244
 };
 
+// หน้าเรียน (รายละเอียดวิชา / บทเรียน / Mock Exam) เป็นหน้าอิสระที่ไม่ใช้ Barba — ให้เบราว์เซอร์เปิดหน้าตามปกติ
+const FLOW_PAGE_PATTERN = /\/(course|lesson|mock-exam)\.html(?:[?#]|$)/;
+
 // 🖼️ Function จัดการ Fallback และตรวจจับภาพพื้นหลังการ์ดรายวิชาใน assets/ อัตโนมัติ (เน้น .webp)
 window.handleCardImgError = function(img, id, altName) {
   if (!img) return;
@@ -601,7 +604,8 @@ async function initAuth() {
 
 // เริ่มต้นระบบเมื่อโหลดหน้า
 document.addEventListener('DOMContentLoaded', () => {
-  const initialNs = document.querySelector('[data-barba="container"]')?.getAttribute('data-barba-namespace') || 'home';
+  // หน้าเรียนไม่มี Barba container: ใช้ <body data-nav="..."> บอกแท็บเมนูล่างที่ต้องไฮไลต์
+  const initialNs = document.querySelector('[data-barba="container"]')?.getAttribute('data-barba-namespace') || document.body.dataset.nav || 'home';
 
   // กำหนดความสูงเริ่มต้นให้ตรงกับหน้าแรกที่เปิด
   const blueBg = document.getElementById('mainBlueBg') || document.querySelector('.header-bg-shell');
@@ -621,6 +625,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (window.barba) {
     barba.init({
+      prevent: ({ href }) => FLOW_PAGE_PATTERN.test(href || ''),
       transitions: [{
         name: 'fade-slide-transition',
         leave(data) {
