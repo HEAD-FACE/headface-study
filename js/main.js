@@ -1,11 +1,11 @@
 // HEADFACE STUDY - Core Javascript with Barba.js & Smooth Transitions
 
-// ความสูงของพื้นที่สีเขียวมิ้น (Header Background Shell: #mainBlueBg) ในแต่ละหน้า
-// ปรับให้อยู่ในตำแหน่งที่พอดี ครอบคลุมกล่องข้อมูลตามที่ผู้ใช้กำหนด
+// ความสูงของพื้นที่สีเขียว (Header Background Shell: #mainBlueBg) ในแต่ละหน้า (ตามดีไซน์ใหม่)
+// หน้าแรก: ยืดลงมาให้ขอบโค้งอยู่ต่ำกว่ามุมการ์ด "สอบใกล้ถึง" ราว 25px
 const HEADER_HEIGHTS = {
-  'home': 310,      // ปรับเพิ่มอีก 5px เป็น 310px ให้ครอบคลุมการ์ดทั้งหมดอย่างพอดีตามที่ผู้ใช้กำหนด
-  'subject': 92,     // ปรับเป็น 92px ตามที่ผู้ใช้กำหนด
-  'progress': 235    // ปรับเป็น 235px ตามที่ผู้ใช้กำหนด
+  'home': 366,
+  'subject': 96,
+  'progress': 244
 };
 
 // 🖼️ Function จัดการ Fallback และตรวจจับภาพพื้นหลังการ์ดรายวิชาใน assets/ อัตโนมัติ (เน้น .webp)
@@ -55,7 +55,7 @@ const NAV_ICONS = {
     inactive: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-book"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6l0 13" /><path d="M12 6l0 13" /><path d="M21 6l0 13" /></svg>`
   },
   progress: {
-    active: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" class="icon icon-tabler icons-tabler-filled icon-tabler-chart-bar-popular"><rect x="3.25" y="12" width="5.5" height="8" rx="1.2" fill="currentColor" stroke="#ffffff" stroke-width="1.8" /><rect x="9.25" y="8" width="5.5" height="12" rx="1.2" fill="currentColor" stroke="#ffffff" stroke-width="1.8" /><rect x="15.25" y="4" width="5.5" height="16" rx="1.2" fill="currentColor" stroke="#ffffff" stroke-width="1.8" /><path d="M3 20h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>`,
+    active: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" class="icon icon-tabler icons-tabler-filled icon-tabler-chart-bar-popular"><rect x="3.25" y="12" width="5.5" height="8" rx="1.2" fill="currentColor" stroke="#D1FAE5" stroke-width="1.8" /><rect x="9.25" y="8" width="5.5" height="12" rx="1.2" fill="currentColor" stroke="#D1FAE5" stroke-width="1.8" /><rect x="15.25" y="4" width="5.5" height="16" rx="1.2" fill="currentColor" stroke="#D1FAE5" stroke-width="1.8" /><path d="M3 20h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>`,
     inactive: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-chart-bar-popular"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M3 13a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -6" /><path d="M9 9a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -10" /><path d="M15 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -14" /><path d="M4 20h14" /></svg>`
   }
 };
@@ -66,36 +66,19 @@ function updateActiveNav(namespace) {
   navLinks.forEach(link => {
     const target = link.getAttribute('data-nav');
     const iconContainer = link.querySelector('.nav-icon-box');
-    const label = link.querySelector('.nav-label');
+    const isActive = target === namespace;
 
-    if (target === namespace) {
-      link.classList.remove('text-slate-400');
-      link.classList.add('text-emerald-600');
-      if (iconContainer) {
-        iconContainer.classList.add('bg-emerald-50', 'text-emerald-600', 'scale-105');
-        iconContainer.classList.remove('text-slate-400');
-        if (NAV_ICONS[target]) {
-          iconContainer.innerHTML = NAV_ICONS[target].active;
-        }
-      }
-      if (label) {
-        label.classList.add('font-bold', 'text-emerald-700');
-        label.classList.remove('font-medium', 'text-slate-400');
-      }
+    // สีและพื้นหลังของแท็บที่เลือกอยู่ใน CSS (.nav-i.on) — ที่นี่สลับแค่สถานะกับไอคอน
+    link.classList.toggle('on', isActive);
+    if (isActive) {
+      link.setAttribute('aria-current', 'page');
     } else {
-      link.classList.add('text-slate-400');
-      link.classList.remove('text-emerald-600');
-      if (iconContainer) {
-        iconContainer.classList.remove('bg-emerald-50', 'text-emerald-600', 'scale-105');
-        iconContainer.classList.add('text-slate-400');
-        if (NAV_ICONS[target]) {
-          iconContainer.innerHTML = NAV_ICONS[target].inactive;
-        }
-      }
-      if (label) {
-        label.classList.remove('font-bold', 'text-emerald-700');
-        label.classList.add('font-medium', 'text-slate-400');
-      }
+      link.removeAttribute('aria-current');
+    }
+
+    if (iconContainer && NAV_ICONS[target]) {
+      const svg = isActive ? NAV_ICONS[target].active : NAV_ICONS[target].inactive;
+      iconContainer.innerHTML = svg.replace('<svg ', '<svg aria-hidden="true" ');
     }
   });
 }
@@ -135,8 +118,27 @@ function initPageFeatures(container) {
   const emptyState = container.querySelector('#subject-empty-state');
   const resetFiltersBtn = container.querySelector('#subject-reset-filters-btn');
 
+  // ข้อความที่ใช้ค้นหา = ข้อความบนการ์ด ไม่นับตัวอักษรที่เป็นลายประกอบในภาพประกอบ (.art)
+  function getCardSearchText(card) {
+    if (card._searchText === undefined) {
+      const clone = card.cloneNode(true);
+      clone.querySelectorAll('.art').forEach(art => art.remove());
+      card._searchText = clone.textContent.toLowerCase();
+    }
+    return card._searchText;
+  }
+
+  // สลับปุ่มหมวดหมู่ที่เลือกอยู่ (สไตล์อยู่ใน CSS: .fchip.on)
+  function setActiveFilterBtn(activeBtn) {
+    filterBtns.forEach(b => {
+      const isOn = b === activeBtn;
+      b.classList.toggle('on', isOn);
+      b.setAttribute('aria-pressed', isOn ? 'true' : 'false');
+    });
+  }
+
   function applyFilters() {
-    const activeBtn = container.querySelector('.subject-filter-btn.game-btn-mint');
+    const activeBtn = container.querySelector('.subject-filter-btn.on');
     const category = activeBtn ? activeBtn.getAttribute('data-filter') : 'all';
     const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
 
@@ -151,7 +153,7 @@ function initPageFeatures(container) {
     let matchCount = 0;
     subjectCards.forEach(card => {
       const cardCategory = card.getAttribute('data-category');
-      const text = card.textContent.toLowerCase();
+      const text = getCardSearchText(card);
       const matchesCategory = (category === 'all' || cardCategory === category);
       const matchesSearch = (!query || text.includes(query));
 
@@ -204,12 +206,7 @@ function initPageFeatures(container) {
   if (filterBtns.length > 0) {
     filterBtns.forEach(btn => {
       btn.addEventListener('click', () => {
-        filterBtns.forEach(b => {
-          b.classList.remove('game-btn-mint', 'font-bold');
-          b.classList.add('game-btn-white', 'font-semibold');
-        });
-        btn.classList.add('game-btn-mint', 'font-bold');
-        btn.classList.remove('game-btn-white', 'font-semibold');
+        setActiveFilterBtn(btn);
         applyFilters();
       });
     });
@@ -239,15 +236,7 @@ function initPageFeatures(container) {
     resetFiltersBtn.addEventListener('click', () => {
       if (searchInput) searchInput.value = '';
       if (filterBtns.length > 0) {
-        filterBtns.forEach(b => {
-          b.classList.remove('game-btn-mint', 'font-bold');
-          b.classList.add('game-btn-white', 'font-semibold');
-        });
-        const allBtn = container.querySelector('.subject-filter-btn[data-filter="all"]');
-        if (allBtn) {
-          allBtn.classList.add('game-btn-mint', 'font-bold');
-          allBtn.classList.remove('game-btn-white', 'font-semibold');
-        }
+        setActiveFilterBtn(container.querySelector('.subject-filter-btn[data-filter="all"]'));
       }
       applyFilters();
     });
@@ -310,18 +299,12 @@ function showLearningToast(subjectTitle) {
 function updateSharedHeader(ns) {
   const titleEl = document.getElementById('header-page-title');
   const badgeEl = document.getElementById('header-page-badge');
-  const sharedHeader = document.getElementById('shared-top-header');
 
   const pageInfo = {
-    'home': { title: 'หน้าแรกการเรียน', badge: '', pb: 'pb-3' },
-    'subject': { title: 'คลังรายวิชาทั้งหมด', badge: '10 วิชา 🎒', pb: 'pb-2' },
-    'progress': { title: 'ความคืบหน้า & อันดับ', badge: '🏆 ซีซัน 1', pb: 'pb-3' }
-  }[ns] || { title: 'หน้าแรกการเรียน', badge: '', pb: 'pb-3' };
-
-  if (sharedHeader) {
-    sharedHeader.classList.remove('pb-2', 'pb-3');
-    sharedHeader.classList.add(pageInfo.pb);
-  }
+    'home': { title: 'หน้าแรกการเรียน', badge: '' },
+    'subject': { title: 'คลังรายวิชาทั้งหมด', badge: '10 วิชา 🎒' },
+    'progress': { title: 'ความคืบหน้า & อันดับ', badge: '🏆 ซีซัน 1' }
+  }[ns] || { title: 'หน้าแรกการเรียน', badge: '' };
 
   if (titleEl && titleEl.textContent !== pageInfo.title) {
     gsap.to(titleEl, {
@@ -359,18 +342,20 @@ function openStarInfoModal() {
 
   modal.classList.remove('pointer-events-none');
   modal.setAttribute('aria-hidden', 'false');
-  gsap.to(modal, { opacity: 1, duration: 0.2 });
-  gsap.fromTo(card, { opacity: 0, scale: 0.92, y: 10 }, { opacity: 1, scale: 1, y: 0, duration: 0.25, ease: "back.out(1.5)" });
+  gsap.to(modal, { opacity: 1, duration: 0.2, overwrite: 'auto' });
+  // Bottom Sheet: เลื่อนขึ้นมาจากขอบล่างของหน้าจอ
+  gsap.fromTo(card, { yPercent: 100 }, { yPercent: 0, duration: 0.32, ease: "power3.out", overwrite: 'auto' });
 }
 
 function closeStarInfoModal() {
   const modal = document.getElementById('star-info-modal');
   const card = document.getElementById('star-info-modal-card');
   if (!modal || !card) return;
-  gsap.to(card, { opacity: 0, scale: 0.94, y: 8, duration: 0.15 });
+  gsap.to(card, { yPercent: 100, duration: 0.22, ease: "power2.in", overwrite: 'auto' });
   gsap.to(modal, {
     opacity: 0,
-    duration: 0.2,
+    duration: 0.22,
+    overwrite: 'auto',
     onComplete: () => {
       modal.classList.add('pointer-events-none');
       modal.setAttribute('aria-hidden', 'true');
@@ -466,6 +451,7 @@ function renderUserProfileUI(user) {
 function initProfileDropdown() {
   const profileBtn = document.getElementById('profileBtn');
   const profileDropdown = document.getElementById('profileDropdown');
+  const profileScrim = document.getElementById('profileScrim'); // ฉากหลังมืดตอนเปิดเมนู
   const logoutBtn = document.getElementById('dropdownLogoutBtn');
   let isOpen = false;
 
@@ -476,12 +462,17 @@ function initProfileDropdown() {
   function openDropdown() {
     isOpen = true;
     profileDropdown.classList.remove('hidden');
+    profileBtn.setAttribute('aria-expanded', 'true');
+    if (profileScrim) profileScrim.classList.remove('hidden');
 
     if (typeof window.gsap !== 'undefined') {
       gsap.fromTo(profileDropdown,
         { opacity: 0, y: -8, scale: 0.95 },
-        { opacity: 1, y: 0, scale: 1, duration: 0.2, ease: "power2.out" }
+        { opacity: 1, y: 0, scale: 1, duration: 0.2, ease: "power2.out", overwrite: 'auto' }
       );
+      if (profileScrim) {
+        gsap.fromTo(profileScrim, { opacity: 0 }, { opacity: 1, duration: 0.2, overwrite: 'auto' });
+      }
     } else {
       profileDropdown.style.opacity = '1';
       profileDropdown.style.transform = 'translateY(0) scale(1)';
@@ -490,16 +481,27 @@ function initProfileDropdown() {
 
   function closeDropdown() {
     isOpen = false;
+    profileBtn.setAttribute('aria-expanded', 'false');
     if (typeof window.gsap !== 'undefined') {
       gsap.to(profileDropdown, {
         opacity: 0,
         scale: 0.95,
         duration: 0.15,
         ease: "power2.in",
+        overwrite: 'auto',
         onComplete: () => profileDropdown.classList.add('hidden')
       });
+      if (profileScrim) {
+        gsap.to(profileScrim, {
+          opacity: 0,
+          duration: 0.15,
+          overwrite: 'auto',
+          onComplete: () => profileScrim.classList.add('hidden')
+        });
+      }
     } else {
       profileDropdown.classList.add('hidden');
+      if (profileScrim) profileScrim.classList.add('hidden');
     }
   }
 
@@ -560,11 +562,12 @@ function initProfileLink() {
 }
 
 /**
- * ล้มเหลวแบบปิด (fail closed): เมื่อ guard ทำงานไม่ได้ ห้ามปล่อยให้ใช้หน้าได้โดยไม่ตรวจสิทธิ์
- * ซ่อนเนื้อหาและบันทึก error เท่านั้น ไม่ redirect เพื่อไม่ให้เกิด loop ระหว่าง study กับหน้า login
+ * ล้มเหลวแบบปิด (fail closed): เมื่อยังไม่ผ่านการตรวจสิทธิ์ ห้ามปล่อยให้ใช้หน้าได้
+ * (guard โหลดไม่ขึ้น, ตรวจเซสชันกับ Backend ไม่ได้ เช่น ติด CORS/เซิร์ฟเวอร์ล่ม, หรือกำลังถูกส่งไปหน้า login)
+ * ซ่อนเนื้อหาและบันทึก error เท่านั้น ไม่ redirect เองเพื่อไม่ให้เกิด loop ระหว่าง study กับหน้า login
  */
 function failAuthGuardClosed(reason) {
-  console.error('[StudyAuth] Auth guard unavailable, page content hidden:', reason);
+  console.error('[StudyAuth] Page content hidden, session not verified:', reason);
   document.documentElement.style.display = 'none';
 }
 
@@ -588,6 +591,8 @@ async function initAuth() {
     const user = await window.StudyAuth.requireAuth(true);
     if (user) {
       renderUserProfileUI(user);
+    } else {
+      failAuthGuardClosed('no verified session (redirecting to login, or the session check failed)');
     }
   } catch (err) {
     console.error('[StudyAuth] Authentication check failed:', err);
@@ -686,6 +691,8 @@ document.addEventListener('DOMContentLoaded', () => {
               const user = await window.StudyAuth.requireAuth(true);
               if (user) {
                 renderUserProfileUI(user);
+              } else {
+                failAuthGuardClosed('no verified session (redirecting to login, or the session check failed)');
               }
             } catch (err) {
               console.error('[StudyAuth] Transition auth check failed:', err);

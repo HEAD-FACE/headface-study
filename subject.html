@@ -78,704 +78,441 @@
   <!-- Full-Width Fluid Desktop Outer Wrapper -->
   <div class="min-h-screen w-full bg-[#EEF4F8] flex flex-col relative overflow-x-hidden" data-barba="wrapper">
 
-    <!-- 🛡️ PERSISTENT HEADER BACKGROUND (สูง 92px สำหรับหน้าวิชา ตามที่ผู้ใช้กำหนด) -->
-    <div id="mainBlueBg" class="header-bg-shell bg-curve" style="height: 92px;"></div>
+    <!-- 🛡️ PERSISTENT HEADER BACKGROUND (สูง 96px สำหรับหน้าวิชา; ความสูงต่อหน้าตั้งใน main.js: HEADER_HEIGHTS) -->
+    <div id="mainBlueBg" class="header-bg-shell bg-curve" style="height: 96px;"></div>
 
     <!-- 🛡️ PERSISTENT TOP APP BAR (อยู่นอก Barba Container เพื่อไม่ให้มีแอนิเมชันเวลาเปลี่ยนหน้า เป็น component ร่วมกัน) -->
-    <header id="shared-top-header" class="w-full max-w-4xl mx-auto pt-5 pb-2 px-5 text-white relative z-30">
-      <div class="flex items-center justify-between">
-        
-        <!-- ซ้าย: โลโก้แบรนด์ HEADFACE STUDY และ ชื่อหน้า (ติดกันตามแบบเดิม) -->
-        <div>
-          <div class="flex items-center gap-1.5 mb-0.5">
-            <span class="text-xs font-black uppercase tracking-wider text-emerald-100">
-              HEADFACE
-            </span>
-            <span class="bg-white/25 px-2 py-0.5 rounded-full text-[9px] font-black text-white tracking-wide">
-              STUDY
-            </span>
-            <span id="header-page-badge" class="bg-white/20 px-2 py-0.5 rounded-full text-[9px] font-bold text-white tracking-wide">10 วิชา 🎒</span>
-          </div>
-          <h1 id="header-page-title" class="text-xl font-extrabold tracking-tight leading-tight">คลังรายวิชาทั้งหมด</h1>
+    <header id="shared-top-header" class="hdr">
+
+      <!-- ซ้าย: โลโก้แบรนด์ HEADFACE STUDY และ ชื่อหน้า -->
+      <div>
+        <div class="brand">
+          <span class="brand-name">HEADFACE</span>
+          <span class="pill-dark">STUDY</span>
+          <span id="header-page-badge" class="pill-dark">10 วิชา 🎒</span>
         </div>
-
-        <!-- ขวา: ไอคอนตั้งค่า และ โปรไฟล์ (อยู่ในแนวเดียวกับชื่อหน้า และอยู่นิ่งไม่ขยับ) -->
-        <div class="flex items-center gap-2.5">
-          <!-- ปุ่มการตั้งค่า (Settings) -->
-          <button class="w-9 h-9 flex items-center justify-center text-white hover:scale-110 active:scale-95 transition-transform cursor-pointer" title="การตั้งค่า" aria-label="การตั้งค่า">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#ffffff" class="icon icon-tabler icons-tabler-filled icon-tabler-settings"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M14.647 4.081a.724 .724 0 0 0 1.08 .448c2.439 -1.485 5.23 1.305 3.745 3.744a.724 .724 0 0 0 .447 1.08c2.775 .673 2.775 4.62 0 5.294a.724 .724 0 0 0 -.448 1.08c1.485 2.439 -1.305 5.23 -3.744 3.745a.724 .724 0 0 0 -1.08 .447c-.673 2.775 -4.62 2.775 -5.294 0a.724 .724 0 0 0 -1.08 -.448c-2.439 1.485 -5.23 -1.305 -3.745 -3.744a.724 .724 0 0 0 -.447 -1.08c-2.775 -.673 -2.775 -4.62 0 -5.294a.724 .724 0 0 0 .448 -1.08c-1.485 -2.439 1.305 -5.23 3.744 -3.745a.722 .722 0 0 0 1.08 -.447c.673 -2.775 4.62 -2.775 5.294 0zm-2.647 4.919a3 3 0 1 0 0 6a3 3 0 0 0 0 -6" /></svg>
-          </button>
-          
-          <!-- Container ของ Profile Button และ Popup Dropdown -->
-          <div class="relative">
-            <!-- 1. ปุ่ม Profile แสดงรูป Avatar และชื่อผู้ใช้ -->
-            <button id="profileBtn" type="button"
-              class="flex items-center gap-3 focus:outline-none rounded-full ring-2 ring-transparent focus:ring-white/50 transition-all cursor-pointer">
-              <div class="text-right hidden sm:block">
-                <p id="headerName" class="text-[13px] font-bold text-white leading-none">กำลังโหลด...</p>
-                <p id="headerStudentId" class="text-[11px] text-white/80 mt-1 font-medium">เลขประจำตัว: -</p>
-              </div>
-              <img id="headerAvatar" src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix&backgroundColor=e2e8f0" alt="Profile"
-                class="w-10 h-10 rounded-full border-2 border-white/30 bg-white shadow-sm object-cover shrink-0">
-            </button>
-
-            <!-- 2. Profile Popup Dropdown Card -->
-            <div id="profileDropdown"
-              class="hidden absolute right-0 top-full mt-3 w-56 bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-slate-100 overflow-hidden origin-top-right z-50 text-slate-800">
-              <div class="p-4 border-b border-slate-100/80 bg-slate-50/50">
-                <p id="dropdownName" class="text-sm font-semibold text-slate-900 truncate">กำลังโหลด...</p>
-                <p id="dropdownNumber" class="text-xs text-slate-500">เลขที่ -</p>
-                <p id="dropdownStudentId" class="text-xs text-slate-500">เลขประจำตัว: -</p>
-              </div>
-              <div class="p-2 space-y-1">
-                <a id="dropdownProfileLink" href="#"
-                  class="flex items-center gap-2.5 w-full px-3 py-2 text-sm text-slate-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl font-medium transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400">
-                    <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" />
-                    <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
-                  </svg>
-                  <span>ดูโปรไฟล์ส่วนตัว</span>
-                </a>
-                <button type="button" id="dropdownLogoutBtn"
-                  class="flex items-center gap-2.5 w-full px-3 py-2 text-sm text-rose-600 hover:bg-rose-50 rounded-xl font-medium transition-colors cursor-pointer">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                    <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
-                    <path d="M9 12h12l-3 -3" />
-                    <path d="M18 15l3 -3" />
-                  </svg>
-                  <span>ออกจากระบบ</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
+        <h1 id="header-page-title" class="hdr-title">คลังรายวิชาทั้งหมด</h1>
       </div>
+
+      <!-- ขวา: ไอคอนตั้งค่า และ โปรไฟล์ (อยู่ในแนวเดียวกับชื่อหน้า และอยู่นิ่งไม่ขยับ) -->
+      <div class="hdr-act">
+        <!-- ปุ่มการตั้งค่า (Settings) -->
+        <button type="button" class="icon-btn" title="การตั้งค่า" aria-label="การตั้งค่า">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14.647 4.081a.724 .724 0 0 0 1.08 .448c2.439 -1.485 5.23 1.305 3.745 3.744a.724 .724 0 0 0 .447 1.08c2.775 .673 2.775 4.62 0 5.294a.724 .724 0 0 0 -.448 1.08c1.485 2.439 -1.305 5.23 -3.744 3.745a.724 .724 0 0 0 -1.08 .447c-.673 2.775 -4.62 2.775 -5.294 0a.724 .724 0 0 0 -1.08 -.448c-2.439 1.485 -5.23 -1.305 -3.745 -3.744a.724 .724 0 0 0 -.447 -1.08c-2.775 -.673 -2.775 -4.62 0 -5.294a.724 .724 0 0 0 .448 -1.08c-1.485 -2.439 1.305 -5.23 3.744 -3.745a.722 .722 0 0 0 1.08 -.447c.673 -2.775 4.62 -2.775 5.294 0zm-2.647 4.919a3 3 0 1 0 0 6a3 3 0 0 0 0 -6" /></svg>
+        </button>
+
+        <!-- Container ของ Profile Button และ Popup Dropdown -->
+        <div class="profile-wrap">
+          <!-- 1. ปุ่ม Profile แสดงรูป Avatar และชื่อผู้ใช้ -->
+          <button id="profileBtn" type="button" class="profile-btn" aria-haspopup="true" aria-expanded="false" aria-controls="profileDropdown" aria-label="โปรไฟล์ผู้ใช้">
+            <span class="profile-text">
+              <span id="headerName" class="profile-name">กำลังโหลด...</span>
+              <span id="headerStudentId" class="profile-id">เลขประจำตัว: -</span>
+            </span>
+            <img id="headerAvatar" src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix&amp;backgroundColor=e2e8f0" alt="Profile" width="44" height="44">
+          </button>
+
+          <!-- 2. Profile Popup Dropdown Card -->
+          <div id="profileDropdown" class="menu hidden" role="dialog" aria-label="เมนูโปรไฟล์">
+            <div class="menu-h">
+              <p id="dropdownName" class="menu-n">กำลังโหลด...</p>
+              <p id="dropdownNumber" class="menu-s">เลขที่ -</p>
+              <p id="dropdownStudentId" class="menu-s">เลขประจำตัว: -</p>
+            </div>
+            <a id="dropdownProfileLink" href="#" class="menu-a">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"/><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/></svg>
+              <span>ดูโปรไฟล์ส่วนตัว</span>
+            </a>
+            <button type="button" id="dropdownLogoutBtn" class="menu-a danger">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2"/><path d="M9 12h12l-3 -3"/><path d="M18 15l3 -3"/></svg>
+              <span>ออกจากระบบ</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ฉากหลังมืดตอนเปิดเมนูโปรไฟล์ (main.js เปิด/ปิดพร้อม Dropdown) -->
+      <div id="profileScrim" class="scrim hidden" aria-hidden="true"></div>
     </header>
 
-    <!-- Barba Container: Subject -->
+    <!-- Barba Container: subject -->
     <main class="barba-container flex-1 pb-28 w-full max-w-4xl mx-auto" data-barba="container" data-barba-namespace="subject">
 
       <!-- ============================================== -->
-      <!-- SEARCH BAR (ดันลงมาห่างจากพื้นที่สีเขียวตามที่กำหนด) -->
+      <!-- SEARCH BAR + FILTER CATEGORIES -->
       <!-- ============================================== -->
-      <section class="mt-[28px] px-5 relative z-20">
-        <div class="relative rounded-2xl border-2 border-slate-300 shadow-[0_4px_0_0_#CBD5E1] bg-white transition-all focus-within:border-emerald-400 focus-within:shadow-[0_4px_0_0_#A7F3D0]">
-          <input id="subject-search-input" type="text" placeholder="ค้นหาวิชา, บทเรียน หรือเนื้อหาที่อยากติว..." class="w-full pl-10 pr-10 py-3 rounded-2xl bg-transparent text-slate-700 text-xs font-semibold placeholder-slate-400 focus:outline-none transition-all">
-          <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-          <button id="subject-search-clear" type="button" class="hidden absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center text-xs font-bold transition-all" aria-label="ล้างคำค้นหา">
-            ✕
-          </button>
+      <div class="pad" style="padding-top:52px">
+        <div class="search">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"/><path d="M21 21l-6 -6"/></svg>
+          <input id="subject-search-input" class="search-in" type="text" aria-label="ค้นหาวิชา" placeholder="ค้นหาวิชา, บทเรียน หรือเนื้อหาที่อยากติว...">
+          <button id="subject-search-clear" type="button" class="search-clear hidden" aria-label="ล้างคำค้นหา">✕</button>
         </div>
-      </section>
 
-      <!-- ============================================== -->
-      <!-- FILTER CATEGORIES (หมวดหมู่วิชา) -->
-      <!-- ============================================== -->
-      <section class="mt-4 px-5">
-        <div class="flex gap-2.5 overflow-x-auto no-scrollbar py-1">
-          <button class="subject-filter-btn game-btn game-btn-mint px-4 py-2 text-xs font-bold shrink-0" data-filter="all">
-            ทั้งหมด (10)
-          </button>
-          <button class="subject-filter-btn game-btn game-btn-white px-4 py-2 text-xs font-semibold shrink-0" data-filter="science">
-            วิทย์-คณิต 🔬
-          </button>
-          <button class="subject-filter-btn game-btn game-btn-white px-4 py-2 text-xs font-semibold shrink-0" data-filter="language">
-            ภาษา 🗣️
-          </button>
-          <button class="subject-filter-btn game-btn game-btn-white px-4 py-2 text-xs font-semibold shrink-0" data-filter="social">
-            สังคม & อื่นๆ 🌏
-          </button>
+        <!-- FILTER CATEGORIES (หมวดหมู่วิชา) -->
+        <div class="chips" role="group" aria-label="หมวดหมู่วิชา">
+          <button type="button" class="subject-filter-btn fchip on" data-filter="all" aria-pressed="true">ทั้งหมด (10)</button>
+          <button type="button" class="subject-filter-btn fchip" data-filter="science" aria-pressed="false">วิทย์-คณิต 🔬</button>
+          <button type="button" class="subject-filter-btn fchip" data-filter="language" aria-pressed="false">ภาษา 🗣️</button>
+          <button type="button" class="subject-filter-btn fchip" data-filter="social" aria-pressed="false">สังคม &amp; อื่นๆ 🌏</button>
         </div>
-      </section>
 
-      <!-- ============================================== -->
-      <!-- ALL SUBJECT CARDS LIST (Responsive Grid) -->
-      <!-- ============================================== -->
-      <section class="mt-4 px-5">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-          <!-- 1. วิทยาศาสตร์ -->
-          <div class="subject-card-item relative overflow-hidden rounded-3xl p-4 min-h-[140px] bg-[#F0FDF4] border-2 border-emerald-300 shadow-[0_5px_0_0_#A7F3D0] hover:-translate-y-0.5 hover:shadow-[0_7px_0_0_#A7F3D0] active:translate-y-1 active:shadow-[0_2px_0_0_#A7F3D0] bouncy transition-all group" data-category="science">
-            <!-- Handcrafted SVG Illustration: Single Scientific Test Tube with Rising Bubbles -->
-            <div class="absolute right-0 bottom-0 pointer-events-none select-none z-0 overflow-hidden flex items-end justify-end">
-              <svg viewBox="0 0 170 130" fill="none" xmlns="http://www.w3.org/2000/svg" class="subject-card-backdrop w-48 h-36 sm:w-60 sm:h-44 transition-all duration-300 ease-out group-hover:scale-105 group-hover:-translate-y-1 opacity-30 group-hover:opacity-45">
-                <g transform="translate(65, 15) rotate(22 30 60)">
-                  <!-- Test Tube Glass Body -->
-                  <path d="M18 20 V 96 C 18 106 38 106 38 96 V 20" stroke="#059669" stroke-width="2.2" stroke-linecap="round" fill="#10B981" fill-opacity="0.08"/>
-                  <!-- Glass Rim Lip -->
-                  <ellipse cx="28" cy="20" rx="13" ry="3.5" stroke="#059669" stroke-width="2" fill="#D1FAE5" fill-opacity="0.5"/>
-                  <!-- Liquid inside Tube -->
-                  <path d="M19 58 Q 28 55 37 58 V 95 C 37 104 19 104 19 95 Z" fill="#10B981" fill-opacity="0.22"/>
-                  <path d="M19 58 Q 28 55 37 58" stroke="#047857" stroke-width="1.6" stroke-opacity="0.45"/>
-                  <!-- Measurement Graduation Marks -->
-                  <line x1="19" y1="42" x2="25" y2="42" stroke="#059669" stroke-width="1.5" stroke-linecap="round" stroke-opacity="0.5"/>
-                  <line x1="19" y1="52" x2="28" y2="52" stroke="#059669" stroke-width="1.5" stroke-linecap="round" stroke-opacity="0.5"/>
-                  <line x1="19" y1="62" x2="25" y2="62" stroke="#059669" stroke-width="1.5" stroke-linecap="round" stroke-opacity="0.5"/>
-                  <line x1="19" y1="72" x2="28" y2="72" stroke="#059669" stroke-width="1.5" stroke-linecap="round" stroke-opacity="0.5"/>
-                  <line x1="19" y1="82" x2="25" y2="82" stroke="#059669" stroke-width="1.5" stroke-linecap="round" stroke-opacity="0.5"/>
-                  <!-- Inner Submerged Bubbles -->
-                  <circle cx="26" cy="88" r="2.2" fill="#059669" fill-opacity="0.45"/>
-                  <circle cx="31" cy="74" r="1.8" fill="#059669" fill-opacity="0.45"/>
-                  <!-- Animated Rising Bubbles Leaving the Lip -->
-                  <circle cx="28" cy="14" r="3.2" fill="#10B981" fill-opacity="0.6" stroke="#059669" stroke-width="1" class="anim-bubble-1"/>
-                  <circle cx="23" cy="8" r="2.2" fill="#34D399" fill-opacity="0.55" stroke="#059669" stroke-width="0.8" class="anim-bubble-2"/>
-                  <circle cx="33" cy="2" r="2.6" fill="#10B981" fill-opacity="0.5" stroke="#059669" stroke-width="0.8" class="anim-bubble-3"/>
-                </g>
-              </svg>
-            </div>
-            
-            <div class="flex items-start justify-between relative z-10">
-              <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-2xl shadow-sm border border-emerald-100">
-                  🔬
-                </div>
-                <div>
-                  <span class="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">วิชาที่ 1 • วิทยาศาสตร์</span>
-                  <h3 class="text-base font-black text-slate-800 leading-tight">วิทยาศาสตร์</h3>
-                  <span class="text-xs text-slate-500 font-medium">16 บทเรียน • 110 แบบฝึกหัด</span>
-                </div>
+        <!-- ALL SUBJECT CARDS LIST (Responsive Grid) -->
+        <div class="sc-list" style="margin-top:8px">
+          <article class="sc subject-card-item hue-emerald" data-category="science">
+            <div class="sc-grid">
+              <span class="sc-tile" aria-hidden="true">🔬</span>
+              <div>
+                <p class="sc-eyebrow">วิชาที่ 1 • วิทยาศาสตร์</p>
+                <h3 class="sc-title">วิทยาศาสตร์</h3>
+                <p class="sc-meta">16 บทเรียน • 110 แบบฝึกหัด</p>
               </div>
-              <span class="px-2.5 py-1 rounded-xl bg-white text-emerald-700 text-[11px] font-black border border-emerald-200/90 shadow-sm">
-                75%
-              </span>
-            </div>
-            <div class="mt-3.5 relative z-10 flex items-center gap-3">
-              <div class="flex-1 h-2.5 bg-slate-200/70 rounded-full overflow-hidden p-0.5 shimmer-glow border border-slate-300/40">
-                <div class="h-full bg-emerald-500 rounded-full" style="width: 75%"></div>
+              <div class="sc-side">
+                <span class="sc-pct">75%</span>
+                <div class="art" aria-hidden="true"><svg class="ar ar-sci" viewBox="0 0 88 66" width="88" height="66" aria-hidden="true" focusable="false"><defs><clipPath id="s-sci-sci-c"><path d="M38 12H50V27L64 51Q67 58 60 58H28Q21 58 24 51L38 27Z"/></clipPath><linearGradient id="s-sci-sci-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6EE7B7"/><stop offset="1" stop-color="#10B981"/></linearGradient></defs><g transform="translate(44 35)"><circle class="bk-disc" r="27"/><circle class="bk-ring" r="30.5"/></g><g transform="translate(44 58)"><g class="pv sci-tilt"><g transform="translate(-44 -58)">
+<path d="M38 12H50V27L64 51Q67 58 60 58H28Q21 58 24 51L38 27Z" fill="#fff" fill-opacity=".92"/>
+<g clip-path="url(#s-sci-sci-c)">
+<g class="pv sci-w2"><path d="M-40 38.5q8 -3.5 16 0t16 0t16 0t16 0t16 0t16 0t16 0t16 0t16 0t16 0t16 0V70H-40Z" fill="#A7F3D0"/></g>
+<g class="pv sci-w1"><path d="M-40 41.5q8 -3 16 0t16 0t16 0t16 0t16 0t16 0t16 0t16 0t16 0t16 0t16 0V70H-40Z" fill="url(#s-sci-sci-g)"/></g>
+<circle class="fb sci-b" style="animation-duration:2.6s;animation-delay:-.4s" cx="37" cy="53" r="2.4" fill="#fff" stroke="#047857" stroke-width="1"/>
+<circle class="fb sci-b" style="animation-duration:3.1s;animation-delay:-1.7s" cx="48" cy="54" r="1.8" fill="#fff" stroke="#047857" stroke-width="1"/>
+<circle class="fb sci-b" style="animation-duration:2.2s;animation-delay:-1s" cx="43" cy="51" r="1.3" fill="#fff" stroke="#047857" stroke-width="1"/>
+</g>
+<path d="M38 12H50V27L64 51Q67 58 60 58H28Q21 58 24 51L38 27Z" fill="none" stroke="#047857" stroke-width="2.4" stroke-linejoin="round"/>
+<rect x="35" y="8.5" width="18" height="5" rx="2.5" fill="#D1FAE5" stroke="#047857" stroke-width="2"/>
+<path d="M29.5 51L36.5 36" stroke="#fff" stroke-width="2.2" stroke-linecap="round" opacity=".9"/>
+<path d="M52 36h4M54 42h3.5" stroke="#047857" stroke-width="1.6" stroke-linecap="round" opacity=".45"/>
+<circle class="fb sci-s" style="animation-delay:-.3s" cx="43" cy="8" r="2" fill="#6EE7B7" stroke="#047857" stroke-width="1"/>
+<circle class="fb sci-s" style="animation-delay:-1.5s;animation-duration:2.8s" cx="48" cy="9" r="1.4" fill="#6EE7B7" stroke="#047857" stroke-width="1"/>
+</g></g></g>
+<g transform="translate(71 17) scale(5.5)"><path class="tw" style="animation-delay:-0.4s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#FBBF24"/></g><g transform="translate(17 24) scale(3.6)"><path class="tw" style="animation-delay:-1.4s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#34D399"/></g><g transform="translate(73 51) scale(3.2)"><path class="tw" style="animation-delay:-2s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#F59E0B"/></g></svg></div>
               </div>
-              <button class="game-btn game-btn-white px-3.5 py-1.5 text-emerald-700 text-xs font-black shrink-0">
-                เข้าเรียน
-              </button>
             </div>
-          </div>
-
-          <!-- 2. คณิตศาสตร์ -->
-          <div class="subject-card-item relative overflow-hidden rounded-3xl p-4 min-h-[140px] bg-[#F0F9FF] border-2 border-sky-300 shadow-[0_5px_0_0_#BAE6FD] hover:-translate-y-0.5 hover:shadow-[0_7px_0_0_#BAE6FD] active:translate-y-1 active:shadow-[0_2px_0_0_#BAE6FD] bouncy transition-all group" data-category="science">
-            <!-- Handcrafted SVG Illustration: Single Geometry Compass & Arc -->
-            <div class="absolute right-0 bottom-0 pointer-events-none select-none z-0 overflow-hidden flex items-end justify-end">
-              <svg viewBox="0 0 170 130" fill="none" xmlns="http://www.w3.org/2000/svg" class="subject-card-backdrop w-48 h-36 sm:w-60 sm:h-44 transition-all duration-300 ease-out group-hover:scale-105 group-hover:-translate-y-1 opacity-30 group-hover:opacity-45">
-                <!-- Circular Dashed Drawn Arc -->
-                <path d="M42 112 A 68 68 0 0 1 146 84" stroke="#0284C7" stroke-width="1.8" stroke-dasharray="4 4" stroke-opacity="0.35"/>
-                <!-- Compass Group with pivot animation -->
-                <g class="anim-compass">
-                  <!-- Compass Top Handle -->
-                  <rect x="103" y="10" width="5" height="12" rx="2" stroke="#0369A1" stroke-width="1.6" fill="#BAE6FD" fill-opacity="0.6"/>
-                  <!-- Center Hinge Joint -->
-                  <circle cx="105.5" cy="26" r="6.5" stroke="#0369A1" stroke-width="1.8" fill="#E0F2FE"/>
-                  <circle cx="105.5" cy="26" r="2.5" fill="#0284C7"/>
-                  <!-- Adjustment Crossbar & Knurled Wheel -->
-                  <path d="M92 56 H 122" stroke="#0284C7" stroke-width="1.4" stroke-opacity="0.5"/>
-                  <circle cx="107" cy="56" r="3" stroke="#0369A1" stroke-width="1.2" fill="#BAE6FD"/>
-                  <!-- Left Needle Leg -->
-                  <path d="M101 30 L 76 102 L 74 110 L 77 108 L 103 32" stroke="#0369A1" stroke-width="1.8" stroke-linejoin="round" fill="#0EA5E9" fill-opacity="0.14"/>
-                  <circle cx="74" cy="110" r="1.5" fill="#0369A1"/>
-                  <!-- Right Pencil Leg -->
-                  <path d="M109 30 L 132 86 L 136 94 L 133 96 L 129 90 L 107 32" stroke="#0369A1" stroke-width="1.8" stroke-linejoin="round" fill="#0EA5E9" fill-opacity="0.14"/>
-                  <!-- Pencil Lead Tip -->
-                  <polygon points="136,94 140,102 133,96" fill="#0284C7"/>
-                </g>
-              </svg>
+            <div class="sc-foot">
+              <div class="bar" aria-hidden="true"><i style="width:75%"></i></div>
+              <button type="button" class="go">เข้าเรียน</button>
             </div>
-            
-            <div class="flex items-start justify-between relative z-10">
-              <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-2xl shadow-sm border border-sky-100">
-                  📐
-                </div>
-                <div>
-                  <span class="text-[11px] font-bold text-sky-700 uppercase tracking-wider">วิชาที่ 2 • คณิตศาสตร์</span>
-                  <h3 class="text-base font-black text-slate-800 leading-tight">คณิตศาสตร์</h3>
-                  <span class="text-xs text-slate-500 font-medium">18 บทเรียน • 120 แบบฝึกหัด</span>
-                </div>
+          </article>
+          <article class="sc subject-card-item hue-sky" data-category="science">
+            <div class="sc-grid">
+              <span class="sc-tile" aria-hidden="true">📐</span>
+              <div>
+                <p class="sc-eyebrow">วิชาที่ 2 • คณิตศาสตร์</p>
+                <h3 class="sc-title">คณิตศาสตร์</h3>
+                <p class="sc-meta">18 บทเรียน • 120 แบบฝึกหัด</p>
               </div>
-              <span class="px-2.5 py-1 rounded-xl bg-white text-sky-700 text-[11px] font-black border border-sky-200/90 shadow-sm">
-                65%
-              </span>
-            </div>
-            <div class="mt-3.5 relative z-10 flex items-center gap-3">
-              <div class="flex-1 h-2.5 bg-slate-200/70 rounded-full overflow-hidden p-0.5 shimmer-glow border border-slate-300/40">
-                <div class="h-full bg-sky-500 rounded-full" style="width: 65%"></div>
+              <div class="sc-side">
+                <span class="sc-pct">65%</span>
+                <div class="art" aria-hidden="true"><svg class="ar ar-mat" viewBox="0 0 88 66" width="88" height="66" aria-hidden="true" focusable="false"><g transform="translate(44 35)"><circle class="bk-disc" r="27"/><circle class="bk-ring" r="30.5"/></g><ellipse cx="44" cy="52" rx="22" ry="7.5" fill="none" stroke="#7DD3FC" stroke-width="1.4" stroke-dasharray="2 3.5" stroke-linecap="round"/>
+<path class="mat-draw" pathLength="1" d="M66 52A22 7.5 0 1 1 22 52A22 7.5 0 1 1 66 52" fill="none" stroke="#0284C7" stroke-width="3.2" stroke-linecap="round"/>
+<line x1="44" y1="11" x2="44" y2="49" stroke="#0369A1" stroke-width="3.2" stroke-linecap="round"/>
+<path d="M42.6 48.5L44 54L45.4 48.5Z" fill="#1E293B"/>
+<circle cx="44" cy="52" r="1.3" fill="#F97316"/>
+<g transform="translate(44 11)">
+<g class="pv mat-leg"><line x1="0" y1="0" x2="0" y2="46.53" stroke="#0369A1" stroke-width="3.2" stroke-linecap="round"/><line x1="-.9" y1="5" x2="-.9" y2="34.53" stroke="#7DD3FC" stroke-width="1" stroke-linecap="round" opacity=".8"/></g>
+<g class="pv mat-tip"><rect x="-2.3" y="-9" width="4.6" height="7.5" rx="1.3" fill="#38BDF8" stroke="#0369A1" stroke-width="1.2"/><path d="M-1.7 -1.5L0 4L1.7 -1.5Z" fill="#F97316" stroke="#9A3412" stroke-width=".7" stroke-linejoin="round"/></g>
+</g>
+<rect x="41.5" y="1.5" width="5" height="6" rx="2" fill="#0EA5E9" stroke="#0369A1" stroke-width="1.4"/>
+<circle cx="44" cy="11" r="4.4" fill="#38BDF8" stroke="#0369A1" stroke-width="2.2"/><circle cx="42.8" cy="9.8" r="1.2" fill="#fff" opacity=".85"/>
+<g transform="translate(14 17)"><g class="pv flt" style="animation-delay:-.6s"><path d="M-5 -3.2Q0 -5.4 5 -3.2M-2 -4.4L-2.6 4.8M2.4 -4.4Q2 3.6 4.4 5" fill="none" stroke="#0369A1" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></g></g>
+<g transform="translate(74 15)"><g class="pv flt" style="animation-delay:-1.8s"><path d="M-4 0H4M0 -4V4" stroke="#0EA5E9" stroke-width="2.4" stroke-linecap="round"/></g></g>
+<g transform="translate(76 44)"><g class="pv flt" style="animation-delay:-2.6s"><path d="M-3.4 -3.4L3.4 3.4M3.4 -3.4L-3.4 3.4" stroke="#F97316" stroke-width="2.4" stroke-linecap="round"/></g></g>
+<g transform="translate(11 44) scale(3.4)"><path class="tw" style="animation-delay:-1s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#38BDF8"/></g></svg></div>
               </div>
-              <button class="game-btn game-btn-white px-3.5 py-1.5 text-sky-700 text-xs font-black shrink-0">
-                เข้าเรียน
-              </button>
             </div>
-          </div>
-
-          <!-- 3. ภาษาไทย -->
-          <div class="subject-card-item relative overflow-hidden rounded-3xl p-4 min-h-[140px] bg-[#FFF1F2] border-2 border-rose-300 shadow-[0_5px_0_0_#FECDD3] hover:-translate-y-0.5 hover:shadow-[0_7px_0_0_#FECDD3] active:translate-y-1 active:shadow-[0_2px_0_0_#FECDD3] bouncy transition-all group" data-category="language">
-            <!-- Handcrafted SVG Illustration: Single Thai Folding Manuscript (สมุดข่อย) -->
-            <div class="absolute right-0 bottom-0 pointer-events-none select-none z-0 overflow-hidden flex items-end justify-end">
-              <svg viewBox="0 0 170 130" fill="none" xmlns="http://www.w3.org/2000/svg" class="subject-card-backdrop w-48 h-36 sm:w-60 sm:h-44 transition-all duration-300 ease-out group-hover:scale-105 group-hover:-translate-y-1 opacity-30 group-hover:opacity-45">
-                <g class="anim-thai-manuscript" transform="translate(18, 16)">
-                  <!-- Bottom Folded Layer (Base depth) -->
-                  <path d="M12 78 L 48 64 L 104 64 L 140 78 L 136 86 L 102 74 L 46 74 L 8 86 Z" stroke="#BE123C" stroke-width="1.5" stroke-linejoin="round" fill="#FDA4AF" fill-opacity="0.25"/>
-                  <!-- Middle Folded Page -->
-                  <path d="M8 84 L 46 70 L 102 70 L 138 84 L 134 94 L 100 82 L 44 82 L 4 94 Z" stroke="#BE123C" stroke-width="1.6" stroke-linejoin="round" fill="#FFF1F2" fill-opacity="0.7"/>
-                  <!-- Top Open Page (Main Canvas) -->
-                  <path d="M4 92 L 44 78 L 100 78 L 136 92 L 132 104 L 98 90 L 42 90 L 0 104 Z" stroke="#9F1239" stroke-width="2" stroke-linejoin="round" fill="#FFFFFF" fill-opacity="0.9"/>
-                  <!-- Calligraphic Text Lines on Samut Khoi -->
-                  <line x1="20" y1="94" x2="42" y2="86" stroke="#E11D48" stroke-width="1.4" stroke-linecap="round" stroke-opacity="0.45"/>
-                  <line x1="48" y1="86" x2="94" y2="86" stroke="#E11D48" stroke-width="1.4" stroke-linecap="round" stroke-opacity="0.45"/>
-                  <line x1="100" y1="86" x2="122" y2="94" stroke="#E11D48" stroke-width="1.4" stroke-linecap="round" stroke-opacity="0.45"/>
-                  <line x1="16" y1="99" x2="42" y2="90" stroke="#E11D48" stroke-width="1.4" stroke-linecap="round" stroke-opacity="0.45"/>
-                  <line x1="48" y1="90" x2="94" y2="90" stroke="#E11D48" stroke-width="1.4" stroke-linecap="round" stroke-opacity="0.45"/>
-                  <line x1="100" y1="90" x2="126" y2="99" stroke="#E11D48" stroke-width="1.4" stroke-linecap="round" stroke-opacity="0.45"/>
-                  <!-- Center Seal Gem on Spine Fold -->
-                  <circle cx="71" cy="88" r="2.8" fill="#E11D48" fill-opacity="0.6"/>
-                  <!-- Elegant Thai Letter "ก" Hovering Above Manuscript -->
-                  <g transform="translate(56, 14)">
-                    <path d="M12 42 V 18 C 12 11 18 5 25 5 C 29 5 33 8 35 12 C 34 14 31 16 28 16 C 33 16 38 12 37 5 C 33 2 28 0 23 0 C 13 0 5 8 5 20 V 42" stroke="#BE123C" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.4"/>
-                  </g>
-                </g>
-              </svg>
+            <div class="sc-foot">
+              <div class="bar" aria-hidden="true"><i style="width:65%"></i></div>
+              <button type="button" class="go">เข้าเรียน</button>
             </div>
-            
-            <div class="flex items-start justify-between relative z-10">
-              <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-2xl shadow-sm border border-rose-100">
-                  ✍️
-                </div>
-                <div>
-                  <span class="text-[11px] font-bold text-rose-700 uppercase tracking-wider">วิชาที่ 3 • ภาษาไทย</span>
-                  <h3 class="text-base font-black text-slate-800 leading-tight">ภาษาไทย</h3>
-                  <span class="text-xs text-slate-500 font-medium">12 บทเรียน • 80 ข้อสอบวิเคราะห์</span>
-                </div>
+          </article>
+          <article class="sc subject-card-item hue-rose" data-category="language">
+            <div class="sc-grid">
+              <span class="sc-tile" aria-hidden="true">✍️</span>
+              <div>
+                <p class="sc-eyebrow">วิชาที่ 3 • ภาษาไทย</p>
+                <h3 class="sc-title">ภาษาไทย</h3>
+                <p class="sc-meta">12 บทเรียน • 80 ข้อสอบวิเคราะห์</p>
               </div>
-              <span class="px-2.5 py-1 rounded-xl bg-white text-rose-700 text-[11px] font-black border border-rose-200/90 shadow-sm">
-                85%
-              </span>
-            </div>
-            <div class="mt-3.5 relative z-10 flex items-center gap-3">
-              <div class="flex-1 h-2.5 bg-slate-200/70 rounded-full overflow-hidden p-0.5 shimmer-glow border border-slate-300/40">
-                <div class="h-full bg-rose-500 rounded-full" style="width: 85%"></div>
+              <div class="sc-side">
+                <span class="sc-pct">85%</span>
+                <div class="art" aria-hidden="true"><svg class="ar ar-tha" viewBox="0 0 88 66" width="88" height="66" aria-hidden="true" focusable="false"><g transform="translate(44 35)"><circle class="bk-disc" r="27"/><circle class="bk-ring" r="30.5"/></g><ellipse class="fb tha-sh" cx="42" cy="62.5" rx="17" ry="2.6" fill="#BE123C" opacity=".16"/>
+<g transform="translate(36 44.5) rotate(-7)"><g class="pv tha-tile">
+<rect x="-17" y="-19" width="34" height="34" rx="9" fill="#FB7185" stroke="#BE123C" stroke-width="2.4"/>
+<path d="M-12 -12Q-12 -14.5 -9 -14.5H-3" stroke="#fff" stroke-width="2.4" stroke-linecap="round" fill="none" opacity=".7"/>
+<text x="0" y="8" text-anchor="middle" font-size="31" font-weight="800" fill="#fff">ก</text>
+</g></g>
+<g transform="translate(49.5 25)"><g class="pv tha-chick">
+<path d="M-2.4 -.2V-2.4M2.4 -.2V-2.4" stroke="#EA580C" stroke-width="1.5" stroke-linecap="round"/>
+<circle cx="0" cy="-9" r="8.2" fill="#FDE047" stroke="#A16207" stroke-width="2"/>
+<path d="M-2.5 -17.6Q-3.5 -20.4 -1 -20.6M0 -17.4Q0 -21 2.6 -20.6M2.4 -17.3Q4.6 -19.6 6.2 -18.2" stroke="#A16207" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+<path d="M7.4 -10.6L12.6 -8.6L7.4 -6.6Z" fill="#FB923C" stroke="#C2410C" stroke-width=".9" stroke-linejoin="round"/>
+<circle class="fb tha-eye" cx="3" cy="-10.8" r="1.5" fill="#1F2937"/>
+<circle cx="-.6" cy="-6.4" r="1.9" fill="#FDA4AF" opacity=".75"/>
+<path d="M-6.4 -9Q-9.2 -5 -4 -4.6" stroke="#CA8A04" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+</g></g>
+<g transform="translate(14 21)"><g class="pv tha-l" style="animation-delay:-.8s"><text x="0" y="5" text-anchor="middle" font-size="13" font-weight="800" fill="#E11D48">ข</text></g></g>
+<g transform="translate(75 52)"><g class="pv tha-l" style="animation-delay:-2.4s;animation-duration:4s"><text x="0" y="5" text-anchor="middle" font-size="12" font-weight="800" fill="#BE123C">ค</text></g></g>
+<g transform="translate(74 30) scale(3.4)"><path class="tw" style="animation-delay:-0.5s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#FBBF24"/></g><g transform="translate(13 50) scale(3.2)"><path class="tw" style="animation-delay:-1.7s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#FB7185"/></g></svg></div>
               </div>
-              <button class="game-btn game-btn-white px-3.5 py-1.5 text-rose-700 text-xs font-black shrink-0">
-                เข้าเรียน
-              </button>
             </div>
-          </div>
-
-          <!-- 4. ภาษาอังกฤษ -->
-          <div class="subject-card-item relative overflow-hidden rounded-3xl p-4 min-h-[140px] bg-[#F5F3FF] border-2 border-violet-300 shadow-[0_5px_0_0_#DDD6FE] hover:-translate-y-0.5 hover:shadow-[0_7px_0_0_#DDD6FE] active:translate-y-1 active:shadow-[0_2px_0_0_#DDD6FE] bouncy transition-all group" data-category="language">
-            <!-- Handcrafted SVG Illustration: Single Open English Dictionary with Floating ABC -->
-            <div class="absolute right-0 bottom-0 pointer-events-none select-none z-0 overflow-hidden flex items-end justify-end">
-              <svg viewBox="0 0 170 130" fill="none" xmlns="http://www.w3.org/2000/svg" class="subject-card-backdrop w-48 h-36 sm:w-60 sm:h-44 transition-all duration-300 ease-out group-hover:scale-105 group-hover:-translate-y-1 opacity-30 group-hover:opacity-45">
-                <g transform="translate(18, 12)">
-                  <!-- Animated Floating Vocab "ABC" -->
-                  <g class="anim-english-abc" transform="translate(48, 10)">
-                    <text x="0" y="24" font-family="'Prompt', -apple-system, sans-serif" font-size="19" font-weight="900" fill="#6D28D9" fill-opacity="0.38" letter-spacing="2">A B C</text>
-                  </g>
-                  <!-- Dictionary Base Hardcover Backing -->
-                  <path d="M18 64 Q 68 56 74 64 Q 80 56 130 64 L 134 94 Q 80 84 74 94 Q 68 84 14 94 Z" stroke="#5B21B6" stroke-width="2.2" stroke-linejoin="round" fill="#DDD6FE" fill-opacity="0.35"/>
-                  <!-- Left Open Pages Block -->
-                  <path d="M20 62 Q 68 55 74 62 L 74 90 Q 68 82 16 88 Z" stroke="#6D28D9" stroke-width="1.8" stroke-linejoin="round" fill="#FFFFFF" fill-opacity="0.85"/>
-                  <!-- Right Open Pages Block -->
-                  <path d="M74 62 Q 80 55 128 62 L 132 88 Q 80 82 74 90 Z" stroke="#6D28D9" stroke-width="1.8" stroke-linejoin="round" fill="#FFFFFF" fill-opacity="0.85"/>
-                  <!-- Left Page Text Lines -->
-                  <line x1="28" y1="69" x2="62" y2="67" stroke="#8B5CF6" stroke-width="1.3" stroke-linecap="round" stroke-opacity="0.45"/>
-                  <line x1="28" y1="74" x2="64" y2="72" stroke="#8B5CF6" stroke-width="1.3" stroke-linecap="round" stroke-opacity="0.45"/>
-                  <line x1="28" y1="79" x2="58" y2="77" stroke="#8B5CF6" stroke-width="1.3" stroke-linecap="round" stroke-opacity="0.45"/>
-                  <!-- Right Page Text Lines -->
-                  <line x1="84" y1="67" x2="118" y2="69" stroke="#8B5CF6" stroke-width="1.3" stroke-linecap="round" stroke-opacity="0.45"/>
-                  <line x1="84" y1="72" x2="120" y2="74" stroke="#8B5CF6" stroke-width="1.3" stroke-linecap="round" stroke-opacity="0.45"/>
-                  <line x1="84" y1="77" x2="114" y2="79" stroke="#8B5CF6" stroke-width="1.3" stroke-linecap="round" stroke-opacity="0.45"/>
-                  <!-- Center Ribbon Bookmark -->
-                  <path d="M74 62 V 102 L 78 98 L 82 102 V 62" fill="#8B5CF6" fill-opacity="0.6" stroke="#6D28D9" stroke-width="1.4" stroke-linejoin="round"/>
-                </g>
-              </svg>
+            <div class="sc-foot">
+              <div class="bar" aria-hidden="true"><i style="width:85%"></i></div>
+              <button type="button" class="go">เข้าเรียน</button>
             </div>
-            
-            <div class="flex items-start justify-between relative z-10">
-              <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-2xl shadow-sm border border-violet-100">
-                  🌍
-                </div>
-                <div>
-                  <span class="text-[11px] font-bold text-violet-700 uppercase tracking-wider">วิชาที่ 4 • ภาษาต่างประเทศ</span>
-                  <h3 class="text-base font-black text-slate-800 leading-tight">ภาษาอังกฤษ</h3>
-                  <span class="text-xs text-slate-500 font-medium">20 บทเรียน • คลังศัพท์ 450 คำ</span>
-                </div>
+          </article>
+          <article class="sc subject-card-item hue-violet" data-category="language">
+            <div class="sc-grid">
+              <span class="sc-tile" aria-hidden="true">🌍</span>
+              <div>
+                <p class="sc-eyebrow">วิชาที่ 4 • ภาษาต่างประเทศ</p>
+                <h3 class="sc-title">ภาษาอังกฤษ</h3>
+                <p class="sc-meta">20 บทเรียน • คลังศัพท์ 450 คำ</p>
               </div>
-              <span class="px-2.5 py-1 rounded-xl bg-white text-violet-700 text-[11px] font-black border border-violet-200/90 shadow-sm">
-                55%
-              </span>
-            </div>
-            <div class="mt-3.5 relative z-10 flex items-center gap-3">
-              <div class="flex-1 h-2.5 bg-slate-200/70 rounded-full overflow-hidden p-0.5 shimmer-glow border border-slate-300/40">
-                <div class="h-full bg-violet-500 rounded-full" style="width: 55%"></div>
+              <div class="sc-side">
+                <span class="sc-pct">55%</span>
+                <div class="art" aria-hidden="true"><svg class="ar ar-eng" viewBox="0 0 88 66" width="88" height="66" aria-hidden="true" focusable="false"><g transform="translate(44 35)"><circle class="bk-disc" r="27"/><circle class="bk-ring" r="30.5"/></g><g transform="translate(29 22)"><g class="pv eng-fl" style="animation-delay:-.4s"><g class="pv eng-p1" style="transform-origin:-12px 19px">
+<path d="M-8 -11H8A11 11 0 0 1 19 0A11 11 0 0 1 8 11H-3L-12 19L-10 11H-8A11 11 0 0 1 -19 0A11 11 0 0 1 -8 -11Z" fill="#8B5CF6" stroke="#5B21B6" stroke-width="2.4" stroke-linejoin="round"/>
+<text x="0" y="5.2" text-anchor="middle" font-size="15" font-weight="800" fill="#fff">Aa</text>
+</g></g></g>
+<g transform="translate(58 44)"><g class="pv eng-fl" style="animation-delay:-1.9s"><g class="pv eng-p2" style="transform-origin:12px 19px">
+<path d="M-8 -11H8A11 11 0 0 1 19 0A11 11 0 0 1 8 11H10L12 19L3 11H-8A11 11 0 0 1 -19 0A11 11 0 0 1 -8 -11Z" fill="#fff" stroke="#6D28D9" stroke-width="2.4" stroke-linejoin="round"/>
+<text x="0" y="5" text-anchor="middle" font-size="13.5" font-weight="800" fill="#6D28D9">Hi!</text>
+</g></g></g>
+<circle class="fb eng-d" style="animation-delay:-.2s" cx="72" cy="14" r="2.2" fill="#F472B6"/>
+<circle class="fb eng-d" style="animation-delay:-1.1s" cx="13" cy="48" r="2" fill="#FBBF24"/>
+<g transform="translate(74 28) scale(3.6)"><path class="tw" style="animation-delay:-0.9s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#FBBF24"/></g><g transform="translate(12 12) scale(3)"><path class="tw" style="animation-delay:-1.8s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#A78BFA"/></g></svg></div>
               </div>
-              <button class="game-btn game-btn-white px-3.5 py-1.5 text-violet-700 text-xs font-black shrink-0">
-                เข้าเรียน
-              </button>
             </div>
-          </div>
-
-          <!-- 5. สังคมศึกษา -->
-          <div class="subject-card-item relative overflow-hidden rounded-3xl p-4 min-h-[140px] bg-[#FFFBEB] border-2 border-amber-300 shadow-[0_5px_0_0_#FDE68A] hover:-translate-y-0.5 hover:shadow-[0_7px_0_0_#FDE68A] active:translate-y-1 active:shadow-[0_2px_0_0_#FDE68A] bouncy transition-all group" data-category="social">
-            <!-- Handcrafted SVG Illustration: Single Geographic Desk Globe on Stand -->
-            <div class="absolute right-0 bottom-0 pointer-events-none select-none z-0 overflow-hidden flex items-end justify-end">
-              <svg viewBox="0 0 170 130" fill="none" xmlns="http://www.w3.org/2000/svg" class="subject-card-backdrop w-48 h-36 sm:w-60 sm:h-44 transition-all duration-300 ease-out group-hover:scale-105 group-hover:-translate-y-1 opacity-30 group-hover:opacity-45">
-                <g transform="translate(68, 16)">
-                  <!-- Curved Mounting Arc & Stand (Fixed Base) -->
-                  <path d="M12 20 A 42 42 0 0 0 42 86 V 96" stroke="#B45309" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M26 96 H 58" stroke="#B45309" stroke-width="3" stroke-linecap="round"/>
-                  <ellipse cx="42" cy="96" rx="20" ry="4" stroke="#B45309" stroke-width="2" fill="#FDE68A" fill-opacity="0.5"/>
-                  <!-- Top Axis Pin -->
-                  <circle cx="42" cy="12" r="3" fill="#B45309"/>
-                  <!-- Globe Sphere (Animated Subtle Axis Tilt) -->
-                  <g class="anim-globe-sphere">
-                    <circle cx="42" cy="48" r="36" stroke="#B45309" stroke-width="2.2" fill="#FDE68A" fill-opacity="0.2"/>
-                    <!-- Equator & Parallels -->
-                    <line x1="6" y1="48" x2="78" y2="48" stroke="#D97706" stroke-width="1.6" stroke-linecap="round" stroke-opacity="0.45"/>
-                    <path d="M12 32 Q 42 40 72 32" stroke="#D97706" stroke-width="1.4" stroke-linecap="round" stroke-opacity="0.4"/>
-                    <path d="M12 64 Q 42 56 72 64" stroke="#D97706" stroke-width="1.4" stroke-linecap="round" stroke-opacity="0.4"/>
-                    <!-- Prime Meridian Ellipse & Axis Line -->
-                    <ellipse cx="42" cy="48" rx="16" ry="36" stroke="#D97706" stroke-width="1.6" stroke-opacity="0.45"/>
-                    <line x1="42" y1="12" x2="42" y2="84" stroke="#D97706" stroke-width="1.6" stroke-dasharray="2 3" stroke-opacity="0.45"/>
-                  </g>
-                </g>
-              </svg>
+            <div class="sc-foot">
+              <div class="bar" aria-hidden="true"><i style="width:55%"></i></div>
+              <button type="button" class="go">เข้าเรียน</button>
             </div>
-            
-            <div class="flex items-start justify-between relative z-10">
-              <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-2xl shadow-sm border border-amber-100">
-                  🏛️
-                </div>
-                <div>
-                  <span class="text-[11px] font-bold text-amber-800 uppercase tracking-wider">วิชาที่ 5 • สังคมศึกษา</span>
-                  <h3 class="text-base font-black text-slate-800 leading-tight">สังคมศึกษา</h3>
-                  <span class="text-xs text-slate-500 font-medium">15 บทเรียน • 90 แนวข้อสอบ</span>
-                </div>
+          </article>
+          <article class="sc subject-card-item hue-amber" data-category="social">
+            <div class="sc-grid">
+              <span class="sc-tile" aria-hidden="true">🏛️</span>
+              <div>
+                <p class="sc-eyebrow">วิชาที่ 5 • สังคมศึกษา</p>
+                <h3 class="sc-title">สังคมศึกษา</h3>
+                <p class="sc-meta">15 บทเรียน • 90 แนวข้อสอบ</p>
               </div>
-              <span class="px-2.5 py-1 rounded-xl bg-white text-amber-800 text-[11px] font-black border border-amber-200/90 shadow-sm">
-                40%
-              </span>
-            </div>
-            <div class="mt-3.5 relative z-10 flex items-center gap-3">
-              <div class="flex-1 h-2.5 bg-slate-200/70 rounded-full overflow-hidden p-0.5 shimmer-glow border border-slate-300/40">
-                <div class="h-full bg-amber-500 rounded-full" style="width: 40%"></div>
+              <div class="sc-side">
+                <span class="sc-pct">40%</span>
+                <div class="art" aria-hidden="true"><svg class="ar ar-soc" viewBox="0 0 88 66" width="88" height="66" aria-hidden="true" focusable="false"><defs><clipPath id="s-soc-soc-c"><circle cx="44" cy="35" r="22"/></clipPath>
+<linearGradient id="s-soc-soc-o" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#38BDF8"/><stop offset="1" stop-color="#0369A1"/></linearGradient>
+<radialGradient id="s-soc-soc-v" cx=".35" cy=".3" r=".85"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset=".55" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#082F49" stop-opacity=".4"/></radialGradient></defs><g transform="translate(44 35)"><circle class="bk-disc" r="27"/><circle class="bk-ring" r="30.5"/></g><circle cx="44" cy="35" r="22" fill="url(#s-soc-soc-o)"/>
+<g clip-path="url(#s-soc-soc-c)">
+<g class="pv soc-map"><g transform="translate(0 0)" fill="#4ADE80" stroke="#15803D" stroke-width="1" stroke-linejoin="round">
+<path d="M26 22C30 18 36 19 38 23C40 27 36 30 38 34C40 38 34 42 30 40C27 38 28 33 25 31C22 28 23 25 26 22Z"/>
+<path d="M50 18C55 15 62 17 63 22C64 27 59 28 57 33C55 38 50 36 49 31C48 26 46 21 50 18Z"/>
+<path d="M66 40C70 38 75 40 76 44C77 48 72 51 68 50C64 49 63 43 66 40Z"/>
+<path d="M44 44C47 43 50 45 49 48C48 51 44 51 43 48C42 46 43 45 44 44Z"/>
+</g><g transform="translate(88 0)" fill="#4ADE80" stroke="#15803D" stroke-width="1" stroke-linejoin="round">
+<path d="M26 22C30 18 36 19 38 23C40 27 36 30 38 34C40 38 34 42 30 40C27 38 28 33 25 31C22 28 23 25 26 22Z"/>
+<path d="M50 18C55 15 62 17 63 22C64 27 59 28 57 33C55 38 50 36 49 31C48 26 46 21 50 18Z"/>
+<path d="M66 40C70 38 75 40 76 44C77 48 72 51 68 50C64 49 63 43 66 40Z"/>
+<path d="M44 44C47 43 50 45 49 48C48 51 44 51 43 48C42 46 43 45 44 44Z"/>
+</g></g>
+<g fill="none" stroke="#fff" stroke-opacity=".38" stroke-width="1"><ellipse cx="44" cy="35" rx="10" ry="22"/><ellipse cx="44" cy="35" rx="19" ry="22"/><path d="M22 35H66M25 24H63M25 46H63"/></g>
+<circle cx="44" cy="35" r="22" fill="url(#s-soc-soc-v)"/>
+</g>
+<circle cx="44" cy="35" r="22" fill="none" stroke="#0C4A6E" stroke-width="2.4"/>
+<g transform="translate(58 30)">
+<ellipse class="fb soc-rip" cx="0" cy="0" rx="7" ry="2.6" fill="none" stroke="#FEF3C7" stroke-width="1.6"/>
+<g class="pv soc-pin"><path d="M0 0C-4.5 -6 -6 -8.5 -6 -11.5A6 6 0 1 1 6 -11.5C6 -8.5 4.5 -6 0 0Z" fill="#EF4444" stroke="#991B1B" stroke-width="1.8" stroke-linejoin="round"/><circle cx="0" cy="-11.5" r="2.3" fill="#fff"/></g>
+</g>
+<g transform="translate(16 16) scale(4.2)"><path class="tw" style="animation-delay:-0.3s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#FBBF24"/></g><g transform="translate(73 54) scale(3.4)"><path class="tw" style="animation-delay:-1.5s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#F59E0B"/></g><g transform="translate(14 54) scale(3)"><path class="tw" style="animation-delay:-2.3s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#38BDF8"/></g></svg></div>
               </div>
-              <button class="game-btn game-btn-white px-3.5 py-1.5 text-amber-800 text-xs font-black shrink-0">
-                เข้าเรียน
-              </button>
             </div>
-          </div>
-
-          <!-- 6. ประวัติศาสตร์ -->
-          <div class="subject-card-item relative overflow-hidden rounded-3xl p-4 min-h-[140px] bg-[#FFF7ED] border-2 border-orange-300 shadow-[0_5px_0_0_#FED7AA] hover:-translate-y-0.5 hover:shadow-[0_7px_0_0_#FED7AA] active:translate-y-1 active:shadow-[0_2px_0_0_#FED7AA] bouncy transition-all group" data-category="social">
-            <!-- Handcrafted SVG Illustration: Single Vintage Hourglass with Flowing Sand -->
-            <div class="absolute right-0 bottom-0 pointer-events-none select-none z-0 overflow-hidden flex items-end justify-end">
-              <svg viewBox="0 0 170 130" fill="none" xmlns="http://www.w3.org/2000/svg" class="subject-card-backdrop w-48 h-36 sm:w-60 sm:h-44 transition-all duration-300 ease-out group-hover:scale-105 group-hover:-translate-y-1 opacity-30 group-hover:opacity-45">
-                <g transform="translate(85, 14)">
-                  <!-- Top & Bottom Wooden Plates -->
-                  <rect x="0" y="8" width="58" height="7" rx="3.5" stroke="#9A3412" stroke-width="2" fill="#F97316" fill-opacity="0.25"/>
-                  <rect x="0" y="87" width="58" height="7" rx="3.5" stroke="#9A3412" stroke-width="2" fill="#F97316" fill-opacity="0.25"/>
-                  <!-- Wooden Support Pillars (Left & Right) -->
-                  <line x1="6" y1="15" x2="6" y2="87" stroke="#C2410C" stroke-width="2" stroke-linecap="round"/>
-                  <line x1="52" y1="15" x2="52" y2="87" stroke="#C2410C" stroke-width="2" stroke-linecap="round"/>
-                  <circle cx="6" cy="51" r="2.5" fill="#C2410C"/>
-                  <circle cx="52" cy="51" r="2.5" fill="#C2410C"/>
-                  <!-- Glass Hourglass Bulb -->
-                  <path d="M12 15 L 46 15 C 46 34 35 45 31 51 C 35 57 46 68 46 87 L 12 87 C 12 68 23 57 27 51 C 23 45 12 34 12 15 Z" stroke="#9A3412" stroke-width="2.2" stroke-linejoin="round" fill="#FFEDD5" fill-opacity="0.25"/>
-                  <!-- Sand in Upper Chamber -->
-                  <path d="M16 28 Q 29 35 42 28 L 31 49 Z" fill="#F97316" fill-opacity="0.5"/>
-                  <!-- Animated Flowing Sand Droplets -->
-                  <g transform="translate(29, 50)">
-                    <circle cx="0" cy="0" r="1.5" fill="#EA580C" class="anim-sand-grain-1"/>
-                    <circle cx="0" cy="0" r="1.5" fill="#EA580C" class="anim-sand-grain-2"/>
-                  </g>
-                  <!-- Pooled Sand Mound in Lower Chamber -->
-                  <path d="M15 87 Q 29 70 43 87 Z" fill="#F97316" fill-opacity="0.6"/>
-                </g>
-              </svg>
+            <div class="sc-foot">
+              <div class="bar" aria-hidden="true"><i style="width:40%"></i></div>
+              <button type="button" class="go">เข้าเรียน</button>
             </div>
-            
-            <div class="flex items-start justify-between relative z-10">
-              <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-2xl shadow-sm border border-orange-100">
-                  📜
-                </div>
-                <div>
-                  <span class="text-[11px] font-bold text-orange-800 uppercase tracking-wider">วิชาที่ 6 • ประวัติศาสตร์</span>
-                  <h3 class="text-base font-black text-slate-800 leading-tight">ประวัติศาสตร์</h3>
-                  <span class="text-xs text-slate-500 font-medium">10 บทเรียน • 60 แบบทดสอบ</span>
-                </div>
+          </article>
+          <article class="sc subject-card-item hue-orange" data-category="social">
+            <div class="sc-grid">
+              <span class="sc-tile" aria-hidden="true">📜</span>
+              <div>
+                <p class="sc-eyebrow">วิชาที่ 6 • ประวัติศาสตร์</p>
+                <h3 class="sc-title">ประวัติศาสตร์</h3>
+                <p class="sc-meta">10 บทเรียน • 60 แบบทดสอบ</p>
               </div>
-              <span class="px-2.5 py-1 rounded-xl bg-white text-orange-800 text-[11px] font-black border border-orange-200/90 shadow-sm">
-                50%
-              </span>
-            </div>
-            <div class="mt-3.5 relative z-10 flex items-center gap-3">
-              <div class="flex-1 h-2.5 bg-slate-200/70 rounded-full overflow-hidden p-0.5 shimmer-glow border border-slate-300/40">
-                <div class="h-full bg-orange-500 rounded-full" style="width: 50%"></div>
+              <div class="sc-side">
+                <span class="sc-pct">50%</span>
+                <div class="art" aria-hidden="true"><svg class="ar ar-his" viewBox="0 0 88 66" width="88" height="66" aria-hidden="true" focusable="false"><defs><clipPath id="s-his-his-c"><path d="M-14 -21C-14 -9 -4 -5 -1.6 0C-4 5 -14 9 -14 21H14C14 9 4 5 1.6 0C4 -5 14 -9 14 -21Z"/></clipPath></defs><g transform="translate(44 35)"><circle class="bk-disc" r="27"/><circle class="bk-ring" r="30.5"/></g><g transform="translate(44 34.5) scale(.92)"><g class="pv his-flip">
+<path d="M-14 -21C-14 -9 -4 -5 -1.6 0C-4 5 -14 9 -14 21H14C14 9 4 5 1.6 0C4 -5 14 -9 14 -21Z" fill="#fff" fill-opacity=".9"/>
+<g clip-path="url(#s-his-his-c)">
+<path class="pv his-top" style="transform-origin:0 -1.5px" d="M-14 -15H14V0H-14Z" fill="#F59E0B"/>
+<path class="pv his-bot" style="transform-origin:0 21px" d="M-15 21L0 7L15 21Z" fill="#F59E0B"/>
+<path class="his-flow" d="M0 -2V19" stroke="#D97706" stroke-width="1.8" stroke-dasharray="1.6 2.4" fill="none"/>
+</g>
+<path d="M-14 -21C-14 -9 -4 -5 -1.6 0C-4 5 -14 9 -14 21H14C14 9 4 5 1.6 0C4 -5 14 -9 14 -21Z" fill="none" stroke="#7C2D12" stroke-width="2.4" stroke-linejoin="round"/>
+<path d="M-10 -17Q-10 -10 -4.5 -6.5M10 17Q10 10 4.5 6.5" stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none" opacity=".85"/>
+<rect x="-18" y="-28" width="36" height="7" rx="3.5" fill="#C2410C" stroke="#7C2D12" stroke-width="2.2"/>
+<rect x="-18" y="21" width="36" height="7" rx="3.5" fill="#C2410C" stroke="#7C2D12" stroke-width="2.2"/>
+</g></g>
+<g transform="translate(15 18) scale(4.2)"><path class="tw" style="animation-delay:-0.4s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#FBBF24"/></g><g transform="translate(73 50) scale(3.6)"><path class="tw" style="animation-delay:-1.6s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#F97316"/></g><g transform="translate(72 17) scale(3)"><path class="tw" style="animation-delay:-2.4s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#FDBA74"/></g></svg></div>
               </div>
-              <button class="game-btn game-btn-white px-3.5 py-1.5 text-orange-800 text-xs font-black shrink-0">
-                เข้าเรียน
-              </button>
             </div>
-          </div>
-
-          <!-- 7. วิทยาศาสตร์สากล -->
-          <div class="subject-card-item relative overflow-hidden rounded-3xl p-4 min-h-[140px] bg-[#ECFEFF] border-2 border-cyan-300 shadow-[0_5px_0_0_#A5F3FC] hover:-translate-y-0.5 hover:shadow-[0_7px_0_0_#A5F3FC] active:translate-y-1 active:shadow-[0_2px_0_0_#A5F3FC] bouncy transition-all group" data-category="science">
-            <!-- Handcrafted SVG Illustration: Single International Quantum Atom Model with Orbiting Electrons -->
-            <div class="absolute right-0 bottom-0 pointer-events-none select-none z-0 overflow-hidden flex items-end justify-end">
-              <svg viewBox="0 0 170 130" fill="none" xmlns="http://www.w3.org/2000/svg" class="subject-card-backdrop w-48 h-36 sm:w-60 sm:h-44 transition-all duration-300 ease-out group-hover:scale-105 group-hover:-translate-y-1 opacity-30 group-hover:opacity-45">
-                <!-- Central Nucleus Particles -->
-                <circle cx="95" cy="65" r="9" fill="#0891B2" fill-opacity="0.2" stroke="#0E7490" stroke-width="1.8"/>
-                <circle cx="93" cy="63" r="3.5" fill="#06B6D4"/>
-                <circle cx="98" cy="66" r="3.2" fill="#0E7490"/>
-                <circle cx="94" cy="68" r="2.8" fill="#22D3EE"/>
-                <!-- Orbit 1 (Horizontal tilt) -->
-                <ellipse cx="95" cy="65" rx="54" ry="18" stroke="#0891B2" stroke-width="1.8" stroke-dasharray="4 3" stroke-opacity="0.38"/>
-                <!-- Orbit 2 (Animated Clockwise Rotation) -->
-                <g class="anim-atom-orbit-1">
-                  <ellipse cx="95" cy="65" rx="54" ry="18" transform="rotate(60 95 65)" stroke="#0E7490" stroke-width="1.8" stroke-opacity="0.38"/>
-                  <circle cx="142" cy="92" r="3.8" fill="#06B6D4" stroke="#0891B2" stroke-width="1.2"/>
-                </g>
-                <!-- Orbit 3 (Animated Counter-Clockwise Rotation) -->
-                <g class="anim-atom-orbit-2">
-                  <ellipse cx="95" cy="65" rx="54" ry="18" transform="rotate(-60 95 65)" stroke="#0E7490" stroke-width="1.8" stroke-opacity="0.38"/>
-                  <circle cx="48" cy="92" r="3.8" fill="#0891B2" stroke="#0E7490" stroke-width="1.2"/>
-                </g>
-              </svg>
+            <div class="sc-foot">
+              <div class="bar" aria-hidden="true"><i style="width:50%"></i></div>
+              <button type="button" class="go">เข้าเรียน</button>
             </div>
-            
-            <div class="flex items-start justify-between relative z-10">
-              <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-2xl shadow-sm border border-cyan-100">
-                  ⚛️
-                </div>
-                <div>
-                  <span class="text-[11px] font-bold text-cyan-800 uppercase tracking-wider">วิชาที่ 7 • วิทยาศาสตร์สากล</span>
-                  <h3 class="text-base font-black text-slate-800 leading-tight">วิทยาศาสตร์สากล</h3>
-                  <span class="text-xs text-slate-500 font-medium">14 บทเรียน • ฟิสิกส์ & อนุภาคสากล</span>
-                </div>
+          </article>
+          <article class="sc subject-card-item hue-cyan" data-category="science">
+            <div class="sc-grid">
+              <span class="sc-tile" aria-hidden="true">⚛️</span>
+              <div>
+                <p class="sc-eyebrow">วิชาที่ 7 • วิทยาศาสตร์สากล</p>
+                <h3 class="sc-title">วิทยาศาสตร์สากล</h3>
+                <p class="sc-meta">14 บทเรียน • ฟิสิกส์ &amp; อนุภาคสากล</p>
               </div>
-              <span class="px-2.5 py-1 rounded-xl bg-white text-cyan-800 text-[11px] font-black border border-cyan-200/90 shadow-sm">
-                60%
-              </span>
-            </div>
-            <div class="mt-3.5 relative z-10 flex items-center gap-3">
-              <div class="flex-1 h-2.5 bg-slate-200/70 rounded-full overflow-hidden p-0.5 shimmer-glow border border-slate-300/40">
-                <div class="h-full bg-cyan-500 rounded-full" style="width: 60%"></div>
+              <div class="sc-side">
+                <span class="sc-pct">60%</span>
+                <div class="art" aria-hidden="true"><svg class="ar ar-phy" viewBox="0 0 88 66" width="88" height="66" aria-hidden="true" focusable="false"><g transform="translate(44 35)"><circle class="bk-disc" r="27"/><circle class="bk-ring" r="30.5"/></g><g transform="rotate(0 44 35)" style="--T:3s;--ph:0s">
+<ellipse cx="44" cy="35" rx="25" ry="9.5" fill="none" stroke="#0E7490" stroke-width="1.8"/>
+<g class="pv phy-x"><g class="pv phy-y"><circle cx="44" cy="35" r="3.2" fill="#FDE047" stroke="#A16207" stroke-width="1.4"/></g></g>
+</g><g transform="rotate(60 44 35)" style="--T:3.8s;--ph:-1.1s">
+<ellipse cx="44" cy="35" rx="25" ry="9.5" fill="none" stroke="#0E7490" stroke-width="1.8"/>
+<g class="pv phy-x"><g class="pv phy-y"><circle cx="44" cy="35" r="3.2" fill="#FDE047" stroke="#A16207" stroke-width="1.4"/></g></g>
+</g><g transform="rotate(120 44 35)" style="--T:3.4s;--ph:-2.3s">
+<ellipse cx="44" cy="35" rx="25" ry="9.5" fill="none" stroke="#0E7490" stroke-width="1.8"/>
+<g class="pv phy-x"><g class="pv phy-y"><circle cx="44" cy="35" r="3.2" fill="#FDE047" stroke="#A16207" stroke-width="1.4"/></g></g>
+</g>
+<g transform="translate(44 35)"><g class="pv phy-nuc">
+<circle cx="-1.6" cy="1.4" r="3.8" fill="#3B82F6" stroke="#1E3A8A" stroke-width="1.2"/>
+<circle cx="2" cy="-1.8" r="3.8" fill="#F43F5E" stroke="#881337" stroke-width="1.2"/>
+<circle cx="1.2" cy="2.6" r="3.2" fill="#F43F5E" stroke="#881337" stroke-width="1.2"/>
+</g></g>
+<g transform="translate(15 15) scale(3.8)"><path class="tw" style="animation-delay:-0.5s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#FBBF24"/></g><g transform="translate(74 55) scale(3.4)"><path class="tw" style="animation-delay:-1.5s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#22D3EE"/></g><g transform="translate(73 14) scale(3)"><path class="tw" style="animation-delay:-2.4s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#67E8F9"/></g></svg></div>
               </div>
-              <button class="game-btn game-btn-white px-3.5 py-1.5 text-cyan-800 text-xs font-black shrink-0">
-                เข้าเรียน
-              </button>
             </div>
-          </div>
-
-          <!-- 8. คณิตศาสตร์สากล -->
-          <div class="subject-card-item relative overflow-hidden rounded-3xl p-4 min-h-[140px] bg-[#EFF6FF] border-2 border-blue-300 shadow-[0_5px_0_0_#BFDBFE] hover:-translate-y-0.5 hover:shadow-[0_7px_0_0_#BFDBFE] active:translate-y-1 active:shadow-[0_2px_0_0_#BFDBFE] bouncy transition-all group" data-category="science">
-            <!-- Handcrafted SVG Illustration: Single 3D Mathematical Infinity Symbol (∞) -->
-            <div class="absolute right-0 bottom-0 pointer-events-none select-none z-0 overflow-hidden flex items-end justify-end">
-              <svg viewBox="0 0 170 130" fill="none" xmlns="http://www.w3.org/2000/svg" class="subject-card-backdrop w-48 h-36 sm:w-60 sm:h-44 transition-all duration-300 ease-out group-hover:scale-105 group-hover:-translate-y-1 opacity-30 group-hover:opacity-45">
-                <g class="anim-infinity-loop" transform="translate(15, 8)">
-                  <!-- Shadow Underlay -->
-                  <path d="M42 66 C22 66 10 54 10 40 C10 26 22 14 42 14 C62 14 74 34 85 40 C96 46 108 66 128 66 C148 66 160 54 160 40 C160 26 148 14 128 14 C108 14 96 34 85 40 C74 46 62 66 42 66 Z" stroke="#1D4ED8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="#BFDBFE" fill-opacity="0.2"/>
-                  <!-- Inner Ribbon Dimension Highlight -->
-                  <path d="M42 58 C26 58 18 48 18 40 C18 32 26 22 42 22 C56 22 66 36 76 42" stroke="#2563EB" stroke-width="1.8" stroke-linecap="round" stroke-opacity="0.5"/>
-                  <path d="M128 22 C144 22 152 32 152 40 C152 48 144 58 128 58 C114 58 104 44 94 38" stroke="#2563EB" stroke-width="1.8" stroke-linecap="round" stroke-opacity="0.5"/>
-                  <!-- Mathematical Intersection Accent -->
-                  <circle cx="85" cy="40" r="3.5" fill="#1E40AF" fill-opacity="0.5"/>
-                </g>
-              </svg>
+            <div class="sc-foot">
+              <div class="bar" aria-hidden="true"><i style="width:60%"></i></div>
+              <button type="button" class="go">เข้าเรียน</button>
             </div>
-            
-            <div class="flex items-start justify-between relative z-10">
-              <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-2xl shadow-sm border border-blue-100">
-                  ♾️
-                </div>
-                <div>
-                  <span class="text-[11px] font-bold text-blue-800 uppercase tracking-wider">วิชาที่ 8 • คณิตศาสตร์สากล</span>
-                  <h3 class="text-base font-black text-slate-800 leading-tight">คณิตศาสตร์สากล</h3>
-                  <span class="text-xs text-slate-500 font-medium">16 บทเรียน • แคลคูลัส & พีชคณิตสากล</span>
-                </div>
+          </article>
+          <article class="sc subject-card-item hue-blue" data-category="science">
+            <div class="sc-grid">
+              <span class="sc-tile" aria-hidden="true">♾️</span>
+              <div>
+                <p class="sc-eyebrow">วิชาที่ 8 • คณิตศาสตร์สากล</p>
+                <h3 class="sc-title">คณิตศาสตร์สากล</h3>
+                <p class="sc-meta">16 บทเรียน • แคลคูลัส &amp; พีชคณิตสากล</p>
               </div>
-              <span class="px-2.5 py-1 rounded-xl bg-white text-blue-800 text-[11px] font-black border border-blue-200/90 shadow-sm">
-                70%
-              </span>
-            </div>
-            <div class="mt-3.5 relative z-10 flex items-center gap-3">
-              <div class="flex-1 h-2.5 bg-slate-200/70 rounded-full overflow-hidden p-0.5 shimmer-glow border border-slate-300/40">
-                <div class="h-full bg-blue-500 rounded-full" style="width: 70%"></div>
+              <div class="sc-side">
+                <span class="sc-pct">70%</span>
+                <div class="art" aria-hidden="true"><svg class="ar ar-inf" viewBox="0 0 88 66" width="88" height="66" aria-hidden="true" focusable="false"><g transform="translate(44 35)"><circle class="bk-disc" r="27"/><circle class="bk-ring" r="30.5"/></g><path d="M44 35C52 22 70 22 70 35C70 48 52 48 44 35C36 22 18 22 18 35C18 48 36 48 44 35Z" fill="none" stroke="#93C5FD" stroke-width="5.5" stroke-linejoin="round"/>
+<path d="M44 35C52 22 70 22 70 35C70 48 52 48 44 35C36 22 18 22 18 35C18 48 36 48 44 35Z" fill="none" stroke="#fff" stroke-width="1.6" stroke-opacity=".7" stroke-linejoin="round" transform="translate(0 -.4)"/>
+<path class="inf-c1" pathLength="100" d="M44 35C52 22 70 22 70 35C70 48 52 48 44 35C36 22 18 22 18 35C18 48 36 48 44 35Z" fill="none" stroke="#1D4ED8" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path class="inf-c1" pathLength="100" d="M44 35C52 22 70 22 70 35C70 48 52 48 44 35C36 22 18 22 18 35C18 48 36 48 44 35Z" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="stroke-dasharray:14 86"/>
+<path class="inf-c2" pathLength="100" d="M44 35C52 22 70 22 70 35C70 48 52 48 44 35C36 22 18 22 18 35C18 48 36 48 44 35Z" fill="none" stroke="#60A5FA" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<g transform="translate(15 13)"><g class="pv flt" style="animation-delay:-.7s"><path d="M3.4 -6.4C1.4 -8 -.6 -6.6 -.6 -3.6V3.6C-.6 6.6 -2.8 8 -4.6 6.4" fill="none" stroke="#1D4ED8" stroke-width="2.3" stroke-linecap="round"/></g></g>
+<g transform="translate(74 55)"><g class="pv flt" style="animation-delay:-2s"><path d="M4 -5H-4L1.4 0L-4 5H4" fill="none" stroke="#1D4ED8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></g></g>
+<g transform="translate(73 14)"><g class="pv flt" style="animation-delay:-1.4s"><path d="M-5.4 .6L-3.4 3.4L.2 -4.6H5.2" fill="none" stroke="#F59E0B" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></g></g>
+<g transform="translate(44 8) scale(3.4)"><path class="tw" style="animation-delay:-0.8s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#93C5FD"/></g><g transform="translate(14 54) scale(3.2)"><path class="tw" style="animation-delay:-1.9s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#FBBF24"/></g></svg></div>
               </div>
-              <button class="game-btn game-btn-white px-3.5 py-1.5 text-blue-800 text-xs font-black shrink-0">
-                เข้าเรียน
-              </button>
             </div>
-          </div>
-
-          <!-- 9. ภาษาจีน -->
-          <div class="subject-card-item relative overflow-hidden rounded-3xl p-4 min-h-[140px] bg-[#FFF1F2] border-2 border-red-300 shadow-[0_5px_0_0_#FECACA] hover:-translate-y-0.5 hover:shadow-[0_7px_0_0_#FECACA] active:translate-y-1 active:shadow-[0_2px_0_0_#FECACA] bouncy transition-all group" data-category="language">
-            <!-- Handcrafted SVG Illustration: Single Traditional Chinese Lantern with Swaying Tassel -->
-            <div class="absolute right-0 bottom-0 pointer-events-none select-none z-0 overflow-hidden flex items-end justify-end">
-              <svg viewBox="0 0 170 130" fill="none" xmlns="http://www.w3.org/2000/svg" class="subject-card-backdrop w-48 h-36 sm:w-60 sm:h-44 transition-all duration-300 ease-out group-hover:scale-105 group-hover:-translate-y-1 opacity-30 group-hover:opacity-45">
-                <g class="anim-chinese-lantern" transform="translate(20, 4)">
-                  <!-- Top Hanging Ring & Loop -->
-                  <circle cx="85" cy="12" r="5" stroke="#B91C1C" stroke-width="1.8" fill="none"/>
-                  <line x1="85" y1="17" x2="85" y2="24" stroke="#B91C1C" stroke-width="2"/>
-                  <!-- Upper Gold Cap -->
-                  <rect x="73" y="24" width="24" height="6" rx="2" stroke="#991B1B" stroke-width="1.6" fill="#FDE047" fill-opacity="0.6"/>
-                  <!-- Main Oval Lantern Body -->
-                  <ellipse cx="85" cy="56" rx="34" ry="28" stroke="#B91C1C" stroke-width="2.2" fill="#FEE2E2" fill-opacity="0.25"/>
-                  <!-- Bamboo Rib Contours -->
-                  <path d="M85 28 C 70 28 65 42 65 56 C 65 70 70 84 85 84" stroke="#DC2626" stroke-width="1.6" stroke-opacity="0.45" fill="none"/>
-                  <path d="M85 28 C 100 28 105 42 105 56 C 105 70 100 84 85 84" stroke="#DC2626" stroke-width="1.6" stroke-opacity="0.45" fill="none"/>
-                  <line x1="85" y1="28" x2="85" y2="84" stroke="#DC2626" stroke-width="1.6" stroke-opacity="0.45"/>
-                  <!-- Lower Gold Rim -->
-                  <rect x="73" y="84" width="24" height="6" rx="2" stroke="#991B1B" stroke-width="1.6" fill="#FDE047" fill-opacity="0.6"/>
-                  <!-- Hanging Silk Tassel -->
-                  <path d="M82 90 L 78 116 M 85 90 L 85 120 M 88 90 L 92 116" stroke="#B91C1C" stroke-width="2" stroke-linecap="round" stroke-opacity="0.6"/>
-                  <circle cx="85" cy="94" r="3" fill="#DC2626"/>
-                </g>
-              </svg>
+            <div class="sc-foot">
+              <div class="bar" aria-hidden="true"><i style="width:70%"></i></div>
+              <button type="button" class="go">เข้าเรียน</button>
             </div>
-            
-            <div class="flex items-start justify-between relative z-10">
-              <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-2xl shadow-sm border border-red-100">
-                  🏮
-                </div>
-                <div>
-                  <span class="text-[11px] font-bold text-red-700 uppercase tracking-wider">วิชาที่ 9 • ภาษาจีน</span>
-                  <h3 class="text-base font-black text-slate-800 leading-tight">ภาษาจีน</h3>
-                  <span class="text-xs text-slate-500 font-medium">15 บทเรียน • ไวยากรณ์ HSK & สนทนา</span>
-                </div>
+          </article>
+          <article class="sc subject-card-item hue-red" data-category="language">
+            <div class="sc-grid">
+              <span class="sc-tile" aria-hidden="true">🏮</span>
+              <div>
+                <p class="sc-eyebrow">วิชาที่ 9 • ภาษาจีน</p>
+                <h3 class="sc-title">ภาษาจีน</h3>
+                <p class="sc-meta">15 บทเรียน • ไวยากรณ์ HSK &amp; สนทนา</p>
               </div>
-              <span class="px-2.5 py-1 rounded-xl bg-white text-red-700 text-[11px] font-black border border-red-200/90 shadow-sm">
-                45%
-              </span>
-            </div>
-            <div class="mt-3.5 relative z-10 flex items-center gap-3">
-              <div class="flex-1 h-2.5 bg-slate-200/70 rounded-full overflow-hidden p-0.5 shimmer-glow border border-slate-300/40">
-                <div class="h-full bg-red-500 rounded-full" style="width: 45%"></div>
+              <div class="sc-side">
+                <span class="sc-pct">45%</span>
+                <div class="art" aria-hidden="true"><svg class="ar ar-chn" viewBox="0 0 88 66" width="88" height="66" aria-hidden="true" focusable="false"><g transform="translate(44 35)"><circle class="bk-disc" r="27"/><circle class="bk-ring" r="30.5"/></g><g transform="translate(70 5) scale(.56)"><g class="pv chn-sw" style="animation-delay:-1.3s"><line x1="0" y1="0" x2="0" y2="7" stroke="#92400E" stroke-width="1.6" stroke-linecap="round"/>
+<rect x="-8" y="6.5" width="16" height="5" rx="2" fill="#FBBF24" stroke="#92400E" stroke-width="1.6"/>
+<ellipse cx="0" cy="23.5" rx="18" ry="13.5" fill="#F97316" stroke="#7F1D1D" stroke-width="2.4"/>
+<path d="M-8 12C-13 18 -13 29 -8 35M8 12C13 18 13 29 8 35M0 10V37" fill="none" stroke="#FCA5A5" stroke-width="1.2" opacity=".75"/>
+<rect x="-8" y="35" width="16" height="5" rx="2" fill="#FBBF24" stroke="#92400E" stroke-width="1.6"/>
+<path d="M-3.8 20H3.8V28H-3.8ZM0 17V31" fill="none" stroke="#FDE047" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<g class="pv chn-tas"><path d="M0 40V46" stroke="#92400E" stroke-width="1.5"/><circle cx="0" cy="41" r="1.6" fill="#FBBF24"/><path d="M-3.4 53L0 45L3.4 53" fill="#F59E0B" stroke="#92400E" stroke-width="1.2" stroke-linejoin="round"/><path d="M-1.4 53V51M1.4 53V51" stroke="#92400E" stroke-width="1"/></g></g></g>
+<g transform="translate(38 4)"><g class="pv chn-sw"><line x1="0" y1="0" x2="0" y2="7" stroke="#92400E" stroke-width="1.6" stroke-linecap="round"/>
+<rect x="-8" y="6.5" width="16" height="5" rx="2" fill="#FBBF24" stroke="#92400E" stroke-width="1.6"/>
+<ellipse cx="0" cy="23.5" rx="18" ry="13.5" fill="#DC2626" stroke="#7F1D1D" stroke-width="2.4"/>
+<path d="M-8 12C-13 18 -13 29 -8 35M8 12C13 18 13 29 8 35M0 10V37" fill="none" stroke="#FCA5A5" stroke-width="1.2" opacity=".75"/>
+<rect x="-8" y="35" width="16" height="5" rx="2" fill="#FBBF24" stroke="#92400E" stroke-width="1.6"/>
+<path d="M-3.8 20H3.8V28H-3.8ZM0 17V31" fill="none" stroke="#FDE047" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<g class="pv chn-tas"><path d="M0 40V46" stroke="#92400E" stroke-width="1.5"/><circle cx="0" cy="41" r="1.6" fill="#FBBF24"/><path d="M-3.4 53L0 45L3.4 53" fill="#F59E0B" stroke="#92400E" stroke-width="1.2" stroke-linejoin="round"/><path d="M-1.4 53V51M1.4 53V51" stroke="#92400E" stroke-width="1"/></g></g></g>
+<circle class="fb chn-c" style="animation-delay:-.2s" cx="14" cy="14" r="2" fill="#FBBF24"/>
+<circle class="fb chn-c" style="animation-delay:-1.6s;animation-duration:3.8s" cx="76" cy="47" r="1.7" fill="#F59E0B"/>
+<circle class="fb chn-c" style="animation-delay:-2.7s;animation-duration:3.1s" cx="11" cy="42" r="1.5" fill="#FDE047"/>
+<g transform="translate(75 40) scale(3.6)"><path class="tw" style="animation-delay:-0.8s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#FBBF24"/></g><g transform="translate(16 28) scale(3)"><path class="tw" style="animation-delay:-2s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#FDBA74"/></g></svg></div>
               </div>
-              <button class="game-btn game-btn-white px-3.5 py-1.5 text-red-700 text-xs font-black shrink-0">
-                เข้าเรียน
-              </button>
             </div>
-          </div>
-
-          <!-- 10. ภาษาอังกฤษเพิ่มเติม -->
-          <div class="subject-card-item relative overflow-hidden rounded-3xl p-4 min-h-[140px] bg-[#EEF2FF] border-2 border-indigo-300 shadow-[0_5px_0_0_#C7D2FE] hover:-translate-y-0.5 hover:shadow-[0_7px_0_0_#C7D2FE] active:translate-y-1 active:shadow-[0_2px_0_0_#C7D2FE] bouncy transition-all group" data-category="language">
-            <!-- Handcrafted SVG Illustration: Single Academic Graduation Mortarboard Cap with Swaying Tassel -->
-            <div class="absolute right-0 bottom-0 pointer-events-none select-none z-0 overflow-hidden flex items-end justify-end">
-              <svg viewBox="0 0 170 130" fill="none" xmlns="http://www.w3.org/2000/svg" class="subject-card-backdrop w-48 h-36 sm:w-60 sm:h-44 transition-all duration-300 ease-out group-hover:scale-105 group-hover:-translate-y-1 opacity-30 group-hover:opacity-45">
-                <g transform="translate(15, 14)">
-                  <!-- Skull Cap Base Underneath -->
-                  <path d="M46 54 Q 75 70 104 54 V 68 Q 75 84 46 68 Z" stroke="#3730A3" stroke-width="2" stroke-linejoin="round" fill="#C7D2FE" fill-opacity="0.4"/>
-                  <!-- Diamond Mortarboard Top Plate -->
-                  <polygon points="75,22 138,44 75,66 12,44" stroke="#3730A3" stroke-width="2.4" stroke-linejoin="round" fill="#EEF2FF" fill-opacity="0.75"/>
-                  <polygon points="75,26 132,44 75,62 18,44" stroke="#4F46E5" stroke-width="1.4" stroke-linejoin="round" fill="#C7D2FE" fill-opacity="0.25"/>
-                  <!-- Center Button Pin -->
-                  <circle cx="75" cy="44" r="4.2" stroke="#3730A3" stroke-width="1.8" fill="#4F46E5"/>
-                  <!-- Animated Hanging Tassel -->
-                  <g class="anim-cap-tassel">
-                    <!-- Tassel String draping over the edge -->
-                    <path d="M75 44 Q 96 46 112 56 L 112 84" stroke="#4338CA" stroke-width="2" stroke-linecap="round" fill="none"/>
-                    <rect x="109" y="84" width="6" height="5" rx="1.5" fill="#4F46E5"/>
-                    <path d="M109 89 L 107 106 M 112 89 L 112 108 M 115 89 L 117 106" stroke="#3730A3" stroke-width="2" stroke-linecap="round"/>
-                  </g>
-                </g>
-              </svg>
+            <div class="sc-foot">
+              <div class="bar" aria-hidden="true"><i style="width:45%"></i></div>
+              <button type="button" class="go">เข้าเรียน</button>
             </div>
-            
-            <div class="flex items-start justify-between relative z-10">
-              <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-2xl shadow-sm border border-indigo-100">
-                  🎓
-                </div>
-                <div>
-                  <span class="text-[11px] font-bold text-indigo-700 uppercase tracking-wider">วิชาที่ 10 • ภาษาต่างประเทศ</span>
-                  <h3 class="text-base font-black text-slate-800 leading-tight">ภาษาอังกฤษเพิ่มเติม</h3>
-                  <span class="text-xs text-slate-500 font-medium">18 บทเรียน • Academic Writing & IELTS</span>
-                </div>
+          </article>
+          <article class="sc subject-card-item hue-indigo" data-category="language">
+            <div class="sc-grid">
+              <span class="sc-tile" aria-hidden="true">🎓</span>
+              <div>
+                <p class="sc-eyebrow">วิชาที่ 10 • ภาษาต่างประเทศ</p>
+                <h3 class="sc-title">ภาษาอังกฤษเพิ่มเติม</h3>
+                <p class="sc-meta">18 บทเรียน • Academic Writing &amp; IELTS</p>
               </div>
-              <span class="px-2.5 py-1 rounded-xl bg-white text-indigo-700 text-[11px] font-black border border-indigo-200/90 shadow-sm">
-                65%
-              </span>
-            </div>
-            <div class="mt-3.5 relative z-10 flex items-center gap-3">
-              <div class="flex-1 h-2.5 bg-slate-200/70 rounded-full overflow-hidden p-0.5 shimmer-glow border border-slate-300/40">
-                <div class="h-full bg-indigo-500 rounded-full" style="width: 65%"></div>
+              <div class="sc-side">
+                <span class="sc-pct">65%</span>
+                <div class="art" aria-hidden="true"><svg class="ar ar-iel" viewBox="0 0 88 66" width="88" height="66" aria-hidden="true" focusable="false"><g transform="translate(44 35)"><circle class="bk-disc" r="27"/><circle class="bk-ring" r="30.5"/></g><g transform="translate(40 61)"><rect x="-21" y="-27" width="42" height="26" rx="4.5" fill="#fff" stroke="#312E81" stroke-width="2.4"/>
+<path class="iel-l" pathLength="1" style="animation-delay:-2.2s" d="M-14 -19H8" stroke="#4F46E5" stroke-width="3" stroke-linecap="round" fill="none"/>
+<path class="iel-l" pathLength="1" style="animation-delay:-1.75s" d="M-14 -12H9" stroke="#A5B4FC" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+<path class="iel-l" pathLength="1" style="animation-delay:-1.3s" d="M-14 -6H-1" stroke="#A5B4FC" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+<g transform="translate(15 -5)"><g class="pv iel-ok"><circle r="6.5" fill="#22C55E" stroke="#166534" stroke-width="1.8"/><path d="M-3 .2L-.8 2.5L3.4 -2.2" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g></g>
+</g>
+<g transform="translate(44 23)"><g class="pv iel-cap">
+<path d="M-12 1.5V9C-12 13 12 13 12 9V1.5" fill="#6366F1" stroke="#312E81" stroke-width="2.2" stroke-linejoin="round"/>
+<path d="M0 -14L22 -4.5L0 5L-22 -4.5Z" fill="#4F46E5" stroke="#312E81" stroke-width="2.2" stroke-linejoin="round"/>
+<path d="M-12 -5.4L0 -10" stroke="#818CF8" stroke-width="1.6" stroke-linecap="round"/>
+<path d="M22 -4.5V6" stroke="#F59E0B" stroke-width="1.8" stroke-linecap="round"/><circle cx="22" cy="8" r="2.3" fill="#FBBF24" stroke="#B45309" stroke-width="1"/>
+<circle cx="0" cy="-4.5" r="1.8" fill="#FBBF24"/>
+</g></g>
+<g transform="translate(15 18) scale(3.8)"><path class="tw" style="animation-delay:-0.6s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#FBBF24"/></g><g transform="translate(74 22) scale(3.4)"><path class="tw" style="animation-delay:-1.7s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#A5B4FC"/></g><g transform="translate(73 54) scale(3)"><path class="tw" style="animation-delay:-2.4s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#818CF8"/></g></svg></div>
               </div>
-              <button class="game-btn game-btn-white px-3.5 py-1.5 text-indigo-700 text-xs font-black shrink-0">
-                เข้าเรียน
-              </button>
             </div>
-          </div>
+            <div class="sc-foot">
+              <div class="bar" aria-hidden="true"><i style="width:65%"></i></div>
+              <button type="button" class="go">เข้าเรียน</button>
+            </div>
+          </article>
 
           <!-- Empty State (แสดงเมื่อค้นหาไม่พบวิชา) -->
-          <div id="subject-empty-state" class="hidden col-span-1 md:col-span-2 py-12 text-center">
-            <div class="w-16 h-16 mx-auto mb-3 rounded-2xl bg-white/90 border border-slate-200/80 shadow-sm flex items-center justify-center text-3xl">
-              🔍
-            </div>
-            <h4 class="text-base font-extrabold text-slate-700">ไม่พบรายวิชาที่ค้นหา</h4>
-            <p class="text-xs text-slate-500 mt-1">ลองเปลี่ยนคำค้นหา หรือเลือกหมวดหมู่อื่นดูนะ</p>
-            <button id="subject-reset-filters-btn" class="mt-4 game-btn game-btn-mint px-5 py-2.5 text-xs font-black">
-              ดูวิชาทั้งหมด 📚
-            </button>
+          <div id="subject-empty-state" class="empty hidden">
+            <span class="empty-i" aria-hidden="true">🔍</span>
+            <h3>ไม่พบรายวิชาที่ค้นหา</h3>
+            <p>ลองเปลี่ยนคำค้นหา หรือเลือกหมวดหมู่อื่นดูนะ</p>
+            <button id="subject-reset-filters-btn" type="button" class="btn">ดูวิชาทั้งหมด 📚</button>
           </div>
-
         </div>
-      </section>
+      </div>
 
     </main>
 
     <!-- ============================================== -->
-    <!-- BOTTOM NAVBAR (ยืดเต็มจอ Desktop) -->
+    <!-- BOTTOM NAVBAR -->
     <!-- ============================================== -->
-    <nav id="bottom-navbar" class="fixed bottom-0 left-0 right-0 w-full z-50 glass-nav border-t border-slate-200/80 px-6 py-2.5 rounded-t-3xl transition-all">
-      <div class="max-w-md mx-auto flex items-center justify-around">
-
-        <!-- 1. หน้าแรก (Home) -->
-        <a href="index.html" data-nav="home" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600 transition-all active:scale-95 group">
-          <div class="nav-icon-box w-11 h-9 rounded-2xl flex items-center justify-center transition-all">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-home">
-              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <path d="M5 12l-2 0l9 -9l9 9l-2 0" />
-              <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
-              <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
-            </svg>
-          </div>
-          <span class="nav-label text-[11px] font-medium text-slate-400">หน้าแรก</span>
+    <nav id="bottom-navbar" aria-label="เมนูหลัก">
+      <div class="nav-in">
+        <a href="index.html" data-nav="home" class="nav-i">
+          <span class="nav-icon-box nav-pill"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-home" aria-hidden="true"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 12l-2 0l9 -9l9 9l-2 0" /><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" /><path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" /></svg></span>
+          <span class="nav-label nav-l">หน้าแรก</span>
         </a>
-
-        <!-- 2. รายวิชา (Subject - Active) -->
-        <a href="subject.html" data-nav="subject" class="flex flex-col items-center gap-1 text-emerald-600 transition-all active:scale-95 group">
-          <div class="nav-icon-box w-11 h-9 rounded-2xl bg-emerald-50 flex items-center justify-center transition-all">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-book">
-              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <path d="M21.5 5.134a1 1 0 0 1 .493 .748l.007 .118v13a1 1 0 0 1 -1.5 .866a8 8 0 0 0 -7.5 -.266v-15.174a10 10 0 0 1 8.5 .708m-10.5 -.707l.001 15.174a8 8 0 0 0 -7.234 .117l-.327 .18l-.103 .044l-.049 .016l-.11 .026l-.061 .01l-.117 .006h-.042l-.11 -.012l-.077 -.014l-.108 -.032l-.126 -.056l-.095 -.056l-.089 -.067l-.06 -.056l-.073 -.082l-.064 -.089l-.022 -.036l-.032 -.06l-.044 -.103l-.016 -.049l-.026 -.11l-.01 -.061l-.004 -.049l-.002 -13.068a1 1 0 0 1 .5 -.866a10 10 0 0 1 8.5 -.707" />
-            </svg>
-          </div>
-          <span class="nav-label text-[11px] font-bold text-emerald-700">รายวิชา</span>
+        <a href="subject.html" data-nav="subject" class="nav-i on" aria-current="page">
+          <span class="nav-icon-box nav-pill"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-book" aria-hidden="true"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M21.5 5.134a1 1 0 0 1 .493 .748l.007 .118v13a1 1 0 0 1 -1.5 .866a8 8 0 0 0 -7.5 -.266v-15.174a10 10 0 0 1 8.5 .708m-10.5 -.707l.001 15.174a8 8 0 0 0 -7.234 .117l-.327 .18l-.103 .044l-.049 .016l-.11 .026l-.061 .01l-.117 .006h-.042l-.11 -.012l-.077 -.014l-.108 -.032l-.126 -.056l-.095 -.056l-.089 -.067l-.06 -.056l-.073 -.082l-.064 -.089l-.022 -.036l-.032 -.06l-.044 -.103l-.016 -.049l-.026 -.11l-.01 -.061l-.004 -.049l-.002 -13.068a1 1 0 0 1 .5 -.866a10 10 0 0 1 8.5 -.707" /></svg></span>
+          <span class="nav-label nav-l">รายวิชา</span>
         </a>
-
-        <!-- 3. ความคืบหน้า (Progress) -->
-        <a href="progress.html" data-nav="progress" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600 transition-all active:scale-95 group">
-          <div class="nav-icon-box w-11 h-9 rounded-2xl flex items-center justify-center transition-all">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-chart-bar-popular">
-              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <path d="M3 13a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -6" />
-              <path d="M9 9a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -10" />
-              <path d="M15 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -14" />
-              <path d="M4 20h14" />
-            </svg>
-          </div>
-          <span class="nav-label text-[11px] font-medium text-slate-400">ความคืบหน้า</span>
+        <a href="progress.html" data-nav="progress" class="nav-i">
+          <span class="nav-icon-box nav-pill"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-chart-bar-popular" aria-hidden="true"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M3 13a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -6" /><path d="M9 9a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -10" /><path d="M15 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -14" /><path d="M4 20h14" /></svg></span>
+          <span class="nav-label nav-l">ความคืบหน้า</span>
         </a>
-
       </div>
     </nav>
 

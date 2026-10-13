@@ -12,6 +12,36 @@ export const LOGIN_PAGE_URL = getLoginPageUrl();
 let cachedUser = null;
 let activeAuthPromise = null;
 
+// ตัวตัด loop: ถ้าถูกส่งไปหน้า login ซ้ำ ๆ ในเวลาสั้น ๆ แปลว่า study กับหน้า login เห็นสถานะเซสชันไม่ตรงกัน
+// (หน้า login คิดว่าล็อกอินอยู่ แล้วส่งกลับมา แต่ study ถูกตอบ 401) ให้หยุดเด้งแทนที่จะวนไม่จบ
+const LOGIN_REDIRECT_LOG_KEY = 'study_login_redirects';
+const LOGIN_REDIRECT_WINDOW_MS = 60 * 1000;
+const LOGIN_REDIRECT_MAX = 3;
+
+function reserveLoginRedirect(now = Date.now()) {
+    let stamps = [];
+    try {
+        const parsed = JSON.parse(sessionStorage.getItem(LOGIN_REDIRECT_LOG_KEY) || '[]');
+        if (Array.isArray(parsed)) {
+            stamps = parsed.filter((t) => typeof t === 'number' && now - t >= 0 && now - t < LOGIN_REDIRECT_WINDOW_MS);
+        }
+    } catch (_) {}
+
+    if (stamps.length >= LOGIN_REDIRECT_MAX) return false;
+
+    stamps.push(now);
+    try {
+        sessionStorage.setItem(LOGIN_REDIRECT_LOG_KEY, JSON.stringify(stamps));
+    } catch (_) {}
+    return true;
+}
+
+function resetLoginRedirects() {
+    try {
+        sessionStorage.removeItem(LOGIN_REDIRECT_LOG_KEY);
+    } catch (_) {}
+}
+
 /**
  * ฟังก์ชันอ่านค่า Cookie จาก document.cookie
  */
@@ -126,6 +156,7 @@ async function resolveSession(force = true) {
                 try {
                     sessionStorage.setItem('study_user', JSON.stringify(cachedUser));
                 } catch (_) {}
+                resetLoginRedirects();
 
                 // Dispatch Custom Event แจ้งเตือนทั้งหน้าเว็บว่า Auth พร้อมแล้ว
                 window.dispatchEvent(new CustomEvent('headface-auth-ready', { detail: { user: cachedUser } }));
@@ -158,14 +189,22 @@ export async function checkSession(force = true) {
 
 /**
  * ป้องกันหน้าเว็บ (Route Guard): ตรวจสอบสิทธิ์กับ Backend
- * พาไปหน้า Login กลางเฉพาะเมื่อ Backend ยืนยันว่าไม่มีเซสชัน (HTTP 401) เท่านั้น
- * หากตรวจสอบไม่ได้ชั่วคราว (เซิร์ฟเวอร์ล่ม/เครือข่ายหลุด) จะไม่เด้งผู้ใช้ออกและไม่ล้างเซสชัน
+ * - พาไปหน้า Login กลางเฉพาะเมื่อ Backend ยืนยันว่าไม่มีเซสชัน (HTTP 401) เท่านั้น
+ *   (และไม่เกิน LOGIN_REDIRECT_MAX ครั้งใน LOGIN_REDIRECT_WINDOW_MS เพื่อไม่ให้ loop)
+ * - หากตรวจสอบไม่ได้ชั่วคราว (เซิร์ฟเวอร์ล่ม/เครือข่ายหลุด/ติด CORS) จะไม่เด้งผู้ใช้ออกและไม่ล้างเซสชัน
+ * คืน user เฉพาะเมื่อ "ยืนยันได้จริง" (หรือเคยยืนยันสำเร็จในแท็บนี้) ผู้เรียกต้องถือว่า null = ยังไม่ผ่านการตรวจสิทธิ์
  * @param {boolean} force - บังคับยิงเช็กกับเซิร์ฟเวอร์จริง (ค่าเริ่มต้น: true)
+ * @returns {Promise<object|null>}
  */
 export async function requireAuth(force = true) {
     const state = await resolveSession(force);
     if (state.status === 'unauthenticated') {
-        redirectToLogin();
+        if (reserveLoginRedirect()) {
+            redirectToLogin();
+        } else {
+            console.error('[StudyAuth] Login redirect loop detected; staying on this page instead of redirecting again');
+        }
+        return null;
     }
     return state.user;
 }

@@ -223,6 +223,91 @@ describe('requireAuth — redirect เฉพาะเมื่อ Backend ตอ
     });
 });
 
+describe('ตัวตัด loop ระหว่าง study กับหน้า login', () => {
+    const loadPage = async () => loadAuth(); // จำลองการโหลดหน้าใหม่: โมดูลเริ่มใหม่ แต่ sessionStorage ของแท็บเดิมยังอยู่
+
+    test('401 ซ้ำ ๆ: redirect ได้ 3 ครั้ง แล้วหยุด (คืน null และไม่ redirect ครั้งที่ 4+)', async () => {
+        await inBrowser(
+            { hostname: 'beta-study.headface.app', fetchImpl: async () => jsonResponse(401, {}) },
+            async ({ redirects }) => {
+                for (let i = 1; i <= 6; i++) {
+                    const auth = await loadPage();
+                    assert.equal(await auth.requireAuth(true), null);
+                    assert.equal(redirects.length, Math.min(i, 3), `หลังโหลดหน้าครั้งที่ ${i}`);
+                }
+            }
+        );
+    });
+
+    test('ยืนยันตัวตนสำเร็จ → ล้างตัวนับ แล้ว redirect ได้ใหม่', async () => {
+        let status = 401;
+        await inBrowser(
+            { hostname: 'study.headface.app', fetchImpl: async () => (status === 200 ? jsonResponse(200, { success: true, user: USER }) : jsonResponse(401, {})) },
+            async ({ redirects, sessionStorage }) => {
+                for (let i = 0; i < 2; i++) await (await loadPage()).requireAuth(true);
+                assert.equal(redirects.length, 2);
+
+                status = 200;
+                assert.deepEqual(await (await loadPage()).requireAuth(true), USER);
+                assert.equal(sessionStorage.has('study_login_redirects'), false);
+
+                status = 401;
+                for (let i = 0; i < 4; i++) await (await loadPage()).requireAuth(true);
+                assert.equal(redirects.length, 2 + 3, 'หลังรีเซ็ตต้อง redirect ได้อีก 3 ครั้ง');
+            }
+        );
+    });
+
+    test('ครั้งที่เก่ากว่า 60 วินาทีไม่นับ', async () => {
+        const old = Date.now() - 61 * 1000;
+        await inBrowser(
+            {
+                hostname: 'study.headface.app',
+                session: { study_login_redirects: JSON.stringify([old, old, old]) },
+                fetchImpl: async () => jsonResponse(401, {})
+            },
+            async ({ redirects }) => {
+                await (await loadPage()).requireAuth(true);
+                assert.equal(redirects.length, 1);
+            }
+        );
+    });
+
+    test('ข้อมูลตัวนับเสียหาย/ผิดรูปแบบ → ไม่ error และ redirect ได้ตามปกติ', async () => {
+        for (const bad of ['not json', '{"a":1}', '"x"', 'null']) {
+            await inBrowser(
+                { hostname: 'study.headface.app', session: { study_login_redirects: bad }, fetchImpl: async () => jsonResponse(401, {}) },
+                async ({ redirects }) => {
+                    await (await loadPage()).requireAuth(true);
+                    assert.equal(redirects.length, 1, bad);
+                }
+            );
+        }
+    });
+
+    test('ตรวจเซสชันไม่ได้ (ติด CORS/เครือข่ายล้ม) → ไม่นับเป็นการ redirect และไม่คืนผู้ใช้', async () => {
+        await inBrowser(
+            { hostname: 'beta-study.headface.app', fetchImpl: async () => { throw new TypeError('Failed to fetch'); } },
+            async ({ redirects, sessionStorage }) => {
+                for (let i = 0; i < 5; i++) {
+                    assert.equal(await (await loadPage()).requireAuth(true), null);
+                }
+                assert.equal(redirects.length, 0);
+                assert.equal(sessionStorage.has('study_login_redirects'), false);
+            }
+        );
+    });
+});
+
+describe('main.js ปิดหน้าเมื่อยังไม่ผ่านการตรวจสิทธิ์', () => {
+    const MAIN_SOURCE = readFileSync(path.join(ROOT, 'js', 'main.js'), 'utf8');
+
+    test('ทั้งตอนโหลดหน้าและตอน Barba สลับหน้า ถ้า requireAuth ไม่คืนผู้ใช้ต้องเรียก failAuthGuardClosed', () => {
+        const calls = MAIN_SOURCE.match(/requireAuth\(true\)[\s\S]{0,200}?else \{\s*failAuthGuardClosed\(/g) || [];
+        assert.equal(calls.length, 2);
+    });
+});
+
 describe('getCsrfToken — อ่าน cookie ตามชื่อของ environment', () => {
     test('preview อ่าน hf_csrf_beta ไม่ใช่ hf_csrf ของ production ที่แชร์โดเมน .headface.app', async () => {
         await inBrowser(

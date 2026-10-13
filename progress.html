@@ -64,577 +64,235 @@
   <!-- Full-Width Fluid Desktop Outer Wrapper -->
   <div class="min-h-screen w-full bg-[#EEF4F8] flex flex-col relative overflow-x-hidden" data-barba="wrapper">
 
-    <!-- 🛡️ PERSISTENT HEADER BACKGROUND (สูง 235px ตามที่ผู้ใช้กำหนด) -->
-    <div id="mainBlueBg" class="header-bg-shell bg-curve" style="height: 235px;"></div>
+    <!-- 🛡️ PERSISTENT HEADER BACKGROUND (สูง 244px สำหรับหน้าความคืบหน้า; ความสูงต่อหน้าตั้งใน main.js: HEADER_HEIGHTS) -->
+    <div id="mainBlueBg" class="header-bg-shell bg-curve" style="height: 244px;"></div>
 
     <!-- 🛡️ PERSISTENT TOP APP BAR (อยู่นอก Barba Container เพื่อไม่ให้มีแอนิเมชันเวลาเปลี่ยนหน้า เป็น component ร่วมกัน) -->
-    <header id="shared-top-header" class="w-full max-w-4xl mx-auto pt-5 pb-3 px-5 text-white relative z-30">
-      <div class="flex items-center justify-between">
-        
-        <!-- ซ้าย: โลโก้แบรนด์ HEADFACE STUDY และ ชื่อหน้า (ติดกันตามแบบเดิม) -->
-        <div>
-          <div class="flex items-center gap-1.5 mb-0.5">
-            <span class="text-xs font-black uppercase tracking-wider text-emerald-100">
-              HEADFACE
-            </span>
-            <span class="bg-white/25 px-2 py-0.5 rounded-full text-[9px] font-black text-white tracking-wide">
-              STUDY
-            </span>
-            <span id="header-page-badge" class="bg-white/20 px-2 py-0.5 rounded-full text-[9px] font-bold text-white tracking-wide">🏆 ซีซัน 1</span>
-          </div>
-          <h1 id="header-page-title" class="text-xl font-extrabold tracking-tight leading-tight">ความคืบหน้า & อันดับ</h1>
+    <header id="shared-top-header" class="hdr">
+
+      <!-- ซ้าย: โลโก้แบรนด์ HEADFACE STUDY และ ชื่อหน้า -->
+      <div>
+        <div class="brand">
+          <span class="brand-name">HEADFACE</span>
+          <span class="pill-dark">STUDY</span>
+          <span id="header-page-badge" class="pill-dark">🏆 ซีซัน 1</span>
         </div>
-
-        <!-- ขวา: ไอคอนตั้งค่า และ โปรไฟล์ (อยู่ในแนวเดียวกับชื่อหน้า และอยู่นิ่งไม่ขยับ) -->
-        <div class="flex items-center gap-2.5">
-          <!-- ปุ่มการตั้งค่า (Settings) -->
-          <button class="w-9 h-9 flex items-center justify-center text-white hover:scale-110 active:scale-95 transition-transform cursor-pointer" title="การตั้งค่า" aria-label="การตั้งค่า">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#ffffff" class="icon icon-tabler icons-tabler-filled icon-tabler-settings"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M14.647 4.081a.724 .724 0 0 0 1.08 .448c2.439 -1.485 5.23 1.305 3.745 3.744a.724 .724 0 0 0 .447 1.08c2.775 .673 2.775 4.62 0 5.294a.724 .724 0 0 0 -.448 1.08c1.485 2.439 -1.305 5.23 -3.744 3.745a.724 .724 0 0 0 -1.08 .447c-.673 2.775 -4.62 2.775 -5.294 0a.724 .724 0 0 0 -1.08 -.448c-2.439 1.485 -5.23 -1.305 -3.745 -3.744a.724 .724 0 0 0 -.447 -1.08c-2.775 -.673 -2.775 -4.62 0 -5.294a.724 .724 0 0 0 .448 -1.08c-1.485 -2.439 1.305 -5.23 3.744 -3.745a.722 .722 0 0 0 1.08 -.447c.673 -2.775 4.62 -2.775 5.294 0zm-2.647 4.919a3 3 0 1 0 0 6a3 3 0 0 0 0 -6" /></svg>
-          </button>
-          
-          <!-- Container ของ Profile Button และ Popup Dropdown -->
-          <div class="relative">
-            <!-- 1. ปุ่ม Profile แสดงรูป Avatar และชื่อผู้ใช้ -->
-            <button id="profileBtn" type="button"
-              class="flex items-center gap-3 focus:outline-none rounded-full ring-2 ring-transparent focus:ring-white/50 transition-all cursor-pointer">
-              <div class="text-right hidden sm:block">
-                <p id="headerName" class="text-[13px] font-bold text-white leading-none">กำลังโหลด...</p>
-                <p id="headerStudentId" class="text-[11px] text-white/80 mt-1 font-medium">เลขประจำตัว: -</p>
-              </div>
-              <img id="headerAvatar" src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix&backgroundColor=e2e8f0" alt="Profile"
-                class="w-10 h-10 rounded-full border-2 border-white/30 bg-white shadow-sm object-cover shrink-0">
-            </button>
-
-            <!-- 2. Profile Popup Dropdown Card -->
-            <div id="profileDropdown"
-              class="hidden absolute right-0 top-full mt-3 w-56 bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-slate-100 overflow-hidden origin-top-right z-50 text-slate-800">
-              <div class="p-4 border-b border-slate-100/80 bg-slate-50/50">
-                <p id="dropdownName" class="text-sm font-semibold text-slate-900 truncate">กำลังโหลด...</p>
-                <p id="dropdownNumber" class="text-xs text-slate-500">เลขที่ -</p>
-                <p id="dropdownStudentId" class="text-xs text-slate-500">เลขประจำตัว: -</p>
-              </div>
-              <div class="p-2 space-y-1">
-                <a id="dropdownProfileLink" href="#"
-                  class="flex items-center gap-2.5 w-full px-3 py-2 text-sm text-slate-700 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl font-medium transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400">
-                    <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" />
-                    <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
-                  </svg>
-                  <span>ดูโปรไฟล์ส่วนตัว</span>
-                </a>
-                <button type="button" id="dropdownLogoutBtn"
-                  class="flex items-center gap-2.5 w-full px-3 py-2 text-sm text-rose-600 hover:bg-rose-50 rounded-xl font-medium transition-colors cursor-pointer">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                    <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
-                    <path d="M9 12h12l-3 -3" />
-                    <path d="M18 15l3 -3" />
-                  </svg>
-                  <span>ออกจากระบบ</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
+        <h1 id="header-page-title" class="hdr-title">ความคืบหน้า &amp; อันดับ</h1>
       </div>
+
+      <!-- ขวา: ไอคอนตั้งค่า และ โปรไฟล์ (อยู่ในแนวเดียวกับชื่อหน้า และอยู่นิ่งไม่ขยับ) -->
+      <div class="hdr-act">
+        <!-- ปุ่มการตั้งค่า (Settings) -->
+        <button type="button" class="icon-btn" title="การตั้งค่า" aria-label="การตั้งค่า">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14.647 4.081a.724 .724 0 0 0 1.08 .448c2.439 -1.485 5.23 1.305 3.745 3.744a.724 .724 0 0 0 .447 1.08c2.775 .673 2.775 4.62 0 5.294a.724 .724 0 0 0 -.448 1.08c1.485 2.439 -1.305 5.23 -3.744 3.745a.724 .724 0 0 0 -1.08 .447c-.673 2.775 -4.62 2.775 -5.294 0a.724 .724 0 0 0 -1.08 -.448c-2.439 1.485 -5.23 -1.305 -3.745 -3.744a.724 .724 0 0 0 -.447 -1.08c-2.775 -.673 -2.775 -4.62 0 -5.294a.724 .724 0 0 0 .448 -1.08c-1.485 -2.439 1.305 -5.23 3.744 -3.745a.722 .722 0 0 0 1.08 -.447c.673 -2.775 4.62 -2.775 5.294 0zm-2.647 4.919a3 3 0 1 0 0 6a3 3 0 0 0 0 -6" /></svg>
+        </button>
+
+        <!-- Container ของ Profile Button และ Popup Dropdown -->
+        <div class="profile-wrap">
+          <!-- 1. ปุ่ม Profile แสดงรูป Avatar และชื่อผู้ใช้ -->
+          <button id="profileBtn" type="button" class="profile-btn" aria-haspopup="true" aria-expanded="false" aria-controls="profileDropdown" aria-label="โปรไฟล์ผู้ใช้">
+            <span class="profile-text">
+              <span id="headerName" class="profile-name">กำลังโหลด...</span>
+              <span id="headerStudentId" class="profile-id">เลขประจำตัว: -</span>
+            </span>
+            <img id="headerAvatar" src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix&amp;backgroundColor=e2e8f0" alt="Profile" width="44" height="44">
+          </button>
+
+          <!-- 2. Profile Popup Dropdown Card -->
+          <div id="profileDropdown" class="menu hidden" role="dialog" aria-label="เมนูโปรไฟล์">
+            <div class="menu-h">
+              <p id="dropdownName" class="menu-n">กำลังโหลด...</p>
+              <p id="dropdownNumber" class="menu-s">เลขที่ -</p>
+              <p id="dropdownStudentId" class="menu-s">เลขประจำตัว: -</p>
+            </div>
+            <a id="dropdownProfileLink" href="#" class="menu-a">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"/><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/></svg>
+              <span>ดูโปรไฟล์ส่วนตัว</span>
+            </a>
+            <button type="button" id="dropdownLogoutBtn" class="menu-a danger">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2"/><path d="M9 12h12l-3 -3"/><path d="M18 15l3 -3"/></svg>
+              <span>ออกจากระบบ</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ฉากหลังมืดตอนเปิดเมนูโปรไฟล์ (main.js เปิด/ปิดพร้อม Dropdown) -->
+      <div id="profileScrim" class="scrim hidden" aria-hidden="true"></div>
     </header>
 
-    <!-- Barba Container: Progress -->
+    <!-- Barba Container: progress -->
     <main class="barba-container flex-1 pb-28 w-full max-w-4xl mx-auto" data-barba="container" data-barba-namespace="progress">
 
       <!-- ============================================== -->
-      <!-- EXP & STARS SUMMARY SECTION (2 กล่องเด่น อยู่ในพื้นที่เขียวฟ้าอย่างมิดชิด) -->
+      <!-- EXP & STARS SUMMARY SECTION (อยู่บนพื้นที่สีเขียว) -->
       <!-- ============================================== -->
-      <div class="text-white px-5 pb-4 relative z-20">
-        <div class="grid grid-cols-2 gap-3">
+      <div class="stats2">
+        <!-- 1. กล่อง EXP สะสม -->
+        <section class="card card-mint pc" aria-label="ค่าพลังสะสม">
+          <div class="pc-top"><p class="cap">ค่าพลังสะสม</p><span class="tile tile-sm tile-amber"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2l.018 .001l.016 .001l.083 .005l.011 .002h.011l.038 .009l.052 .008l.016 .006l.011 .001l.029 .011l.052 .014l.019 .009l.015 .004l.028 .014l.04 .017l.021 .012l.022 .01l.023 .015l.031 .017l.034 .024l.018 .011l.013 .012l.024 .017l.038 .034l.022 .017l.008 .01l.014 .012l.036 .041l.026 .027l.006 .009c.12 .147 .196 .322 .218 .513l.001 .012l.002 .041l.004 .064v6h5a1 1 0 0 1 .868 1.497l-.06 .091l-8 11c-.568 .783 -1.808 .38 -1.808 -.588v-6h-5a1 1 0 0 1 -.868 -1.497l.06 -.091l8 -11l.01 -.013l.018 -.024l.033 -.038l.018 -.022l.009 -.008l.013 -.014l.04 -.036l.028 -.026l.008 -.006a1 1 0 0 1 .402 -.199l.011 -.001l.027 -.005l.074 -.013l.011 -.001l.041 -.002z"/></svg></span></div>
+          <p class="pc-val"><span class="num" style="color:#047857">2,480</span><span class="unit">EXP</span></p>
+          <div class="pc-sub"><span class="cap">เลเวล 14</span><span class="pc-good">ยอดเยี่ยม 🚀</span></div>
+          <div class="bar" aria-hidden="true"><i style="width:82%"></i></div>
+        </section>
 
-          <!-- 1. กล่อง EXP สะสม (ไอคอนอยู่นิ่งตามที่กำหนด) -->
-          <div class="game-card game-card-mint p-3.5 text-slate-800 flex flex-col justify-between">
-            <div class="flex items-center justify-between mb-1.5">
-              <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wide">ค่าพลังสะสม</span>
-              <span class="w-6 h-6 rounded-xl bg-amber-100 text-amber-500 flex items-center justify-center shadow-inner">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                  <path d="M13 2l.018 .001l.016 .001l.083 .005l.011 .002h.011l.038 .009l.052 .008l.016 .006l.011 .001l.029 .011l.052 .014l.019 .009l.015 .004l.028 .014l.04 .017l.021 .012l.022 .01l.023 .015l.031 .017l.034 .024l.018 .011l.013 .012l.024 .017l.038 .034l.022 .017l.008 .01l.014 .012l.036 .041l.026 .027l.006 .009c.12 .147 .196 .322 .218 .513l.001 .012l.002 .041l.004 .064v6h5a1 1 0 0 1 .868 1.497l-.06 .091l-8 11c-.568 .783 -1.808 .38 -1.808 -.588v-6h-5a1 1 0 0 1 -.868 -1.497l.06 -.091l8 -11l.01 -.013l.018 -.024l.033 -.038l.018 -.022l.009 -.008l.013 -.014l.04 -.036l.028 -.026l.008 -.006a1 1 0 0 1 .402 -.199l.011 -.001l.027 -.005l.074 -.013l.011 -.001l.041 -.002z" />
-                </svg>
-              </span>
+        <!-- 2. กล่อง จำนวน STARS (พร้อมปุ่ม Info เปิดป๊อปอัป) -->
+        <section class="card card-amber pc" aria-label="STAR">
+          <div class="pc-top">
+            <div class="star-label">
+              <p>STAR</p>
+              <!-- ปุ่มไอคอน Information เปิดป๊อปอัปคำอธิบายกติการะบบดาว -->
+              <button id="btn-star-info" type="button" class="info-btn" aria-label="รายละเอียดระบบดาว" title="รายละเอียดระบบดาว"><span class="info-dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"/><path d="M12 9h.01"/><path d="M11 12h1v4h1"/></svg></span></button>
             </div>
-            <div>
-              <div class="flex items-baseline gap-1">
-                <span class="text-2xl font-black text-emerald-600 leading-none">2,480</span>
-                <span class="text-[11px] font-semibold text-slate-400">EXP</span>
-              </div>
-              <div class="mt-2">
-                <div class="flex justify-between text-[10px] font-medium text-slate-400 mb-1">
-                  <span>เลเวล 14</span>
-                  <span class="text-emerald-600 font-bold">ยอดเยี่ยม 🚀</span>
-                </div>
-                <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden shimmer-glow border border-slate-200/60">
-                  <div class="h-full bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full" style="width: 82%"></div>
-                </div>
-              </div>
-            </div>
+            <span class="tile tile-sm tile-gold"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg></span>
           </div>
-
-          <!-- 2. กล่อง จำนวน STARS (ดาวสะสม พร้อมปุ่ม Info เปิดป๊อปอัป) -->
-          <div class="game-card game-card-amber p-3.5 text-slate-800 flex flex-col justify-between relative overflow-hidden">
-            <div class="absolute -right-2 -bottom-2 w-12 h-12 text-amber-500 opacity-10 pointer-events-none">
-              <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-star">
-                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                <path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" />
-              </svg>
-            </div>
-            <div class="flex items-center justify-between mb-1.5">
-              <div class="flex items-center gap-1.5 shrink-0">
-                <span class="text-[11px] font-bold text-amber-800 uppercase tracking-wide">STAR</span>
-                <!-- ปุ่มไอคอน Information เปิดป๊อปอัปคำอธิบายกติการะบบดาว -->
-                <button id="btn-star-info" type="button" class="w-[18px] h-[18px] rounded-full bg-amber-100 hover:bg-amber-200 text-amber-700 flex items-center justify-center transition-transform hover:scale-110 active:scale-95 cursor-pointer shadow-2xs shrink-0" title="รายละเอียดระบบดาว" aria-label="รายละเอียดระบบดาว">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-info-circle">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                    <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" />
-                    <path d="M12 9h.01" />
-                    <path d="M11 12h1v4h1" />
-                  </svg>
-                </button>
-              </div>
-              <!-- ไอคอนดาว SVG Tabler Filled -->
-              <span class="w-6 h-6 rounded-xl bg-amber-400 text-white flex items-center justify-center shadow-inner shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#ffffff" class="icon icon-tabler icons-tabler-filled icon-tabler-star">
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                  <path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" />
-                </svg>
-              </span>
-            </div>
-            <div>
-              <div class="flex items-baseline gap-1">
-                <span class="text-2xl font-black text-amber-500 leading-none">74</span>
-                <span class="text-[11px] font-bold text-amber-600">ดาวสะสม</span>
-              </div>
-              <div class="mt-2">
-                <div class="flex justify-between text-[10px] font-medium text-slate-500 mb-1">
-                  <span>อันดับที่ 7</span>
-                  <span class="inline-flex items-center gap-1 text-amber-600 font-bold">
-                    <span>Top 10</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 inline-block game-wiggle" viewBox="0 0 24 24">
-                      <defs>
-                        <linearGradient id="flameGradTop10" x1="0%" y1="100%" x2="0%" y2="0%">
-                          <stop offset="0%" stop-color="#EA580C" />
-                          <stop offset="45%" stop-color="#F97316" />
-                          <stop offset="80%" stop-color="#FBBF24" />
-                          <stop offset="100%" stop-color="#FDE047" />
-                        </linearGradient>
-                      </defs>
-                      <path d="M10 2c0 -.88 1.056 -1.331 1.692 -.722c1.958 1.876 3.096 5.995 1.75 9.12l-.08 .174l.012 .003c.625 .133 1.203 -.43 2.303 -2.173l.14 -.224a1 1 0 0 1 1.582 -.153c1.334 1.435 2.601 4.377 2.601 6.27c0 4.265 -3.591 7.705 -8 7.705s-8 -3.44 -8 -7.706c0 -2.252 1.022 -4.716 2.632 -6.301l.605 -.589c.241 -.236 .434 -.43 .618 -.624c1.43 -1.512 2.145 -2.924 2.145 -4.78" fill="url(#flameGradTop10)" />
-                      <path d="M12 12c.9 1.6 2 2.5 2 4.2a2 2 0 0 1 -4 0c0-1.7 1.1-2.6 2-4.2z" fill="#FFF7ED" opacity="0.85" />
-                    </svg>
-                  </span>
-                </div>
-                <div class="w-full h-2 bg-amber-100 rounded-full overflow-hidden shimmer-glow border border-amber-200/60">
-                  <div class="h-full bg-gradient-to-r from-amber-400 to-yellow-500 rounded-full" style="width: 74%"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
+          <p class="pc-val"><span class="num" style="color:#B45309">74</span><span class="unit">ดาวสะสม</span></p>
+          <div class="pc-sub"><span class="cap">อันดับที่ 7</span><span class="chip chip-amber">Top 10<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="flameGradTop10" x1="0%" y1="100%" x2="0%" y2="0%"><stop offset="0%" stop-color="#EA580C"/><stop offset="45%" stop-color="#F97316"/><stop offset="80%" stop-color="#FBBF24"/><stop offset="100%" stop-color="#FDE047"/></linearGradient></defs><path d="M10 2c0 -.88 1.056 -1.331 1.692 -.722c1.958 1.876 3.096 5.995 1.75 9.12l-.08 .174l.012 .003c.625 .133 1.203 -.43 2.303 -2.173l.14 -.224a1 1 0 0 1 1.582 -.153c1.334 1.435 2.601 4.377 2.601 6.27c0 4.265 -3.591 7.705 -8 7.705s-8 -3.44 -8 -7.706c0 -2.252 1.022 -4.716 2.632 -6.301l.605 -.589c.241 -.236 .434 -.43 .618 -.624c1.43 -1.512 2.145 -2.924 2.145 -4.78" fill="url(#flameGradTop10)"/><path d="M12 12c.9 1.6 2 2.5 2 4.2a2 2 0 0 1 -4 0c0-1.7 1.1-2.6 2-4.2z" fill="#FFF7ED" opacity="0.85"/></svg></span></div>
+          <div class="bar bar-amber" aria-hidden="true"><i style="width:74%"></i></div>
+        </section>
       </div>
 
       <!-- ============================================== -->
-      <!-- 2. QUICK STATS (สถิติการเรียนรู้ภาพรวม) -->
+      <!-- QUICK STATS (สถิติการเรียนรู้ภาพรวม) -->
       <!-- ============================================== -->
-      <section class="mt-[29px] px-5">
-        <div class="game-card game-card-neutral p-4 flex items-center justify-around text-center">
-          <div>
-            <span class="text-lg font-black text-slate-800">5 วัน</span>
-            <p class="text-[10px] font-bold text-orange-500 mt-0.5 flex items-center justify-center gap-1">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 inline-block game-wiggle" viewBox="0 0 24 24">
-                <defs>
-                  <linearGradient id="flameGradStreak" x1="0%" y1="100%" x2="0%" y2="0%">
-                    <stop offset="0%" stop-color="#EA580C" />
-                    <stop offset="45%" stop-color="#F97316" />
-                    <stop offset="80%" stop-color="#FBBF24" />
-                    <stop offset="100%" stop-color="#FDE047" />
-                  </linearGradient>
-                </defs>
-                <path d="M10 2c0 -.88 1.056 -1.331 1.692 -.722c1.958 1.876 3.096 5.995 1.75 9.12l-.08 .174l.012 .003c.625 .133 1.203 -.43 2.303 -2.173l.14 -.224a1 1 0 0 1 1.582 -.153c1.334 1.435 2.601 4.377 2.601 6.27c0 4.265 -3.591 7.705 -8 7.705s-8 -3.44 -8 -7.706c0 -2.252 1.022 -4.716 2.632 -6.301l.605 -.589c.241 -.236 .434 -.43 .618 -.624c1.43 -1.512 2.145 -2.924 2.145 -4.78" fill="url(#flameGradStreak)" />
-                <path d="M12 12c.9 1.6 2 2.5 2 4.2a2 2 0 0 1 -4 0c0-1.7 1.1-2.6 2-4.2z" fill="#FFF7ED" opacity="0.85" />
-              </svg>
-              <span>Streak ต่อเนื่อง</span>
-            </p>
-          </div>
-          <div class="w-[2px] h-8 bg-slate-200 rounded-full"></div>
-          <div>
-            <span class="text-lg font-black text-slate-800">248 ข้อ</span>
-            <p class="text-[10px] font-bold text-emerald-600 mt-0.5">✅ ทำโจทย์สะสม</p>
-          </div>
-          <div class="w-[2px] h-8 bg-slate-200 rounded-full"></div>
-          <div>
-            <span class="text-lg font-black text-slate-800">88%</span>
-            <p class="text-[10px] font-bold text-sky-600 mt-0.5">🎯 แม่นยำเฉลี่ย</p>
-          </div>
+      <section class="pad" style="margin-top:30px" aria-label="สถิติการเรียนรู้">
+        <div class="qs">
+          <div class="qs-i"><p class="qs-v">5 วัน</p><p class="qs-l" style="color:#C2410C"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="flameGradStreak" x1="0%" y1="100%" x2="0%" y2="0%"><stop offset="0%" stop-color="#EA580C"/><stop offset="45%" stop-color="#F97316"/><stop offset="80%" stop-color="#FBBF24"/><stop offset="100%" stop-color="#FDE047"/></linearGradient></defs><path d="M10 2c0 -.88 1.056 -1.331 1.692 -.722c1.958 1.876 3.096 5.995 1.75 9.12l-.08 .174l.012 .003c.625 .133 1.203 -.43 2.303 -2.173l.14 -.224a1 1 0 0 1 1.582 -.153c1.334 1.435 2.601 4.377 2.601 6.27c0 4.265 -3.591 7.705 -8 7.705s-8 -3.44 -8 -7.706c0 -2.252 1.022 -4.716 2.632 -6.301l.605 -.589c.241 -.236 .434 -.43 .618 -.624c1.43 -1.512 2.145 -2.924 2.145 -4.78" fill="url(#flameGradStreak)"/><path d="M12 12c.9 1.6 2 2.5 2 4.2a2 2 0 0 1 -4 0c0-1.7 1.1-2.6 2-4.2z" fill="#FFF7ED" opacity="0.85"/></svg><span>Streak ต่อเนื่อง</span></p></div>
+          <span class="qs-div"></span>
+          <div class="qs-i"><p class="qs-v">248 ข้อ</p><p class="qs-l" style="color:#047857">✅ ทำโจทย์สะสม</p></div>
+          <span class="qs-div"></span>
+          <div class="qs-i"><p class="qs-v">88%</p><p class="qs-l" style="color:#0369A1">🎯 แม่นยำเฉลี่ย</p></div>
         </div>
       </section>
 
       <!-- ============================================== -->
-      <!-- 3. LEADERBOARD SECTION (ตารางอันดับจากจำนวนดาว) -->
+      <!-- LEADERBOARD SECTION (ตารางอันดับจากจำนวนดาว) -->
       <!-- ============================================== -->
-      <section class="mt-5 px-5">
-        <div class="flex items-center justify-between mb-4">
-          <div class="flex items-center gap-2">
-            <div class="w-7 h-7 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-sm shadow-sm font-bold">
-              👑
-            </div>
-            <h3 class="font-extrabold text-base text-slate-800">ตารางอันดับดาว (Leaderboard)</h3>
-          </div>
-          <span class="text-[11px] font-semibold text-slate-400 flex items-center gap-1">
-            <span>อัปเดตแบบเรียลไทม์</span>
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-amber-500 inline-block" viewBox="0 0 24 24" fill="currentColor">
-              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <path d="M13 2l.018 .001l.016 .001l.083 .005l.011 .002h.011l.038 .009l.052 .008l.016 .006l.011 .001l.029 .011l.052 .014l.019 .009l.015 .004l.028 .014l.04 .017l.021 .012l.022 .01l.023 .015l.031 .017l.034 .024l.018 .011l.013 .012l.024 .017l.038 .034l.022 .017l.008 .01l.014 .012l.036 .041l.026 .027l.006 .009c.12 .147 .196 .322 .218 .513l.001 .012l.002 .041l.004 .064v6h5a1 1 0 0 1 .868 1.497l-.06 .091l-8 11c-.568 .783 -1.808 .38 -1.808 -.588v-6h-5a1 1 0 0 1 -.868 -1.497l.06 -.091l8 -11l.01 -.013l.018 -.024l.033 -.038l.018 -.022l.009 -.008l.013 -.014l.04 -.036l.028 -.026l.008 -.006a1 1 0 0 1 .402 -.199l.011 -.001l.027 -.005l.074 -.013l.011 -.001l.041 -.002z" />
-            </svg>
-          </span>
+      <section class="pad" style="margin-top:26px" aria-labelledby="h-lb">
+        <div class="lb-h">
+          <span class="tile tile-amber" style="width:40px;height:40px;font-size:22px" aria-hidden="true">👑</span>
+          <h2 id="h-lb">ตารางอันดับดาว (Leaderboard)</h2>
+          <span class="live"><span>อัปเดตแบบเรียลไทม์</span><svg width="14" height="14" viewBox="0 0 24 24" fill="#D97706" aria-hidden="true"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg></span>
         </div>
 
         <!-- TOP 3 PODIUM -->
-        <div class="game-card game-card-neutral p-4 mb-4 pt-6 bg-gradient-to-b from-sky-50/60 to-emerald-50/60">
-          <div class="flex items-end justify-center gap-3">
-
-            <!-- อันดับ 2 -->
-            <div class="flex flex-col items-center flex-1">
-              <div class="relative mb-2">
-                <div class="w-12 h-12 rounded-full ring-2 ring-slate-300 overflow-hidden shadow-md bg-white">
-                  <img src="https://api.dicebear.com/7.x/bottts/svg?seed=student2&backgroundColor=c0aede" alt="อันดับ 2" class="w-full h-full object-cover">
-                </div>
-                <span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-slate-300 text-slate-700 text-[10px] font-black flex items-center justify-center shadow">
-                  2
-                </span>
-              </div>
-              <span class="text-xs font-bold text-slate-700 truncate max-w-[85px]">น้องกัปตัน</span>
-              <span class="inline-flex items-center gap-1 text-[11px] font-black text-amber-700 bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-full mt-1 shadow-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="text-amber-500 shrink-0"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg>
-                <span>115</span>
-              </span>
-              <div class="w-full h-16 bg-slate-200 border-2 border-slate-300 rounded-t-2xl mt-2 flex items-center justify-center text-slate-500 font-black text-sm shadow-[0_4px_0_0_#94A3B8]">
-                🥈
-              </div>
-            </div>
-
-            <!-- อันดับ 1 -->
-            <div class="flex flex-col items-center flex-1 -mt-4">
-              <div class="relative mb-2">
-                <div class="text-2xl game-float game-sparkle mb-0.5">👑</div>
-                <div class="w-14 h-14 rounded-full ring-4 ring-amber-400 overflow-hidden shadow-lg bg-white">
-                  <img src="https://api.dicebear.com/7.x/bottts/svg?seed=student1&backgroundColor=ffd5dc" alt="อันดับ 1" class="w-full h-full object-cover">
-                </div>
-                <span class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-amber-400 text-white text-[11px] font-black flex items-center justify-center shadow">
-                  1
-                </span>
-              </div>
-              <span class="text-xs font-extrabold text-slate-800 truncate max-w-[90px]">น้องฟ้าใส</span>
-              <span class="inline-flex items-center gap-1 text-xs font-black text-amber-800 bg-amber-200 border border-amber-300 px-2.5 py-0.5 rounded-full mt-1 shadow-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" class="text-amber-600 shrink-0"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg>
-                <span>128</span>
-              </span>
-              <div class="w-full h-24 bg-gradient-to-t from-amber-400 to-amber-300 border-2 border-amber-400 rounded-t-2xl mt-2 flex items-center justify-center text-white font-black text-lg shadow-[0_4px_0_0_#D97706]">
-                🥇
-              </div>
-            </div>
-
-            <!-- อันดับ 3 -->
-            <div class="flex flex-col items-center flex-1">
-              <div class="relative mb-2">
-                <div class="w-12 h-12 rounded-full ring-2 ring-amber-600/50 overflow-hidden shadow-md bg-white">
-                  <img src="https://api.dicebear.com/7.x/bottts/svg?seed=student3&backgroundColor=d1d4f9" alt="อันดับ 3" class="w-full h-full object-cover">
-                </div>
-                <span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-amber-600 text-white text-[10px] font-black flex items-center justify-center shadow">
-                  3
-                </span>
-              </div>
-              <span class="text-xs font-bold text-slate-700 truncate max-w-[85px]">น้องไทเกอร์</span>
-              <span class="inline-flex items-center gap-1 text-[11px] font-black text-amber-700 bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-full mt-1 shadow-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="text-amber-500 shrink-0"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg>
-                <span>98</span>
-              </span>
-              <div class="w-full h-12 bg-amber-100 border-2 border-amber-200 rounded-t-2xl mt-2 flex items-center justify-center text-amber-800 font-black text-sm shadow-[0_4px_0_0_#FCD34D]">
-                🥉
-              </div>
-            </div>
-
+        <div class="pod">
+          <div class="pod-col">
+            <div class="pod-av" style="--ring:#94A3B8;--rk:#475569"><img src="https://api.dicebear.com/7.x/bottts/svg?seed=student2&amp;backgroundColor=c0aede" alt="อันดับ 2" width="56" height="56"><span class="rank">2</span></div>
+            <p class="pod-name">น้องกัปตัน</p>
+            <span class="starchip"><svg width="12" height="12" viewBox="0 0 24 24" fill="#D97706" aria-hidden="true"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg><span>115</span></span>
+            <div class="pod-block" style="height:48px;background:#E2E8F0;border-color:#94A3B8"><span aria-hidden="true">🥈</span></div>
+          </div>
+          <div class="pod-col">
+            <div class="crown" aria-hidden="true">👑</div>
+            <div class="pod-av" style="--ring:#D97706;--rk:#B45309"><img src="https://api.dicebear.com/7.x/bottts/svg?seed=student1&amp;backgroundColor=ffd5dc" alt="อันดับ 1" width="72" height="72"><span class="rank">1</span></div>
+            <p class="pod-name">น้องฟ้าใส</p>
+            <span class="starchip"><svg width="12" height="12" viewBox="0 0 24 24" fill="#D97706" aria-hidden="true"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg><span>128</span></span>
+            <div class="pod-block" style="height:72px;background:linear-gradient(180deg,#FCD34D,#FBBF24);border-color:#D97706"><span aria-hidden="true">🥇</span></div>
+          </div>
+          <div class="pod-col">
+            <div class="pod-av" style="--ring:#C2410C;--rk:#9A3412"><img src="https://api.dicebear.com/7.x/bottts/svg?seed=student3&amp;backgroundColor=d1d4f9" alt="อันดับ 3" width="56" height="56"><span class="rank">3</span></div>
+            <p class="pod-name">น้องไทเกอร์</p>
+            <span class="starchip"><svg width="12" height="12" viewBox="0 0 24 24" fill="#D97706" aria-hidden="true"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg><span>98</span></span>
+            <div class="pod-block" style="height:36px;background:#FED7AA;border-color:#FB923C"><span aria-hidden="true">🥉</span></div>
           </div>
         </div>
 
         <!-- MY RANKING CARD -->
-        <div class="rounded-3xl p-3.5 text-white bg-gradient-to-r from-emerald-500 to-teal-600 border-2 border-emerald-400 shadow-[0_6px_0_0_#047857] hover:-translate-y-0.5 hover:shadow-[0_8px_0_0_#047857] active:translate-y-1 active:shadow-[0_2px_0_0_#047857] mb-4 flex items-center justify-between transition-all">
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center font-black text-sm text-white border border-white/30">
-              #7
-            </div>
-            <div class="w-10 h-10 rounded-full border-2 border-white overflow-hidden bg-[#DCE4EC] shadow-sm shrink-0">
-              <img src="assets/avatar.webp" alt="My Profile" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='assets/avatar.png';">
-            </div>
-            <div>
-              <div class="flex items-center gap-1.5">
-                <span class="font-extrabold text-sm">น้องพรีม</span>
-                <span class="px-1.5 py-0.5 rounded-md bg-white/25 text-[9px] font-bold">ฉัน</span>
-              </div>
-              <span class="text-[10px] text-emerald-100">ขาดอีก 4 ดาวขึ้นสู่อันดับ 6!</span>
-            </div>
+        <div class="me">
+          <span class="me-rank">#7</span>
+          <img class="me-av" src="assets/avatar.webp" alt="My Profile" width="44" height="44" onerror="this.onerror=null; this.src='assets/avatar.png';">
+          <div class="me-t">
+            <p class="me-name"><span>น้องพรีม</span><span class="me-chip">ฉัน</span></p>
+            <p class="me-sub">ขาดอีก 4 ดาวขึ้นสู่อันดับ 6!</p>
           </div>
-          <div class="text-right">
-            <span class="inline-flex items-center gap-1 text-base font-black text-amber-300">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" class="text-amber-300 shrink-0"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg>
-              <span>74</span>
-            </span>
-            <p class="text-[9px] text-emerald-100">ดาวสะสม</p>
+          <div class="me-r">
+            <p class="me-star"><svg width="18" height="18" viewBox="0 0 24 24" fill="#FCD34D" aria-hidden="true"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg><span>74</span></p>
+            <p class="me-cap">ดาวสะสม</p>
           </div>
         </div>
 
         <!-- LEADERBOARD LIST (อันดับอื่นๆ 4-10) -->
-        <div class="game-card game-card-neutral p-3 flex flex-col divide-y divide-slate-100">
-
-          <!-- อันดับ 4 -->
-          <div class="flex items-center justify-between py-2.5 px-2 hover:bg-slate-50 rounded-2xl transition-all">
-            <div class="flex items-center gap-3">
-              <span class="w-6 text-center font-extrabold text-xs text-slate-400">4</span>
-              <div class="w-9 h-9 rounded-2xl bg-sky-50 overflow-hidden">
-                <img src="https://api.dicebear.com/7.x/bottts/svg?seed=rank4&backgroundColor=b6e3f4" alt="Rank 4" class="w-full h-full object-cover">
-              </div>
-              <div>
-                <h5 class="text-xs font-bold text-slate-800">น้องมาร์ค วิทย์-คอม</h5>
-                <span class="text-[10px] text-slate-400">โรงเรียนเตรียมฯ</span>
-              </div>
-            </div>
-            <span class="inline-flex items-center gap-1 text-xs font-black text-amber-700 bg-amber-100/80 border border-amber-200 px-2.5 py-1 rounded-xl shadow-xs">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="text-amber-500 shrink-0"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg>
-              <span>91</span>
-            </span>
+        <div class="lb-list">
+          <div class="lb-row">
+            <span class="lb-rank">4</span>
+            <img class="lb-av" src="https://api.dicebear.com/7.x/bottts/svg?seed=rank4&amp;backgroundColor=b6e3f4" alt="" width="40" height="40">
+            <div class="lb-t"><h3>น้องมาร์ค วิทย์-คอม</h3><p>โรงเรียนเตรียมฯ</p></div>
+            <span class="starchip"><svg width="12" height="12" viewBox="0 0 24 24" fill="#D97706" aria-hidden="true"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg><span>91</span></span>
           </div>
-
-          <!-- อันดับ 5 -->
-          <div class="flex items-center justify-between py-2.5 px-2 hover:bg-slate-50 rounded-2xl transition-all">
-            <div class="flex items-center gap-3">
-              <span class="w-6 text-center font-extrabold text-xs text-slate-400">5</span>
-              <div class="w-9 h-9 rounded-2xl bg-teal-50 overflow-hidden">
-                <img src="https://api.dicebear.com/7.x/bottts/svg?seed=rank5&backgroundColor=c0aede" alt="Rank 5" class="w-full h-full object-cover">
-              </div>
-              <div>
-                <h5 class="text-xs font-bold text-slate-800">น้องแพรว สรุปเคมี</h5>
-                <span class="text-[10px] text-slate-400">ม.5 ห้องกิฟต์</span>
-              </div>
-            </div>
-            <span class="inline-flex items-center gap-1 text-xs font-black text-amber-700 bg-amber-100/80 border border-amber-200 px-2.5 py-1 rounded-xl shadow-xs">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="text-amber-500 shrink-0"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg>
-              <span>85</span>
-            </span>
+          <div class="lb-row">
+            <span class="lb-rank">5</span>
+            <img class="lb-av" src="https://api.dicebear.com/7.x/bottts/svg?seed=rank5&amp;backgroundColor=c0aede" alt="" width="40" height="40">
+            <div class="lb-t"><h3>น้องแพรว สรุปเคมี</h3><p>ม.5 ห้องกิฟต์</p></div>
+            <span class="starchip"><svg width="12" height="12" viewBox="0 0 24 24" fill="#D97706" aria-hidden="true"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg><span>85</span></span>
           </div>
-
-          <!-- อันดับ 6 -->
-          <div class="flex items-center justify-between py-2.5 px-2 hover:bg-slate-50 rounded-2xl transition-all">
-            <div class="flex items-center gap-3">
-              <span class="w-6 text-center font-extrabold text-xs text-slate-400">6</span>
-              <div class="w-9 h-9 rounded-2xl bg-amber-50 overflow-hidden">
-                <img src="https://api.dicebear.com/7.x/bottts/svg?seed=rank6&backgroundColor=ffd5dc" alt="Rank 6" class="w-full h-full object-cover">
-              </div>
-              <div>
-                <h5 class="text-xs font-bold text-slate-800">น้องเจมส์ ฟิสิกส์เก่ง</h5>
-                <span class="text-[10px] text-slate-400">สายวิทย์-คณิต</span>
-              </div>
-            </div>
-            <span class="inline-flex items-center gap-1 text-xs font-black text-amber-700 bg-amber-100/80 border border-amber-200 px-2.5 py-1 rounded-xl shadow-xs">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="text-amber-500 shrink-0"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg>
-              <span>78</span>
-            </span>
+          <div class="lb-row">
+            <span class="lb-rank">6</span>
+            <img class="lb-av" src="https://api.dicebear.com/7.x/bottts/svg?seed=rank6&amp;backgroundColor=ffd5dc" alt="" width="40" height="40">
+            <div class="lb-t"><h3>น้องเจมส์ ฟิสิกส์เก่ง</h3><p>สายวิทย์-คณิต</p></div>
+            <span class="starchip"><svg width="12" height="12" viewBox="0 0 24 24" fill="#D97706" aria-hidden="true"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg><span>78</span></span>
           </div>
-
-          <!-- อันดับ 8 -->
-          <div class="flex items-center justify-between py-2.5 px-2 hover:bg-slate-50 rounded-2xl transition-all">
-            <div class="flex items-center gap-3">
-              <span class="w-6 text-center font-extrabold text-xs text-slate-400">8</span>
-              <div class="w-9 h-9 rounded-2xl bg-rose-50 overflow-hidden">
-                <img src="https://api.dicebear.com/7.x/bottts/svg?seed=rank8&backgroundColor=d1d4f9" alt="Rank 8" class="w-full h-full object-cover">
-              </div>
-              <div>
-                <h5 class="text-xs font-bold text-slate-800">น้องบิว สายอังกฤษ</h5>
-                <span class="text-[10px] text-slate-400">เด็กสายศิลป์</span>
-              </div>
-            </div>
-            <span class="inline-flex items-center gap-1 text-xs font-black text-amber-700 bg-amber-100/80 border border-amber-200 px-2.5 py-1 rounded-xl shadow-xs">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="text-amber-500 shrink-0"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg>
-              <span>70</span>
-            </span>
+          <div class="lb-row">
+            <span class="lb-rank">8</span>
+            <img class="lb-av" src="https://api.dicebear.com/7.x/bottts/svg?seed=rank8&amp;backgroundColor=d1d4f9" alt="" width="40" height="40">
+            <div class="lb-t"><h3>น้องบิว สายอังกฤษ</h3><p>เด็กสายศิลป์</p></div>
+            <span class="starchip"><svg width="12" height="12" viewBox="0 0 24 24" fill="#D97706" aria-hidden="true"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg><span>70</span></span>
           </div>
-
-          <!-- อันดับ 9 -->
-          <div class="flex items-center justify-between py-2.5 px-2 hover:bg-slate-50 rounded-2xl transition-all">
-            <div class="flex items-center gap-3">
-              <span class="w-6 text-center font-extrabold text-xs text-slate-400">9</span>
-              <div class="w-9 h-9 rounded-2xl bg-purple-50 overflow-hidden">
-                <img src="https://api.dicebear.com/7.x/bottts/svg?seed=rank9&backgroundColor=b6e3f4" alt="Rank 9" class="w-full h-full object-cover">
-              </div>
-              <div>
-                <h5 class="text-xs font-bold text-slate-800">น้องเต้ เลขง่ายนิดเดียว</h5>
-                <span class="text-[10px] text-slate-400">ม.5 ชายล้วน</span>
-              </div>
-            </div>
-            <span class="inline-flex items-center gap-1 text-xs font-black text-amber-700 bg-amber-100/80 border border-amber-200 px-2.5 py-1 rounded-xl shadow-xs">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="text-amber-500 shrink-0"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg>
-              <span>66</span>
-            </span>
+          <div class="lb-row">
+            <span class="lb-rank">9</span>
+            <img class="lb-av" src="https://api.dicebear.com/7.x/bottts/svg?seed=rank9&amp;backgroundColor=b6e3f4" alt="" width="40" height="40">
+            <div class="lb-t"><h3>น้องเต้ เลขง่ายนิดเดียว</h3><p>ม.5 ชายล้วน</p></div>
+            <span class="starchip"><svg width="12" height="12" viewBox="0 0 24 24" fill="#D97706" aria-hidden="true"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg><span>66</span></span>
           </div>
-
-          <!-- อันดับ 10 -->
-          <div class="flex items-center justify-between py-2.5 px-2 hover:bg-slate-50 rounded-2xl transition-all">
-            <div class="flex items-center gap-3">
-              <span class="w-6 text-center font-extrabold text-xs text-slate-400">10</span>
-              <div class="w-9 h-9 rounded-2xl bg-emerald-50 overflow-hidden">
-                <img src="https://api.dicebear.com/7.x/bottts/svg?seed=rank10&backgroundColor=c0aede" alt="Rank 10" class="w-full h-full object-cover">
-              </div>
-              <div>
-                <h5 class="text-xs font-bold text-slate-800">น้องมายด์ ขยันทุกวัน</h5>
-                <span class="text-[10px] text-slate-400">ม.ปลายขยันขันแข็ง</span>
-              </div>
-            </div>
-            <span class="inline-flex items-center gap-1 text-xs font-black text-amber-700 bg-amber-100/80 border border-amber-200 px-2.5 py-1 rounded-xl shadow-xs">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="text-amber-500 shrink-0"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" /></svg>
-              <span>62</span>
-            </span>
+          <div class="lb-row">
+            <span class="lb-rank">10</span>
+            <img class="lb-av" src="https://api.dicebear.com/7.x/bottts/svg?seed=rank10&amp;backgroundColor=c0aede" alt="" width="40" height="40">
+            <div class="lb-t"><h3>น้องมายด์ ขยันทุกวัน</h3><p>ม.ปลายขยันขันแข็ง</p></div>
+            <span class="starchip"><svg width="12" height="12" viewBox="0 0 24 24" fill="#D97706" aria-hidden="true"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg><span>62</span></span>
           </div>
-
         </div>
 
         <!-- Action Button -->
-        <div class="mt-4 mb-2">
-          <button class="game-btn game-btn-orange w-full py-3.5 text-sm font-extrabold gap-2">
-            <span>เข้าสอบ Mock Exam ล่าดาวเพิ่ม</span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#ffffff" class="icon icon-tabler icons-tabler-filled icon-tabler-star">
-              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" />
-            </svg>
-          </button>
-        </div>
+        <button type="button" class="exam-btn"><span>เข้าสอบ Mock Exam ล่าดาวเพิ่ม</span><svg width="18" height="18" viewBox="0 0 24 24" fill="#ffffff" aria-hidden="true"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg></button>
       </section>
 
       <!-- ============================================== -->
-      <!-- 🌟 MODAL: คำอธิบายระบบดาว (STARS INFO MODAL POPUP) -->
+      <!-- 🌟 MODAL: คำอธิบายระบบดาว (Bottom Sheet) -->
       <!-- ============================================== -->
-      <div id="star-info-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-xs transition-opacity duration-200 opacity-0 pointer-events-none" aria-hidden="true" role="dialog" aria-modal="true">
-        <div id="star-info-modal-card" class="game-card game-card-amber bg-white w-full max-w-sm p-5 text-slate-800 shadow-2xl relative transform transition-all duration-200 scale-95 opacity-0 max-h-[90vh] overflow-y-auto">
-          
-          <!-- Header: ไอคอนดาว + ชื่อหัวข้อ + ปุ่มปิด ✕ -->
-          <div class="flex items-center justify-between pb-3 border-b border-amber-100 mb-3.5">
-            <div class="flex items-center gap-2.5">
-              <span class="w-8 h-8 rounded-xl bg-amber-400 text-white flex items-center justify-center shadow-inner shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#ffffff" class="icon icon-tabler icons-tabler-filled icon-tabler-star">
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                  <path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" />
-                </svg>
-              </span>
-              <div>
-                <h3 class="font-extrabold text-sm text-slate-800">ระบบดาว (Stars)</h3>
-                <span class="text-[10px] font-semibold text-amber-600 block">กติกาการสะสมและการแข่งขัน</span>
-              </div>
-            </div>
-            <button id="btn-close-star-modal" type="button" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 flex items-center justify-center transition-colors cursor-pointer text-sm font-bold" aria-label="ปิด">
-              ✕
-            </button>
+      <div id="star-info-modal" class="opacity-0 pointer-events-none" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="stars-t">
+        <div id="star-info-modal-card" class="sheet">
+          <div class="grab"></div>
+          <div class="sheet-h">
+            <span class="tile tile-gold" style="width:44px;height:44px;border-radius:14px"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg></span>
+            <div><h3 id="stars-t">ระบบดาว (Stars)</h3><p class="cap">กติกาการสะสมและการแข่งขัน</p></div>
+            <button id="btn-close-star-modal" type="button" class="sheet-x" aria-label="ปิด">✕</button>
           </div>
-
-          <!-- เนื้อหาคำอธิบายระบบดาว -->
-          <div class="space-y-2.5 text-xs text-slate-600 leading-relaxed">
-            <div class="p-2.5 rounded-xl bg-amber-50/90 border border-amber-200/70 flex items-start gap-2.5">
-              <span class="w-6 h-6 rounded-lg bg-amber-100 text-amber-500 flex items-center justify-center shrink-0 mt-0.5">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-star">
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                  <path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z" />
-                </svg>
-              </span>
-              <div>
-                <strong class="text-amber-900 block font-bold text-[11px]">ที่มาของระบบดาว</strong>
-                <span>ดาวสะสมจะได้รับจากการทำข้อสอบประลอง <strong class="text-slate-800 font-bold">Mock Exam Ranking</strong> เท่านั้น ไม่ได้รับจากบทเรียนหรือแบบฝึกหัดทั่วไป</span>
-              </div>
-            </div>
-
-            <div class="p-2.5 rounded-xl bg-emerald-50/90 border border-emerald-200/70 flex items-start gap-2.5">
-              <span class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
-                ⚡
-              </span>
-              <div>
-                <strong class="text-emerald-900 block font-bold text-[11px]">เกณฑ์การได้รับดาว</strong>
-                <span>ยิ่งทำคะแนนสอบได้สูง และใช้เวลาน้อยลงเท่าใด ยิ่งได้รับดาวสะสมเพิ่มขึ้นตามสัดส่วน</span>
-              </div>
-            </div>
-
-            <div class="p-2.5 rounded-xl bg-sky-50/90 border border-sky-200/70 flex items-start gap-2.5">
-              <span class="w-6 h-6 rounded-lg bg-sky-100 text-sky-600 flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
-                🏆
-              </span>
-              <div>
-                <strong class="text-sky-900 block font-bold text-[11px]">การชิงอันดับ Leaderboard</strong>
-                <span>จำนวนดาวสะสมทั้งหมดจะนำมาจัดอันดับในตารางผู้นำ เพื่อชิงตำแหน่ง <strong class="text-amber-600 font-bold">Top 10</strong> ประจำซีซัน</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- ปุ่มเข้าใจแล้ว -->
-          <div class="mt-4">
-            <button id="btn-confirm-star-modal" type="button" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 active:scale-98 text-white font-bold text-xs shadow-md shadow-amber-500/20 transition-all cursor-pointer">
-              เข้าใจแล้ว 👍
-            </button>
-          </div>
-
+          <div class="it"><span class="tile tile-gold"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg></span><div><p class="it-t">ที่มาของระบบดาว</p><p class="it-d">ดาวสะสมจะได้รับจากการทำข้อสอบประลอง <b>Mock Exam Ranking</b> เท่านั้น ไม่ได้รับจากบทเรียนหรือแบบฝึกหัดทั่วไป</p></div></div>
+          <div class="it"><span class="tile tile-amber" aria-hidden="true">⚡</span><div><p class="it-t">เกณฑ์การได้รับดาว</p><p class="it-d">ยิ่งทำคะแนนสอบได้สูง และใช้เวลาน้อยลงเท่าใด ยิ่งได้รับดาวสะสมเพิ่มขึ้นตามสัดส่วน</p></div></div>
+          <div class="it"><span class="tile tile-amber" aria-hidden="true">🏆</span><div><p class="it-t">การชิงอันดับ Leaderboard</p><p class="it-d">จำนวนดาวสะสมทั้งหมดจะนำมาจัดอันดับในตารางผู้นำ เพื่อชิงตำแหน่ง <b>Top 10</b> ประจำซีซัน</p></div></div>
+          <div style="margin-top:8px"><button id="btn-confirm-star-modal" type="button" class="btn btn-block btn-amber">เข้าใจแล้ว 👍</button></div>
         </div>
       </div>
 
     </main>
 
     <!-- ============================================== -->
-    <!-- BOTTOM NAVBAR (ยืดเต็มจอ Desktop) -->
+    <!-- BOTTOM NAVBAR -->
     <!-- ============================================== -->
-    <nav id="bottom-navbar" class="fixed bottom-0 left-0 right-0 w-full z-50 glass-nav border-t border-slate-200/80 px-6 py-2.5 rounded-t-3xl transition-all">
-      <div class="max-w-md mx-auto flex items-center justify-around">
-
-        <!-- 1. หน้าแรก (Home) -->
-        <a href="index.html" data-nav="home" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600 transition-all active:scale-95 group">
-          <div class="nav-icon-box w-11 h-9 rounded-2xl flex items-center justify-center transition-all">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-home">
-              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <path d="M5 12l-2 0l9 -9l9 9l-2 0" />
-              <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
-              <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
-            </svg>
-          </div>
-          <span class="nav-label text-[11px] font-medium text-slate-400">หน้าแรก</span>
+    <nav id="bottom-navbar" aria-label="เมนูหลัก">
+      <div class="nav-in">
+        <a href="index.html" data-nav="home" class="nav-i">
+          <span class="nav-icon-box nav-pill"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-home" aria-hidden="true"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 12l-2 0l9 -9l9 9l-2 0" /><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" /><path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" /></svg></span>
+          <span class="nav-label nav-l">หน้าแรก</span>
         </a>
-
-        <!-- 2. รายวิชา (Subject) -->
-        <a href="subject.html" data-nav="subject" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600 transition-all active:scale-95 group">
-          <div class="nav-icon-box w-11 h-9 rounded-2xl flex items-center justify-center transition-all">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-book">
-              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0" />
-              <path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0" />
-              <path d="M3 6l0 13" />
-              <path d="M12 6l0 13" />
-              <path d="M21 6l0 13" />
-            </svg>
-          </div>
-          <span class="nav-label text-[11px] font-medium text-slate-400">รายวิชา</span>
+        <a href="subject.html" data-nav="subject" class="nav-i">
+          <span class="nav-icon-box nav-pill"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-book" aria-hidden="true"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6l0 13" /><path d="M12 6l0 13" /><path d="M21 6l0 13" /></svg></span>
+          <span class="nav-label nav-l">รายวิชา</span>
         </a>
-
-        <!-- 3. ความคืบหน้า (Progress - Active) -->
-        <a href="progress.html" data-nav="progress" class="flex flex-col items-center gap-1 text-emerald-600 transition-all active:scale-95 group">
-          <div class="nav-icon-box w-11 h-9 rounded-2xl bg-emerald-50 flex items-center justify-center transition-all">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" class="icon icon-tabler icons-tabler-filled icon-tabler-chart-bar-popular">
-              <rect x="3.25" y="12" width="5.5" height="8" rx="1.2" fill="currentColor" stroke="#ffffff" stroke-width="1.8" />
-              <rect x="9.25" y="8" width="5.5" height="12" rx="1.2" fill="currentColor" stroke="#ffffff" stroke-width="1.8" />
-              <rect x="15.25" y="4" width="5.5" height="16" rx="1.2" fill="currentColor" stroke="#ffffff" stroke-width="1.8" />
-              <path d="M3 20h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-            </svg>
-          </div>
-          <span class="nav-label text-[11px] font-bold text-emerald-700">ความคืบหน้า</span>
+        <a href="progress.html" data-nav="progress" class="nav-i on" aria-current="page">
+          <span class="nav-icon-box nav-pill"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" class="icon icon-tabler icons-tabler-filled icon-tabler-chart-bar-popular" aria-hidden="true"><rect x="3.25" y="12" width="5.5" height="8" rx="1.2" fill="currentColor" stroke="#D1FAE5" stroke-width="1.8" /><rect x="9.25" y="8" width="5.5" height="12" rx="1.2" fill="currentColor" stroke="#D1FAE5" stroke-width="1.8" /><rect x="15.25" y="4" width="5.5" height="16" rx="1.2" fill="currentColor" stroke="#D1FAE5" stroke-width="1.8" /><path d="M3 20h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg></span>
+          <span class="nav-label nav-l">ความคืบหน้า</span>
         </a>
-
       </div>
     </nav>
 
