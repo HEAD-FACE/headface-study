@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" data-study-pending>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -159,15 +159,25 @@
         <div class="qs">
           <div class="qs-i"><p class="qs-v">5 วัน</p><p class="qs-l" style="color:#C2410C"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="flameGradStreak" x1="0%" y1="100%" x2="0%" y2="0%"><stop offset="0%" stop-color="#EA580C"/><stop offset="45%" stop-color="#F97316"/><stop offset="80%" stop-color="#FBBF24"/><stop offset="100%" stop-color="#FDE047"/></linearGradient></defs><path d="M10 2c0 -.88 1.056 -1.331 1.692 -.722c1.958 1.876 3.096 5.995 1.75 9.12l-.08 .174l.012 .003c.625 .133 1.203 -.43 2.303 -2.173l.14 -.224a1 1 0 0 1 1.582 -.153c1.334 1.435 2.601 4.377 2.601 6.27c0 4.265 -3.591 7.705 -8 7.705s-8 -3.44 -8 -7.706c0 -2.252 1.022 -4.716 2.632 -6.301l.605 -.589c.241 -.236 .434 -.43 .618 -.624c1.43 -1.512 2.145 -2.924 2.145 -4.78" fill="url(#flameGradStreak)"/><path d="M12 12c.9 1.6 2 2.5 2 4.2a2 2 0 0 1 -4 0c0-1.7 1.1-2.6 2-4.2z" fill="#FFF7ED" opacity="0.85"/></svg><span>Streak ต่อเนื่อง</span></p></div>
           <span class="qs-div"></span>
-          <div class="qs-i"><p class="qs-v">248 ข้อ</p><p class="qs-l" style="color:#047857">✅ ทำโจทย์สะสม</p></div>
+          <div class="qs-i"><p class="qs-v" data-study-stat="answers">248 ข้อ</p><p class="qs-l" style="color:#047857">✅ ทำโจทย์สะสม</p></div>
           <span class="qs-div"></span>
-          <div class="qs-i"><p class="qs-v">88%</p><p class="qs-l" style="color:#0369A1">🎯 แม่นยำเฉลี่ย</p></div>
+          <div class="qs-i"><p class="qs-v" data-study-stat="accuracy">88%</p><p class="qs-l" style="color:#0369A1">🎯 แม่นยำเฉลี่ย</p></div>
         </div>
       </section>
 
       <!-- ============================================== -->
       <!-- LEADERBOARD SECTION (ตารางอันดับจากจำนวนดาว) -->
       <!-- ============================================== -->
+      <!-- ============================================== -->
+      <!-- ผลการเรียนของฉัน (เติมจากข้อมูลจริงโดย js/study-hydrate.js; ซ่อนอยู่จนกว่าจะได้ข้อมูล) -->
+      <!-- ============================================== -->
+      <section id="my-progress" class="pad sec" style="margin-top:26px" aria-labelledby="h-my" hidden>
+        <div class="sec-h">
+          <div class="sec-t"><span class="tile tile-teal" style="width:32px;height:32px;border-radius:10px" aria-hidden="true">📈</span><h2 id="h-my">ผลการเรียนของฉัน</h2></div>
+        </div>
+        <div id="my-progress-body"></div>
+      </section>
+
       <section class="pad" style="margin-top:26px" aria-labelledby="h-lb">
         <div class="lb-h">
           <span class="tile tile-amber" style="width:40px;height:40px;font-size:22px" aria-hidden="true">👑</span>
@@ -303,6 +313,7 @@
   <script src="https://unpkg.com/@barba/core"></script>
   <script type="module" src="js/auth.js"></script>
   <script type="module" src="js/api-client.js"></script>
+  <script type="module" src="js/study-hydrate.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

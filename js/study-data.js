@@ -148,8 +148,9 @@ export function resolveLessonNo(key, raw, store = createStore(null)) {
 }
 
 // ───────────── โจทย์ตัวอย่าง (Quiz / Practice / Mock Exam) ─────────────
+import { choiceLabel } from './study-format.js';
+export { choiceLabel };
 const CHOICE_LABELS = ['ก', 'ข', 'ค', 'ง'];
-export const choiceLabel = (i) => CHOICE_LABELS[i] || String(i + 1);
 
 function makeQuestion(i, seed, topicCount = 3) {
     return {
@@ -201,24 +202,7 @@ export function scoreAnswers(questions, picks) {
     return { correct, total, answered, wrong, percent: total ? Math.round((correct / total) * 100) : 0 };
 }
 
-export function scoreMessage(percent) {
-    if (percent >= 80) return 'ยอดเยี่ยม';
-    if (percent >= 60) return 'ทำได้ดี';
-    if (percent >= 40) return 'พอใช้ ลองทบทวนอีกนิด';
-    return 'ลองกลับไปทบทวนเนื้อหาอีกครั้ง';
-}
-
-export function formatClock(totalSeconds) {
-    const s = Math.max(0, Math.round(totalSeconds));
-    return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
-}
-
-export function formatThaiDate(iso) {
-    const d = new Date(iso);
-    if (Number.isNaN(d.getTime())) return '';
-    const months = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
-    return `${d.getDate()} ${months[d.getMonth()]} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-}
+export { scoreMessage, formatClock, formatThaiDate } from './study-format.js';
 
 // ───────────── ลิงก์ไปหน้าเรียน (ใช้ร่วมกันทุกหน้า) ─────────────
 export const courseUrl = (key) => `course.html?s=${encodeURIComponent(key)}`;

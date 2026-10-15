@@ -1,0 +1,200 @@
+{
+  "dryRun": true,
+  "subject": {
+    "id": "demo",
+    "no": 1,
+    "title": "[ชื่อวิชา]",
+    "eyebrow": "วิชาที่ 1 • [ชื่อวิชา]",
+    "description": "[คำอธิบายวิชา 1–3 ประโยค]",
+    "objectives": [
+      "[วัตถุประสงค์การเรียนรู้ข้อ 1]",
+      "[วัตถุประสงค์ข้อ 2]"
+    ],
+    "level": "[ระดับชั้นที่เกี่ยวข้อง]",
+    "metaText": "2 บทเรียน • [จำนวนแบบฝึกหัด]",
+    "hue": "emerald",
+    "emoji": "📘",
+    "units": [
+      {
+        "id": "demo-u1",
+        "title": "[ชื่อหน่วยที่ 1]",
+        "lessons": [
+          {
+            "id": "demo-l01",
+            "no": 1,
+            "title": "[ชื่อบทที่ 1]",
+            "summary": "[สรุปสั้น ๆ ของบท]",
+            "estimatedMin": 15,
+            "quizSize": 3,
+            "quizPassPct": 50,
+            "blocks": [
+              {
+                "type": "heading",
+                "text": "[หัวข้อ]"
+              },
+              {
+                "type": "paragraph",
+                "text": "[ย่อหน้าอธิบาย ขึ้นบรรทัดใหม่ด้วย \\n ได้]"
+              },
+              {
+                "type": "figure",
+                "kind": "image",
+                "url": "https://example.com/diagram.png",
+                "alt": "[คำอธิบายภาพสำหรับผู้ใช้ที่มองไม่เห็นภาพ]",
+                "caption": "[คำบรรยายภาพ]"
+              },
+              {
+                "type": "figure",
+                "kind": "video",
+                "url": "https://example.com/lesson.mp4",
+                "caption": "[วิดีโอการสอน — ลิงก์ไฟล์ .mp4/.webm เล่นในหน้า ลิงก์อื่นเปิดแท็บใหม่]"
+              },
+              {
+                "type": "callout",
+                "title": "สูตรสำคัญ / คำศัพท์",
+                "text": "[สูตร เช่น a < b หรือ x<y ใช้ได้ แต่ห้ามมีแท็ก HTML]"
+              },
+              {
+                "type": "steps",
+                "title": "ตัวอย่างและวิธีคิด",
+                "items": [
+                  "[ขั้นที่ 1]",
+                  "[ขั้นที่ 2]",
+                  "[ขั้นที่ 3 และคำตอบ]"
+                ]
+              },
+              {
+                "type": "checklist",
+                "title": "สรุปเนื้อหาสำคัญ",
+                "items": [
+                  "[ประเด็นสรุปที่ 1]",
+                  "[ประเด็นสรุปที่ 2]"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "demo-l02",
+            "no": 2,
+            "title": "[ชื่อบทที่ 2]",
+            "quizPassPct": null,
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "[quizPassPct เป็น null = ส่ง Quiz กี่คะแนนก็ผ่าน; ไม่ใส่ = ใช้ 50]"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "mock": {
+      "id": "demo-mock",
+      "title": "[ชื่อชุด Mock Exam]",
+      "questionCount": 2,
+      "durationMin": 20,
+      "passMarkPct": null,
+      "timeBonusPct": 25
+    },
+    "questions": [
+      {
+        "id": "demo-q001",
+        "kind": "mcq",
+        "lessonNo": 1,
+        "uses": [
+          "quiz",
+          "mock"
+        ],
+        "difficulty": "easy",
+        "topic": "[หัวข้อที่โจทย์วัด]",
+        "tier": "standard",
+        "starValue": 1,
+        "stem": "[โจทย์ปรนัย]",
+        "choices": [
+          {
+            "id": "a",
+            "text": "[ตัวเลือก ก]"
+          },
+          {
+            "id": "b",
+            "text": "[ตัวเลือก ข]"
+          },
+          {
+            "id": "c",
+            "text": "[ตัวเลือก ค]"
+          },
+          {
+            "id": "d",
+            "text": "[ตัวเลือก ง]"
+          }
+        ],
+        "correct": "b",
+        "explanation": "[คำอธิบายว่าทำไม ข ถูก — ต้องมี ไม่งั้นเผยแพร่ไม่ได้]"
+      },
+      {
+        "id": "demo-q002",
+        "kind": "mcq",
+        "uses": [
+          "mock"
+        ],
+        "difficulty": "hard",
+        "topic": "[หัวข้อ]",
+        "tier": "advanced",
+        "starValue": 2,
+        "stem": "[โจทย์ข้อพิเศษ — เฉพาะแพลน PLUS/MAX]",
+        "choices": [
+          {
+            "id": "a",
+            "text": "[ก]"
+          },
+          {
+            "id": "b",
+            "text": "[ข]"
+          }
+        ],
+        "correct": "a",
+        "explanation": "[คำอธิบาย]"
+      },
+      {
+        "id": "demo-q003",
+        "kind": "mcq",
+        "uses": [
+          "mock"
+        ],
+        "difficulty": "medium",
+        "topic": "[หัวข้อ]",
+        "tier": "standard",
+        "starValue": 1,
+        "stem": "[โจทย์ปรนัยสำหรับ Mock อย่างเดียว]",
+        "choices": [
+          {
+            "id": "a",
+            "text": "[ก]"
+          },
+          {
+            "id": "b",
+            "text": "[ข]"
+          },
+          {
+            "id": "c",
+            "text": "[ค]"
+          }
+        ],
+        "correct": "c",
+        "explanation": "[คำอธิบาย]"
+      },
+      {
+        "id": "demo-p001",
+        "kind": "open",
+        "lessonNo": 1,
+        "uses": [
+          "practice"
+        ],
+        "difficulty": "medium",
+        "topic": "[หัวข้อ]",
+        "stem": "[โจทย์ฝึก — ผู้เรียนดูเฉลยแล้วกด ทำถูก/ทำผิด เอง]",
+        "solution": "[เฉลยและวิธีคิด]"
+      }
+    ]
+  }
+}

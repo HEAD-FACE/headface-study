@@ -866,3 +866,38 @@ nav a * { pointer-events: none !important; }
 @keyframes ielL{0%{stroke-dashoffset:1;opacity:1}16%{stroke-dashoffset:0;opacity:1}86%{stroke-dashoffset:0;opacity:1}96%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:1;opacity:0}}
 .iel-ok{animation:ielOk 5s -2.6s infinite}
 @keyframes ielOk{0%,34%{transform:scale(0);animation-timing-function:cubic-bezier(.34,1.56,.64,1)}44%{transform:scale(1)}86%{transform:scale(1);animation-timing-function:ease-in}94%,100%{transform:scale(0)}}
+
+/* ───── ข้อมูลจริงบนการ์ดวิชา (js/study-hydrate.js) ───── */
+/* ระหว่างรอ API ซ่อนเลขตัวอย่างไว้ก่อน แล้วค่อยแสดงค่าจริง (ถ้า JS ไม่ทำงาน แสดงเองหลัง 4 วินาที) */
+@keyframes study-reveal { to { visibility: visible; } }
+html[data-study-pending] .sc-pct,
+html[data-study-pending] .sc .bar,
+html[data-study-pending] #continued-scroll-track .cc {
+  visibility: hidden;
+  animation: study-reveal 0s linear 4s forwards;
+}
+/* วิชาที่ยังไม่เผยแพร่ */
+.sc.is-soon { cursor: default; box-shadow: 0 4px 0 var(--edge); }
+.sc.is-soon .art { opacity: .55; filter: grayscale(.35); }
+.sc.is-soon .sc-pct { color: #475569; }
+.sc.is-soon .go { color: #475569; border-color: #CBD5E1; box-shadow: 0 3px 0 #CBD5E1; pointer-events: none; }
+.sc.is-soon:active { transform: none; box-shadow: 0 4px 0 var(--edge); }
+
+/* ───── ส่วน "ผลการเรียนของฉัน" ในหน้า Progress (js/study-hydrate.js) ───── */
+html[data-study-pending] [data-study-stat] { visibility: hidden; animation: study-reveal 0s linear 4s forwards; }
+.mp-card { padding: 16px; background: #fff; border: 2px solid #A7F3D0; border-radius: 22px; box-shadow: 0 4px 0 #6EE7B7; }
+.mp-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+.mp-pct { display: flex; align-items: baseline; gap: 6px; }
+.mp-pct .num { font-size: 34px; line-height: 40px; font-weight: 800; color: #047857; }
+.mp-list { display: grid; gap: 10px; margin-top: 12px; }
+.mp-row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; min-height: 64px; background: var(--bg); border: 2px solid var(--bd); border-radius: 18px; box-shadow: 0 3px 0 var(--edge); text-decoration: none; color: inherit; }
+.mp-row:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--edge); }
+.mp-row .mp-t { flex: 1; min-width: 0; }
+.mp-row h3 { font-size: 15px; line-height: 22px; font-weight: 700; color: #0F172A; }
+.mp-row .bar { margin-top: 6px; }
+.mp-row .bar > i { background: var(--bar); }
+.mp-row .mp-n { flex: none; font-size: 16px; font-weight: 800; color: var(--strong); font-variant-numeric: tabular-nums; }
+.mp-recent { display: grid; gap: 6px; margin-top: 14px; }
+.mp-recent li { font-size: 13px; line-height: 20px; color: #334155; }
+.mp-sub { margin-top: 14px; font-size: 14px; line-height: 22px; font-weight: 800; color: #0F172A; }
+[hidden] { display: none !important; }

@@ -338,3 +338,46 @@ a.ls:hover { background: #F8FAFC; }
   .fb, .ov, .ov .sheet, .fade-in { animation: none; }
   .qbar > i, .ring .val, .choice, .chev, .mock-btn { transition: none; }
 }
+
+/* ───── ข้อมูลจริง (js/study-live.js) ───── */
+.notfound-act { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.notfound-act .btn { margin-top: 0; }
+.rp { white-space: normal; }
+.rfig.has-media { min-height: 0; padding: 0; overflow: hidden; border-style: solid; background: #fff; }
+.rfig img, .rfig video { display: block; width: 100%; height: auto; max-height: 420px; object-fit: contain; }
+.rfig .btn { margin: 14px; }
+.about-list { display: grid; gap: 4px; padding-left: 18px; list-style: disc; }
+.mock-btn[aria-disabled="true"] { background: #64748B; box-shadow: 0 4px 0 #475569; color: #fff; cursor: not-allowed; pointer-events: none; }
+.note { margin-top: 12px; padding: 10px 14px; border-radius: 14px; background: var(--bg); border: 2px solid var(--bd); font-size: 14px; line-height: 22px; color: #1E293B; text-align: left; }
+.note.ok { background: #ECFDF5; border-color: #6EE7B7; color: #064E3B; }
+.note.warn { background: #FFFBEB; border-color: #FCD34D; color: #78350F; }
+.note svg { vertical-align: -3px; margin-right: 4px; }
+.errbox { margin-top: 12px; padding: 10px 14px; border-radius: 14px; background: #FFF1F2; border: 2px solid #FDA4AF; color: #881337; font-size: 14px; line-height: 22px; font-weight: 600; text-align: left; }
+.rdone .errbox { margin-top: 0; }
+
+/* ───── ผลการเรียนรายวิชา (js/study-live-report.js) ───── */
+.tgroup { margin-top: 14px; font-size: 15px; line-height: 22px; font-weight: 800; }
+.tgroup small { font-weight: 600; font-size: 12px; color: #475569; }
+.tgroup.weak { color: #9F1239; }
+.tgroup.ok { color: #334155; }
+.tgroup.strong { color: #065F46; }
+.tlist { display: grid; gap: 10px; margin-top: 8px; }
+.tcard { padding: 12px 14px; background: #fff; border: 2px solid #E2E8F0; border-radius: 16px; box-shadow: 0 3px 0 #CBD5E1; }
+.tcard.weak { border-color: #FECDD3; box-shadow: 0 3px 0 #FECDD3; }
+.tcard.strong { border-color: #A7F3D0; box-shadow: 0 3px 0 #A7F3D0; }
+.tcard .top { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 8px; font-size: 14px; line-height: 20px; }
+.tcard .top b { font-weight: 700; }
+.tcard .top span { font-weight: 700; color: #334155; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tcard.weak .bar > i { background: #F43F5E; }
+.inl { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; padding: 0 4px; font-weight: 700; color: var(--strong); text-decoration: underline; }
+.trend { display: flex; align-items: flex-end; gap: 8px; height: 140px; padding: 12px 12px 8px; background: #fff; border: 2px solid #E2E8F0; border-radius: 16px; }
+.trend-b { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; min-width: 0; }
+.trend-b span { font-size: 12px; line-height: 16px; font-weight: 700; color: #334155; margin-bottom: 4px; }
+.trend-b i { display: block; width: 100%; max-width: 36px; border-radius: 8px 8px 0 0; background: var(--bar); }
+.lres { display: grid; gap: 8px; }
+.lr { display: flex; align-items: center; gap: 12px; padding: 10px 14px; min-height: 56px; background: #fff; border: 2px solid #E2E8F0; border-radius: 16px; box-shadow: 0 3px 0 #CBD5E1; text-decoration: none; color: inherit; }
+.lr-n { flex: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; background: #F1F5F9; color: #334155; }
+.lr-n.st-done { background: #059669; color: #fff; }
+.lr-n.st-now { background: var(--chip); color: var(--strong); }
+.lr-b { min-width: 0; }
+.lr-t { font-size: 14px; line-height: 20px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

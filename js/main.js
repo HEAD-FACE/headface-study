@@ -9,7 +9,7 @@ const HEADER_HEIGHTS = {
 };
 
 // หน้าเรียน (รายละเอียดวิชา / บทเรียน / Mock Exam) เป็นหน้าอิสระที่ไม่ใช้ Barba — ให้เบราว์เซอร์เปิดหน้าตามปกติ
-const FLOW_PAGE_PATTERN = /\/(course|lesson|mock-exam)\.html(?:[?#]|$)/;
+const FLOW_PAGE_PATTERN = /\/(course|lesson|mock-exam|report)\.html(?:[?#]|$)/;
 
 // 🖼️ Function จัดการ Fallback และตรวจจับภาพพื้นหลังการ์ดรายวิชาใน assets/ อัตโนมัติ (เน้น .webp)
 window.handleCardImgError = function(img, id, altName) {
@@ -276,6 +276,9 @@ function initPageFeatures(container) {
   if (starModal && starModal.parentElement !== document.body) {
     document.body.appendChild(starModal);
   }
+
+  // ให้ js/study-hydrate.js เติมข้อมูลจริงลงหน้าที่เพิ่งแสดง (โหลดครั้งแรก และตอน Barba สลับหน้า)
+  document.dispatchEvent(new CustomEvent('study:page', { detail: { container } }));
 }
 
 // Floating Feedback Toast for Card Action
