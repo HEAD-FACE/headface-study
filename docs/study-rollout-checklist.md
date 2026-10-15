@@ -14,7 +14,9 @@
 - ใหม่: `migrations/0006_study_core.sql`, `migrations/0007_study_learner.sql`, `src/study/*` (16 ไฟล์), `test/study-*-test.js`, `test/studyWorld.js`
 - แก้: `src/worker.js` (import + route `/api/study` + งาน cron ที่ 5), `schema.sql` (ต่อท้าย), `package.json` (`test:all`)
 
-- [ ] `npm run db:migrate:preview` — จะรัน 0006 และ 0007 (ถ้า 0005 ของงานอื่นยังไม่ได้รัน มันจะรันให้ก่อน ตรวจว่าไม่มีปัญหา)
+- [ ] **ก่อนรัน migrate ให้เช็กว่า 0005 ถูกบันทึกไว้แล้วหรือยัง** (`npx wrangler d1 migrations list PREVIEW_DB --remote --config wrangler.preview-migrations.jsonc`). ถ้า 0005 ขึ้นว่ายังไม่ได้รัน *ทั้งที่* คอลัมน์ `homework.details` / `homework_status.dismissed_at` และตาราง `announcements` มีอยู่แล้ว (เคยรันมือ) คำสั่ง migrate จะหยุดที่ 0005 ด้วย "duplicate column name" และ 0006/0007 จะไม่ถูกรัน → หน้าวิชาขึ้น 503 `STUDY_NOT_READY` (เดิมเป็น 500) แก้โดยบันทึก 0005 ให้เป็นรันแล้วก่อน:
+  `npx wrangler d1 execute PREVIEW_DB --remote --config wrangler.preview-migrations.jsonc --command "INSERT INTO d1_migrations (name) VALUES ('0005_homework_overhaul.sql')"`
+- [ ] `npm run db:migrate:preview` — จะรัน 0006 และ 0007
 - [ ] `npm run preview` (หรือคำสั่งที่ใช้ deploy Preview เดิม)
 - [ ] ตรวจว่ามีตาราง 11 ตัวขึ้นต้น `study_` ใน D1 `headface-preview`
 - [ ] ค่า `study.mock` ของแพลน FREE ใน D1 จริง: ผมเข้าใจว่าไม่จำกัด (ตาม `featureRegistry.js`) แต่ `schema.sql` เก่าเขียน 5/วัน — ตรวจด้วย `SELECT plan_id, enabled, limit_value FROM plan_features WHERE feature_key IN ('study.mock','study.quiz','study.quiz_advanced','study.mock_advanced')` ถ้าไม่ตรงกับที่ตั้งใจ (FREE ไม่จำกัด, PLUS/MAX เปิด advanced) ให้รัน `/admin/platform/init-schema` หรือแก้ค่า
