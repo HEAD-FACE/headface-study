@@ -11,6 +11,7 @@ import { choiceLabel, scoreMessage, formatClock, formatThaiDate } from './study-
 import { SUBJECT_ID_RE, courseUrl, failure, loading, mockUrl, messageOf } from './study-live-common.js';
 import { questionMediaHtml, choiceImageHtml } from './study-media.js';
 import { confetti, countUp, pop } from './study-fx.js';
+import { patchHtml } from './study-dom.js';
 
 const SAVE_RETRY_MS = 5000;
 const AUTO_SUBMIT_RETRY_MS = 5000;
@@ -46,8 +47,7 @@ async function showPicker(api = studyApi) {
             ? `<a class="pick hue-${hue}" href="${mockUrl(s.id)}">${inner}</a>`
             : `<div class="pick hue-${hue}" aria-disabled="true" style="opacity:.6">${inner}</div>`;
     });
-    content.innerHTML = `<p class="cap" style="margin-top:14px">แต่ละวิชามี Mock Exam ประจำวิชา 1 ชุดหลัก ทำซ้ำได้ และเก็บประวัติผลทุกครั้งไว้เปรียบเทียบพัฒนาการ</p>
-      ${rows.length ? `<div class="pick-list" style="margin-top:12px">${rows.join('')}</div>` : '<p class="empty-p" style="margin-top:12px">ยังไม่มีวิชาที่เปิดให้สอบ เมื่อเปิดแล้วจะแสดงที่นี่</p>'}`;
+    content.innerHTML = `${rows.length ? `<div class="pick-list" style="margin-top:14px">${rows.join('')}</div>` : '<p class="empty-p" style="margin-top:14px">ยังไม่มีวิชาที่เปิดให้สอบ เมื่อเปิดแล้วจะแสดงที่นี่</p>'}`;
 }
 
 // ============================================================
@@ -96,6 +96,7 @@ export async function initMockExam({ api = studyApi, saveDebounceMs = 1000, tick
     let timerId = null;
     let saveTimer = null;
     let lastAutoTry = 0;
+    let qdir = 0;            // ทิศที่ข้อใหม่เลื่อนเข้ามา (+1 ถัดไป, −1 ก่อนหน้า) ใช้เฉพาะตอนวาดข้อที่เพิ่งเปลี่ยน
 
     const guard = (e) => { e.preventDefault(); e.returnValue = ''; };
     const serverNow = () => Date.now() + clockOffset;
@@ -111,9 +112,11 @@ export async function initMockExam({ api = studyApi, saveDebounceMs = 1000, tick
         const active = info.active;
         const activeNote = active ? `<div class="note warn" role="status">คุณมีข้อสอบที่ยังทำไม่เสร็จ — เวลาเดินต่อตามกำหนดเดิม กด "ทำต่อ" เพื่อกลับไปทำ</div>` : '';
         const startLabel = busy ? 'กำลังเตรียมข้อสอบ...' : active ? 'ทำต่อข้อสอบที่ค้างไว้' : info.history.length ? 'เริ่มทำข้อสอบอีกครั้ง' : 'เริ่มทำข้อสอบ';
-        return `<section class="rblock fade-in" style="margin-top:14px">
+        // ข้อความยาว (กติกา / ประวัติ) พับเก็บไว้ในหัวข้อที่กดเปิดเมื่อต้องการ — หน้าแรกมีแค่ชื่อ ตัวเลขสำคัญ และปุ่มเริ่ม
+        const fold = (key, title, inner) => `<details class="fold" data-key="${key}"><summary><span>${title}</span><i>${ICON.down(18)}</i></summary><div>${inner}</div></details>`;
+        return `<div data-key="intro">
+          <section class="rblock" style="margin-top:14px">
             <div style="display:flex;align-items:center;gap:12px"><span class="sc-tile" aria-hidden="true" style="background:#fff;border:1.5px solid var(--bd);border-radius:14px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;font-size:26px">${esc(subject.emoji || '📘')}</span><div><p class="cap">${esc(subject.eyebrow || '')}</p><h2 class="rh" style="font-size:18px;line-height:26px">${esc(m.title || `Mock Exam ประจำวิชา${subject.title}`)}</h2></div></div>
-            <p class="rp" style="font-size:14px;line-height:22px;color:#475569">ประเมินความเข้าใจในภาพรวมของวิชา ขอบเขตข้อสอบสอดคล้องกับเนื้อหาในวิชานี้</p>
           </section>
           ${m.available ? `<div class="info-grid" aria-label="รายละเอียดข้อสอบ">
             <div class="info"><span class="tile tile-sky">${ICON.doc(20)}</span><div><b>${m.questionCount} ข้อ</b><span class="l">จำนวนข้อ</span></div></div>
@@ -121,22 +124,19 @@ export async function initMockExam({ api = studyApi, saveDebounceMs = 1000, tick
             <div class="info"><span class="tile tile-teal">${ICON.list(20)}</span><div><b>เลือกตอบ</b><span class="l">รูปแบบคำถาม</span></div></div>
             <div class="info"><span class="tile tile-rose">${ICON.star(20)}</span><div><b>${m.passMarkPct === null ? 'ยังไม่กำหนด' : `${m.passMarkPct}%`}</b><span class="l">คะแนนผ่าน</span></div></div>
           </div>
-          <section class="fsec" aria-labelledby="h-rules"><div class="fsec-h"><h2 id="h-rules">เงื่อนไขก่อนเริ่มสอบ</h2></div>
-            <ul class="rules">
+          ${fold('rules', 'เงื่อนไขก่อนเริ่มสอบ', `<ul class="rules">
               <li>${ICON.info(18)}<span>ระหว่างสอบจะไม่แสดงเฉลย ดูเฉลยและคำอธิบายได้หลังส่งข้อสอบ</span></li>
               <li>${ICON.info(18)}<span>จับเวลาถอยหลังตามเวลาของระบบ เมื่อหมดเวลาระบบจะส่งคำตอบที่ทำไว้ให้อัตโนมัติ คำตอบถูกบันทึกระหว่างทำ ปิดหน้าแล้วกลับมาทำต่อได้ (เวลายังเดินอยู่)</span></li>
               <li>${ICON.info(18)}<span>ติดธงข้อที่ยังไม่แน่ใจ และกลับมาแก้คำตอบได้ก่อนส่ง</span></li>
               <li>${ICON.info(18)}<span>ทำซ้ำได้ ผลของทุกครั้งถูกเก็บในประวัติเพื่อเปรียบเทียบพัฒนาการ</span></li>
               <li>${ICON.info(18)}<span>ดาวได้จากข้อที่ตอบถูก${m.stars.timeBonusPct > 0 ? ` และมีโบนัสเพิ่มสูงสุด ${m.stars.timeBonusPct}% ของดาวที่ได้ ถ้าส่งเร็วกว่าเวลาที่กำหนด` : ''} ตอบผิดไม่ได้ดาว</span></li>
               ${m.advanced.unlocked ? `<li>${ICON.star(18)}<span>แพลนของคุณได้โจทย์ข้อพิเศษเพิ่ม ซึ่งให้ดาวมากกว่าข้อปกติเมื่อตอบถูก</span></li>` : `<li>${ICON.star(18)}<span>แพลน HEADFACE+ และ MAX มีโจทย์ข้อพิเศษเพิ่มและได้ดาวมากกว่าเมื่อตอบถูก</span></li>`}
-            </ul>
-          </section>` : '<p class="empty-p">ชุดข้อสอบของวิชานี้ยังไม่เปิดให้ทำ เมื่อพร้อมจะแจ้งที่นี่</p>'}
-          <section class="fsec" aria-labelledby="h-hist"><div class="fsec-h"><h2 id="h-hist">ประวัติการสอบ</h2></div>
-            ${info.history.length ? `<ul class="hist">${rows}</ul>${cmp}` : '<p class="empty-p">ยังไม่เคยทำ Mock Exam วิชานี้ — ผลของแต่ละครั้งจะแสดงที่นี่</p>'}
-          </section>
+            </ul>`)}` : '<p class="empty-p">ชุดข้อสอบของวิชานี้ยังไม่เปิดให้ทำ เมื่อพร้อมจะแจ้งที่นี่</p>'}
+          ${info.history.length ? fold('history', `ประวัติการสอบ (${info.history.length})`, `<ul class="hist">${rows}</ul>${cmp}`) : ''}
           ${activeNote}
           ${error ? `<p class="errbox" role="alert">${esc(error)}</p>` : ''}
-          ${m.available ? abar(`<button type="button" class="btn btn-lg btn-orange" data-act="start"${busy ? ' disabled' : ''}><span>${startLabel}</span>${busy ? '' : ICON.next(14)}</button>`) : ''}`;
+          ${m.available ? abar(`<button type="button" class="btn btn-lg btn-orange" data-act="start"${busy ? ' disabled' : ''}><span>${startLabel}</span>${busy ? '' : ICON.next(14)}</button>`) : ''}
+        </div>`;
     }
 
     // ───── ระหว่างสอบ ─────
@@ -165,20 +165,24 @@ export async function initMockExam({ api = studyApi, saveDebounceMs = 1000, tick
         const total = attempt.questions.length;
         const isLast = i === total - 1;
         const pick = picks[q.id];
-        return `<div class="xhead"><div class="qhead" style="flex:1"><div class="qbar" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${answered}" aria-label="ทำแล้ว ${answered} จาก ${total} ข้อ"><i style="width:${(answered / total) * 100}%"></i></div><span class="qcount">ข้อ ${i + 1}/${total}</span></div></div>
+        // หน้าแก้เฉพาะจุด (study-dom.js): ข้อใหม่ (data-key) เลื่อนเข้ามา แถบความคืบหน้า/แถบปุ่มล่างอยู่ที่เดิมและเปลี่ยนด้วย transition
+        return `<div data-key="run">
+          <div class="xhead"><div class="qhead" style="flex:1"><div class="qbar" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${answered}" aria-label="ทำแล้ว ${answered} จาก ${total} ข้อ"><i style="width:${(answered / total) * 100}%"></i></div><span class="qcount">ข้อ ${i + 1}/${total}</span></div></div>
           <div class="xhead" style="margin-top:10px"><button type="button" class="flagbtn" data-act="flag" aria-pressed="${flags.has(q.id)}">${ICON.flag(18)}<span>${flags.has(q.id) ? 'ติดธงแล้ว' : 'ติดธงข้อนี้'}</span></button><button type="button" class="xnav-btn" data-act="open-nav">${ICON.grid(18)}<span>ข้อทั้งหมด</span></button></div>
-          ${resumed && i === 0 && answered > 0 ? '<p class="cap" style="margin-top:8px">ทำต่อจากที่ค้างไว้ คำตอบที่บันทึกไว้ถูกนำกลับมาแล้ว</p>' : ''}
           ${saveWarn ? '<p class="note warn" role="status" aria-live="polite">บันทึกอัตโนมัติไม่สำเร็จ กำลังลองใหม่ คำตอบของคุณยังอยู่ในหน้านี้ อย่าปิดหน้าจนกว่าจะส่งข้อสอบ</p>' : ''}
           ${error ? `<p class="errbox" role="alert">${esc(error)}</p>` : ''}
-          <section class="qcard fade-in" aria-labelledby="q-t">
-            <p class="qtopic">${esc(q.topic)}${q.special ? ' <span class="chip chip-amber" style="margin-left:6px">ข้อพิเศษ</span>' : ''}</p>
-            <h2 class="qtext" id="q-t" style="white-space:pre-line">${esc(q.text)}</h2>
-            ${questionMediaHtml(q.media)}
-            <div class="choices" role="radiogroup" aria-label="ตัวเลือกคำตอบ">${q.choices.map((c, idx) => `<button type="button" class="choice${c.id === pick ? ' is-sel' : ''}" role="radio" aria-checked="${c.id === pick}" data-choice="${esc(c.id)}"${busy ? ' disabled' : ''}><span class="choice-l">${choiceLabel(idx)}</span><span class="choice-t">${choiceImageHtml(c)}<span>${esc(c.text)}</span></span><span class="choice-m"></span></button>`).join('')}</div>
-          </section>
-          ${abar(`<button type="button" class="btn btn-lg btn-line" data-act="prev"${i === 0 ? ' disabled' : ''} style="flex:.8">ก่อนหน้า</button>${isLast
+          <div class="qview" data-key="q-${esc(q.id)}" data-dir="${qdir}">
+            <section class="qcard" aria-labelledby="q-t">
+              <p class="qtopic">${esc(q.topic)}${q.special ? ' <span class="chip chip-amber" style="margin-left:6px">ข้อพิเศษ</span>' : ''}</p>
+              <h2 class="qtext" id="q-t" style="white-space:pre-line">${esc(q.text)}</h2>
+              ${questionMediaHtml(q.media)}
+              <div class="choices" role="radiogroup" aria-label="ตัวเลือกคำตอบ">${q.choices.map((c, idx) => `<button type="button" class="choice${c.id === pick ? ' is-sel' : ''}" role="radio" aria-checked="${c.id === pick}" data-choice="${esc(c.id)}"${busy ? ' disabled' : ''}><span class="choice-l">${choiceLabel(idx)}</span><span class="choice-t">${choiceImageHtml(c)}<span>${esc(c.text)}</span></span><span class="choice-m"></span></button>`).join('')}</div>
+            </section>
+          </div>
+          ${abar(`<button type="button" class="btn-ico" data-act="prev" aria-label="ข้อก่อนหน้า"${i === 0 ? ' disabled' : ''}>${ICON.prev(18)}</button>${isLast
             ? `<button type="button" class="btn btn-lg btn-orange" data-act="ask-submit"${busy ? ' disabled' : ''}>${busy ? 'กำลังส่ง...' : 'ส่งข้อสอบ'}</button>`
-            : `<button type="button" class="btn btn-lg" data-act="next"><span>ถัดไป</span>${ICON.next(14)}</button>`}`)}`;
+            : `<button type="button" class="btn btn-lg" data-act="next"><span>ถัดไป</span>${ICON.next(14)}</button>`}`)}
+        </div>`;
     }
 
     // ───── ชั้นซ้อน (ข้อทั้งหมด / ยืนยันส่ง) ─────
@@ -321,40 +325,39 @@ export async function initMockExam({ api = studyApi, saveDebounceMs = 1000, tick
     function resultView() {
         const r = result;
         const unanswered = r.total - r.answered;
-        return `${r.autoSubmitted ? '<div class="demo-note" role="alert" style="border-color:#F43F5E;background:#FFF1F2;color:#881337"><span>หมดเวลา ระบบส่งคำตอบที่ทำไว้ให้อัตโนมัติ</span></div>' : ''}
-          <section class="rblock result fade-in" style="margin-top:14px">
+        const pills = [
+            r.passed === null ? '' : r.passed ? `<span class="pill ok">${ICON.check(14, 3.4)} ผ่านเกณฑ์</span>` : '<span class="pill warn">ยังไม่ผ่านเกณฑ์</span>',
+            `<span class="pill">${ICON.clock(14)} ${formatClock(r.secondsUsed)} / ${formatClock(r.durationSec)}</span>`,
+            deltaHtml(r.deltaVsPrevious),
+            unanswered ? `<span class="pill warn">ไม่ได้ตอบ ${unanswered}</span>` : '',
+        ].filter(Boolean).join('');
+        const fold = (title, inner) => `<details class="fold"><summary><span>${title}</span><i>${ICON.down(18)}</i></summary><div>${inner}</div></details>`;
+        // ผลรายหัวข้อและเฉลยรายข้อยาว จึงพับเก็บไว้ในหัวข้อที่กดเปิดเมื่อต้องการ — หน้าสรุปมีแค่คะแนน ป้ายสถานะ และดาว
+        return `<div data-key="result">
+          ${r.autoSubmitted ? '<div class="demo-note" role="alert" style="border-color:#F43F5E;background:#FFF1F2;color:#881337"><span>หมดเวลา ระบบส่งคำตอบที่ทำไว้ให้อัตโนมัติ</span></div>' : ''}
+          <section class="rblock result" style="margin-top:14px">
             ${ringHtml(r.percent, `${r.correct}/${r.total} ข้อ`)}
             <h2>${esc(scoreMessage(r.percent))}</h2>
-            <p>สรุปผล Mock Exam ประจำวิชา${esc(subject.title)}</p>
-            <div class="rows" aria-label="สรุปผล">
-              <div class="row"><span class="k">ตอบถูก</span><span class="v">${r.correct} / ${r.total}</span></div>
-              <div class="row"><span class="k">ไม่ได้ตอบ</span><span class="v">${unanswered}</span></div>
-              <div class="row"><span class="k">เวลาที่ใช้</span><span class="v">${formatClock(r.secondsUsed)} / ${formatClock(r.durationSec)}</span></div>
-              <div class="row"><span class="k">เทียบกับครั้งก่อน</span><span class="v">${deltaHtml(r.deltaVsPrevious)}</span></div>
-              ${r.passed === null ? '' : `<div class="row"><span class="k">ผลตามเกณฑ์</span><span class="v">${r.passed ? 'ผ่าน' : 'ยังไม่ผ่าน'}</span></div>`}
-              <div class="row"><span class="k">${ICON.star(16, '#D97706')} ดาวที่ได้รับ</span><span class="v"><span data-countup="${r.starsEarned}">${r.starsEarned}</span> ดาว<small style="display:block;font-size:12px;color:#475569;font-weight:600">จากข้อถูก ${r.starsBase}${r.starsTimeBonus ? ` + โบนัสเวลา ${r.starsTimeBonus}` : ''}</small></span></div>
-            </div>
+            <div class="pills" aria-label="สรุปผล">${pills}</div>
+            <div class="stars-big" role="status">${ICON.star(26, '#F59E0B')}<span><span data-countup="${r.starsEarned}">${r.starsEarned}</span> ดาว</span><small>จากข้อถูก ${r.starsBase}${r.starsTimeBonus ? ` + โบนัสเวลา ${r.starsTimeBonus}` : ''}</small></div>
           </section>
-          <section class="fsec" aria-labelledby="h-topic"><div class="fsec-h"><h2 id="h-topic">ผลรายหัวข้อ</h2></div>
-            <div class="rows" style="margin-top:0">${r.topics.map((t) => `<div class="topic-row"><div class="top"><span>${esc(t.topic)}</span><span>${t.correct}/${t.total}</span></div><div class="bar" aria-hidden="true"><i style="width:${t.total ? (t.correct / t.total) * 100 : 0}%"></i></div></div>`).join('')}</div>
-            <p class="cap" style="margin-top:6px">การสรุปจุดแข็ง/จุดอ่อนจะใช้คำตอบจากหลายครั้ง ดูได้ในหน้าผลการเรียนของวิชา</p>
-          </section>
-          <section class="fsec" aria-labelledby="h-rev"><div class="fsec-h"><h2 id="h-rev">เฉลยรายข้อ</h2></div>
-            <div class="review">${r.review.map((x) => {
+          ${fold('ผลรายหัวข้อ', `<div class="rows" style="margin-top:0">${r.topics.map((t) => `<div class="topic-row"><div class="top"><span>${esc(t.topic)}</span><span>${t.correct}/${t.total}</span></div><div class="bar" aria-hidden="true"><i style="width:${t.total ? (t.correct / t.total) * 100 : 0}%"></i></div></div>`).join('')}</div>`)}
+          ${fold(`เฉลยรายข้อ (${r.review.length})`, `<div class="review">${r.review.map((x) => {
                 const state = !x.yourChoiceId ? 'skip' : x.isCorrect ? 'ok' : 'bad';
                 const ci = x.choices.findIndex((c) => c.id === x.correctChoiceId);
                 const yi = x.choices.findIndex((c) => c.id === x.yourChoiceId);
                 return `<div class="review-i ${state === 'ok' ? 'ok' : state === 'bad' ? 'bad' : ''}"><h3>${state === 'ok' ? ICON.check(16) : state === 'bad' ? ICON.x(16) : ICON.info(16)}<span>ข้อ ${x.n} ${esc(x.text)} — ${state === 'ok' ? 'ถูก' : state === 'bad' ? 'ผิด' : 'ไม่ได้ตอบ'}${x.special ? ' • ข้อพิเศษ' : ''}</span></h3>${questionMediaHtml(x.media)}<p>เฉลย: ${ci >= 0 ? `${choiceLabel(ci)} ${esc(x.choices[ci].text)}` : ''}${state === 'bad' && yi >= 0 ? ` • คุณตอบ ${choiceLabel(yi)}` : ''}</p>${x.explanation ? `<p>${esc(x.explanation)}</p>` : ''}</div>`;
-              }).join('')}</div>
-          </section>
+              }).join('')}</div>`)}
           <div class="res-actions">
             <button type="button" class="btn btn-lg btn-block btn-orange" data-act="retry" style="margin-top:0">ทำข้อสอบอีกครั้ง</button>
             <a class="btn btn-lg btn-block btn-line" href="${courseUrl(subject.id)}" style="margin-top:0">กลับหน้ารายละเอียดวิชา</a>
-          </div>`;
+          </div>
+        </div>`;
     }
 
     function render({ focus = false } = {}) {
-        content.innerHTML = stage === 'intro' ? introView() : stage === 'run' ? runView() : resultView();
+        patchHtml(content, stage === 'intro' ? introView() : stage === 'run' ? runView() : resultView());
+        qdir = 0;
         view.classList.toggle('has-abar', (stage === 'intro' && info.mock.available) || stage === 'run');
         if (stage === 'result') {
             animateRing(content);
@@ -369,7 +372,7 @@ export async function initMockExam({ api = studyApi, saveDebounceMs = 1000, tick
         if (!result || celebrated === result) return;
         celebrated = result;
         const el = typeof content.querySelector === 'function' ? content.querySelector('[data-countup]') : null;
-        if (el) { countUp(el, Number(el.dataset.countup)); pop(el.closest('.row')); }
+        if (el) { countUp(el, Number(el.dataset.countup)); pop(el.closest('.stars-big'), { scale: 1.12, ms: 500 }); }
         if (result.passed === true || (result.passed === null && result.percent >= 70)) confetti();
     }
 
@@ -396,8 +399,8 @@ export async function initMockExam({ api = studyApi, saveDebounceMs = 1000, tick
             render();
             return $('[data-act="flag"]')?.focus({ preventScroll: true });
         }
-        if (act === 'prev' && i > 0) { i--; window.scrollTo(0, 0); return render({ focus: true }); }
-        if (act === 'next' && i < attempt.questions.length - 1) { i++; window.scrollTo(0, 0); return render({ focus: true }); }
+        if (act === 'prev' && i > 0) { i--; qdir = -1; window.scrollTo(0, 0); return render({ focus: true }); }
+        if (act === 'next' && i < attempt.questions.length - 1) { i++; qdir = 1; window.scrollTo(0, 0); return render({ focus: true }); }
         if (act === 'open-nav') return navSheet();
         if (act === 'ask-submit') return confirmSheet();
         const choice = e.target.closest('[data-choice]');
@@ -406,7 +409,6 @@ export async function initMockExam({ api = studyApi, saveDebounceMs = 1000, tick
             dirty = true;
             scheduleSave();
             render();
-            document.querySelector(`[data-choice="${CSS.escape(picks[q.id])}"]`)?.focus({ preventScroll: true });
         }
     };
 
@@ -414,7 +416,7 @@ export async function initMockExam({ api = studyApi, saveDebounceMs = 1000, tick
     document.addEventListener('click', (e) => {
         if (!document.getElementById('overlay') || stage !== 'run') return;
         const go = e.target.closest('[data-goto]');
-        if (go) { i = Number(go.dataset.goto); closeOverlay(); window.scrollTo(0, 0); return render({ focus: true }); }
+        if (go) { const to = Number(go.dataset.goto); qdir = to === i ? 0 : to > i ? 1 : -1; i = to; closeOverlay(); window.scrollTo(0, 0); return render({ focus: true }); }
         const act = e.target.closest('#overlay [data-act]')?.dataset.act;
         if (act === 'ask-submit') return confirmSheet();
         if (act === 'submit') return submit();

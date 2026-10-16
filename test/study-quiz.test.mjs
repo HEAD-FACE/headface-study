@@ -74,14 +74,14 @@ describe('intro', () => {
         const html = make(fakeApi()).html();
         assert.match(html, /Quiz ชุด 1/);
         assert.match(html, /2 ข้อ/);
-        assert.match(html, /อย่างน้อย 50% ในการทำ 1 ครั้ง/);
-        assert.match(html, /เรียนจบทุกเนื้อหา<\/b> และผ่านทุก Quiz ของบท/);
+        assert.match(html, /ผ่าน ≥ 50%/);
+        assert.doesNotMatch(html, /เรียนจบทุกเนื้อหา|<p class="note"/, 'ไม่มีประโยคอธิบายยาว ๆ (ข้อความน้อยที่สุด)');
         assert.match(html, /data-act="quiz-start"/);
         assert.doesNotMatch(html, /qtext|data-choice/);
     });
     test('ไม่มีเกณฑ์คะแนน และชุดที่ไม่มีโจทย์', () => {
         node.quiz.passPct = null;
-        assert.match(make(fakeApi()).html(), /ทำครบแล้วส่ง 1 ครั้งถือว่าผ่าน/);
+        assert.match(make(fakeApi()).html(), /ทำครบ = ผ่าน/);
         node.quiz = { available: false, questionCount: 0, passPct: 50 };
         const html = make(fakeApi()).html();
         assert.match(html, /Quiz ชุดนี้ยังไม่มีโจทย์/);
@@ -91,8 +91,7 @@ describe('intro', () => {
         node.progress = { attempts: 2, best: { correct: 4, total: 5 }, last: { correct: 2, total: 5, at: 1 }, passed: true, passPct: 50 };
         const html = make(fakeApi()).html();
         assert.match(html, /ดีที่สุด 4\/5/);
-        assert.match(html, /ล่าสุด 2\/5/);
-        assert.match(html, /ผ่านแล้ว/);
+                assert.match(html, /ผ่านแล้ว/);
         assert.match(html, /ทำ Quiz อีกครั้ง/);
     });
 });
@@ -105,7 +104,8 @@ describe('ทำทีละข้อ', () => {
         await settle();
         assert.deepEqual(api.calls[0], ['start', 'sci', 1, 'sci-z1']);
         const html = quiz.html();
-        assert.match(html, /ข้อ 1\/2/);
+        assert.match(html, /<span class="qcount">1\/2<\/span>/);
+        assert.match(html, /data-key="q-q1" data-dir="1"/, 'ข้อใหม่มี key ของตัวเอง (หน้าแก้เฉพาะจุด)');
         assert.match(html, /โจทย์ &lt;b&gt;หนึ่ง&lt;\/b&gt;/);
         assert.doesNotMatch(html, /<b>หนึ่ง/);
         assert.match(html, /data-choice="a"/);
@@ -130,7 +130,10 @@ describe('ทำทีละข้อ', () => {
         assert.match(html, /choice is-bad/);
         assert.match(html, /choice is-ok/);
         assert.match(html, /disabled/);
-        assert.match(html, /href="lesson\.html\?s=sci&amp;l=1"[^>]*>กลับไปทบทวนเนื้อหาที่เกี่ยวข้อง/);
+        assert.match(html, /href="lesson\.html\?s=sci&amp;l=1"[^>]*>ทบทวนเนื้อหา/);
+        assert.match(html, /class="abar is-bad"/, 'แถบปุ่มล่างย้อมสีแดงเมื่อผิด');
+        assert.match(html, /class="btn btn-lg btn-bad" data-act="quiz-next"/);
+        assert.match(html, /choice is-dim/, 'ตัวเลือกที่ไม่เกี่ยวถูกหรี่');
         click(quiz, { choice: 'c' }); await settle(); // หลังเห็นเฉลยแล้วเปลี่ยนไม่ได้
         click(quiz, { act: 'quiz-check' }); await settle();
         assert.equal(api.calls.filter((c) => c[0] === 'answer').length, 1);
@@ -142,7 +145,8 @@ describe('ทำทีละข้อ', () => {
         click(quiz, { act: 'quiz-start' }); await settle();
         click(quiz, { choice: 'a' }); click(quiz, { act: 'quiz-check' }); await settle();
         click(quiz, { act: 'quiz-next' });
-        assert.match(quiz.html(), /ข้อ 2\/2/);
+        assert.match(quiz.html(), /<span class="qcount">2\/2<\/span>/);
+        assert.match(quiz.html(), /data-key="q-q2"/);
         click(quiz, { choice: 'a' }); click(quiz, { act: 'quiz-check' }); await settle();
         assert.match(quiz.html(), /ดูผลคะแนน/);
         click(quiz, { act: 'quiz-next' }); await settle();
@@ -151,15 +155,33 @@ describe('ทำทีละข้อ', () => {
         assert.deepEqual(patches[0].node.progress.best, { correct: 1, total: 2 });
         const html = quiz.html();
         assert.match(html, /50%/);
-        assert.match(html, /ตอบถูก 1 จาก 2 ข้อ/);
-        assert.match(html, /ผ่านเกณฑ์ของ Quiz ชุดนี้/);
-        assert.match(html, /ข้อที่ควรทบทวน/);
+        assert.match(html, /1\/2 ข้อ/);
+        assert.match(html, /class="pill ok"[^>]*>[\s\S]*ผ่านเกณฑ์/);
+        assert.match(html, /<details class="fold"><summary><span>ข้อที่ควรทบทวน \(1\)<\/span>/, 'ข้อที่ผิดพับเก็บไว้ ไม่แสดงต่อหน้า');
+        assert.doesNotMatch(html, /ตอบถูก 1 จาก 2/);
         assert.match(html, /เฉลย: ข ข1/);
         assert.equal((html.match(/review-i/g) || []).length, 1, 'แสดงเฉพาะข้อที่ผิด');
         assert.match(html, /href="lesson\.html\?s=sci&amp;l=1&amp;n=sci-p1"[^>]*><span>ไปกิจกรรมถัดไป/);
-        assert.match(html, /href="lesson\.html\?s=sci&amp;l=1"[^>]*>กลับไปทบทวนเนื้อหา/);
-        assert.match(html, /href="course\.html\?s=sci"[^>]*>กลับไปเส้นทางเรียน/);
+        assert.match(html, /href="lesson\.html\?s=sci&amp;l=1"[^>]*>ทบทวนเนื้อหา/);
+        assert.match(html, /href="course\.html\?s=sci"[^>]*>เส้นทางเรียน/);
+        assert.match(html, /data-key="result"/);
         assert.equal(quiz.hasAbar(), false);
+    });
+
+    test('ตอบถูกติดกัน 3 ข้อขึ้นไปมีป้ายเปลวไฟ และตอบผิดแล้วนับใหม่', async () => {
+        const qs = ['q1', 'q2', 'q3', 'q4'].map((id, i) => ({ id, n: i + 1, topic: 'ก', text: `โจทย์ ${i + 1}`, media: [], choices: [{ id: 'a', text: 'ก' }, { id: 'b', text: 'ข' }] }));
+        const key = { q1: 'a', q2: 'a', q3: 'a', q4: 'a' };
+        const api = fakeApi({
+            startQuiz: async () => ({ attempt: { id: 'qa_abcdefghij', questions: qs } }),
+            answerQuiz: async (attempt, q, choice) => ({ alreadyAnswered: false, feedback: { questionId: q, isCorrect: choice === key[q], yourChoiceId: choice, correctChoiceId: key[q], explanation: 'x', topic: 't' } }),
+        });
+        const quiz = make(api);
+        click(quiz, { act: 'quiz-start' }); await settle();
+        const answer = async (choice) => { click(quiz, { choice }); click(quiz, { act: 'quiz-check' }); await settle(); const h = quiz.html(); click(quiz, { act: 'quiz-next' }); return h; };
+        assert.doesNotMatch(await answer('a'), /class="streak"/);
+        assert.doesNotMatch(await answer('a'), /class="streak"/);
+        assert.match(await answer('a'), /class="streak">[\s\S]*ติดกัน 3 ข้อ/);
+        assert.doesNotMatch(await answer('b'), /class="streak"/, 'ผิด = ไม่มีป้ายและนับใหม่');
     });
 
     test('บอกว่าบทยังมีกิจกรรมอื่น หรือบทเสร็จสมบูรณ์แล้ว ตามสถานะบทที่ Backend ส่งมา', async () => {
@@ -172,8 +194,8 @@ describe('ทำทีละข้อ', () => {
             for (let i = 0; i < 2; i++) { click(quiz, { choice: 'a' }); click(quiz, { act: 'quiz-check' }); await settle(); click(quiz, { act: 'quiz-next' }); await settle(); }
             return quiz.html();
         };
-        assert.match(await run('now'), /ยังเหลือกิจกรรมอื่นของบทนี้/);
-        assert.match(await run('done'), /บทนี้เสร็จสมบูรณ์แล้ว/);
+        assert.doesNotMatch(await run('now'), /บทนี้เสร็จสมบูรณ์/);
+        assert.match(await run('done'), /<span class="pill gold">บทนี้เสร็จสมบูรณ์/);
     });
 
     test('ไม่มีกิจกรรมถัดไป → ปุ่มหลักพากลับเส้นทางเรียน', async () => {
@@ -192,7 +214,7 @@ describe('ทำทีละข้อ', () => {
         for (let i = 0; i < 2; i++) { click(quiz, { choice: 'a' }); click(quiz, { act: 'quiz-check' }); await settle(); click(quiz, { act: 'quiz-next' }); await settle(); }
         click(quiz, { act: 'quiz-start' }); await settle();
         assert.equal(api.calls.filter((c) => c[0] === 'start').length, 2);
-        assert.match(quiz.html(), /ข้อ 1\/2/);
+        assert.match(quiz.html(), /<span class="qcount">1\/2<\/span>/);
         assert.doesNotMatch(quiz.html(), /class="fb/);
     });
 });
@@ -263,7 +285,7 @@ describe('ข้อผิดพลาดและการกดซ้ำ', () =
         click(quiz, { choice: 'b' }); click(quiz, { act: 'quiz-check' }); await settle();
         let html = quiz.html();
         assert.match(html, /เชื่อมต่อเซิร์ฟเวอร์ไม่ได้/);
-        assert.match(html, /ข้อ 1\/2/);
+        assert.match(html, /<span class="qcount">1\/2<\/span>/);
         assert.match(html, /is-sel/);
         fail = false;
         click(quiz, { act: 'quiz-check' }); await settle();
@@ -295,7 +317,7 @@ describe('ข้อผิดพลาดและการกดซ้ำ', () =
         assert.equal(api.calls.length, 1);
         release();
         await settle();
-        assert.match(quiz.html(), /ข้อ 1\/2/);
+        assert.match(quiz.html(), /<span class="qcount">1\/2<\/span>/);
     });
 
     test('คลิกที่ไม่เกี่ยวกับ Quiz ไม่ถูกจัดการ', () => {

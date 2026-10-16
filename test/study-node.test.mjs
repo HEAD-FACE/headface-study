@@ -53,7 +53,8 @@ describe('เปิดกิจกรรมตามชนิด', () => {
         assert.equal(dom.el.pageTitle.textContent, 'pH คืออะไร');
         assert.equal(dom.el.backLink.href, 'course.html?s=sci');
         assert.equal(globalThis.document.title, 'HEADFACE Study - pH คืออะไร');
-        assert.match(html(), /หน้า 1\/2 • ค่า pH/);
+        assert.match(html(), /<span class="cn-count">1\/2<\/span>/);
+        assert.match(html(), /<p class="cn-kicker">ค่า pH<\/p>/);
         assert.match(html(), /หน้าแรก/);
         assert.equal(dom.el.view.toggled['has-abar'], true);
     });
@@ -82,7 +83,7 @@ describe('เปิดกิจกรรมตามชนิด', () => {
         const api = fakeApi(practiceNode);
         await open(api, '?s=sci&l=2&n=sci-p1');
         assert.match(html(), /ข้อ 1 โจทย์ฝึก/);
-        assert.match(html(), /ทำแล้ว 0\/1/);
+        assert.match(html(), /<span class="qcount"[^>]*>1\/1<\/span>/);
     });
 
     test('เลขบทเป็น current ก็ส่งต่อให้ Backend', async () => {

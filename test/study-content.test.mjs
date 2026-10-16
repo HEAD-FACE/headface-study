@@ -184,7 +184,7 @@ describe('จบเนื้อหา', () => {
         fail = false;
         click(content, 'cn-finish');
         await settle();
-        assert.match(content.html(), /เรียนจบ “สสารและสถานะ” แล้ว/);
+        assert.match(content.html(), /เรียนจบแล้ว![\s\S]*“สสารและสถานะ”/);
     });
 
     test('คลิกที่ไม่เกี่ยวข้องไม่ถูกจัดการ', () => {

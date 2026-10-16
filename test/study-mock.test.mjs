@@ -253,9 +253,11 @@ describe('ทำข้อสอบ', () => {
         release();
         await wait(20);
         const h = html();
-        assert.match(h, /สรุปผล Mock Exam ประจำวิชาวิทยาศาสตร์/);
-        assert.match(h, /ตอบถูก<\/span><span class="v">2 \/ 3/);
-        assert.match(h, /เวลาที่ใช้<\/span><span class="v">02:05 \/ 20:00/);
+        assert.match(h, /data-key="result"/);
+        assert.match(h, /2\/3 ข้อ/, 'คะแนนอยู่ในวงแหวน');
+        assert.match(h, /<span class="pill">[\s\S]*02:05 \/ 20:00/);
+        assert.match(h, /<details class="fold"><summary><span>ผลรายหัวข้อ/, 'ผลรายหัวข้อและเฉลยพับเก็บไว้');
+        assert.match(h, /<details class="fold"><summary><span>เฉลยรายข้อ \(3\)/);
         assert.match(h, /<span data-countup="7">7<\/span> ดาว[\s\S]*จากข้อถูก 6 \+ โบนัสเวลา 1/);
         assert.match(h, /▲ \+10%/);
         assert.match(h, /หัวข้อ A<\/span><span>2\/2/);
@@ -283,7 +285,7 @@ describe('ทำข้อสอบ', () => {
         dom.click({ act: 'ask-submit' });
         dom.clickOverlay({ act: 'submit' });
         await wait(20);
-        assert.match(html(), /สรุปผล Mock Exam/);
+        assert.match(html(), /data-key="result"/);
         assert.equal(api.calls.filter((c) => c[0] === 'submit').length, 2);
     });
 
@@ -295,7 +297,7 @@ describe('ทำข้อสอบ', () => {
         await wait(60);
         const h = html();
         assert.match(h, /หมดเวลา ระบบส่งคำตอบที่ทำไว้ให้อัตโนมัติ/);
-        assert.match(h, /สรุปผล Mock Exam/);
+        assert.match(h, /data-key="result"/);
         assert.doesNotMatch(h, /โบนัสเวลา/);
     });
 
@@ -304,7 +306,7 @@ describe('ทำข้อสอบ', () => {
         await started(api);
         await wait(120);
         assert.equal(api.calls.filter((c) => c[0] === 'submit').length, 1);
-        assert.match(html(), /สรุปผล Mock Exam/);
+        assert.match(html(), /data-key="result"/);
     });
 
     test('เวลาที่เหลือใช้เวลา server ไม่ใช่นาฬิกาเครื่อง (เครื่องเดินเร็ว/ช้า)', async () => {

@@ -551,3 +551,9 @@ body.flow .btn.btn-ok.on, body.flow .btn.btn-bad.on { outline: 3px solid rgba(25
   #content, .sk, .btn-block.btn-lg::after, .abar, .pill, .pills .pill, .intro .facts .chip, .cn-view, .qview, .pk-view, .fb, .fb .streak, .pcard-r, .pcard-sol { animation: none; }
   .qbar > i, .choice, .choice-l, .cn-dots i, .pk-dots i, .fold > summary i, .abar { transition: none; }
 }
+
+/* ผลสอบ: กล่องดาว */
+.stars-big { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 2px 8px; margin-top: 14px; padding: 10px 14px; border-radius: 16px; background: linear-gradient(135deg, #FEF3C7, #FDE68A); border: 2px solid #FBBF24; color: #78350F; font-size: 18px; line-height: 28px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.stars-big small { flex-basis: 100%; text-align: center; font-size: 12px; line-height: 18px; font-weight: 600; }
+.stars-big > svg { animation: tileBob 2.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .stars-big > svg { animation: none; } }
