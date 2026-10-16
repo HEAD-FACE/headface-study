@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 560" role="img" aria-label="การเปลี่ยนรูปพลังงาน: แสงอาทิตย์ผ่านเซลล์สุริยะเป็นพลังงานไฟฟ้า เก็บในแบตเตอรี่เป็นพลังงานเคมี แล้วใช้ให้หลอดไฟเป็นพลังงานแสงและความร้อน">
+  <defs>
+    <marker id="eA" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto" markerUnits="strokeWidth"><path d="M0 0L7 3.5L0 7z" fill="#475569"/></marker>
+  </defs>
+  <rect width="480" height="560" rx="22" fill="#FFFFFF"/>
+  <g font-family="Prompt, 'Noto Sans Thai', 'Leelawadee UI', Tahoma, sans-serif">
+    <!-- 1 แสงอาทิตย์ -->
+    <circle cx="70" cy="64" r="28" fill="#FBBF24" stroke="#B45309" stroke-width="4"/>
+    <g stroke="#F59E0B" stroke-width="5" stroke-linecap="round"><path d="M70 18v10"/><path d="M70 100v10"/><path d="M24 64h10"/><path d="M106 64h10"/><path d="M38 32l7 7"/><path d="M95 89l7 7"/><path d="M38 96l7 -7"/><path d="M95 39l7 -7"/></g>
+    <text x="140" y="60" font-size="26" font-weight="800" fill="#92400E">แสงอาทิตย์</text>
+    <text x="140" y="90" font-size="19" font-weight="600" fill="#475569">พลังงานแสง</text>
+    <path d="M70 120V150" stroke="#475569" stroke-width="5" stroke-linecap="round" marker-end="url(#eA)"/>
+    <!-- 2 เซลล์สุริยะ -->
+    <rect x="34" y="162" width="72" height="56" rx="8" fill="#1E3A8A" stroke="#172554" stroke-width="4"/>
+    <g stroke="#93C5FD" stroke-width="2"><path d="M34 180H106"/><path d="M34 199H106"/><path d="M58 162V218"/><path d="M82 162V218"/></g>
+    <text x="140" y="188" font-size="26" font-weight="800" fill="#1E3A8A">เซลล์สุริยะ</text>
+    <text x="140" y="216" font-size="19" font-weight="600" fill="#475569">แสง → ไฟฟ้า</text>
+    <path d="M70 226V256" stroke="#475569" stroke-width="5" stroke-linecap="round" marker-end="url(#eA)"/>
+    <!-- 3 แบตเตอรี่ -->
+    <rect x="30" y="268" width="76" height="54" rx="9" fill="#DCFCE7" stroke="#15803D" stroke-width="4"/>
+    <rect x="106" y="284" width="10" height="22" rx="3" fill="#15803D"/>
+    <rect x="40" y="278" width="16" height="34" rx="3" fill="#22C55E"/><rect x="60" y="278" width="16" height="34" rx="3" fill="#22C55E"/><rect x="80" y="278" width="16" height="34" rx="3" fill="#86EFAC"/>
+    <text x="140" y="294" font-size="26" font-weight="800" fill="#166534">แบตเตอรี่</text>
+    <text x="140" y="322" font-size="19" font-weight="600" fill="#475569">ไฟฟ้า → พลังงานเคมี</text>
+    <path d="M70 332V362" stroke="#475569" stroke-width="5" stroke-linecap="round" marker-end="url(#eA)"/>
+    <!-- 4 หลอดไฟ -->
+    <circle cx="70" cy="410" r="28" fill="#FEF08A" stroke="#CA8A04" stroke-width="4"/>
+    <path d="M58 438h24v14H58z" fill="#94A3B8" stroke="#475569" stroke-width="3"/>
+    <g stroke="#F59E0B" stroke-width="4" stroke-linecap="round"><path d="M70 366v-4"/><path d="M106 380l7 -7"/><path d="M34 380l-7 -7"/></g>
+    <text x="140" y="404" font-size="26" font-weight="800" fill="#854D0E">หลอดไฟ</text>
+    <text x="140" y="432" font-size="19" font-weight="600" fill="#475569">เคมี/ไฟฟ้า → แสง + ความร้อน</text>
+    <rect x="24" y="486" width="432" height="56" rx="14" fill="#F1F5F9"/>
+    <text x="240" y="510" text-anchor="middle" font-size="18" font-weight="700" fill="#334155">พลังงานรวมคงที่ เปลี่ยนรูปได้ ไม่สูญหาย</text>
+    <text x="240" y="532" text-anchor="middle" font-size="16" font-weight="600" fill="#475569">(กฎการอนุรักษ์พลังงาน)</text>
+  </g>
+</svg>

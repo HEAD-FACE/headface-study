@@ -1,5 +1,5 @@
-// ทดสอบตัวควบคุม Quiz ของหน้าบทเรียน (js/study-live-quiz.js) ด้วย API จำลอง: ลำดับ intro → ถามทีละข้อ → ผลคะแนน,
-// ข้อผิดพลาดจาก Backend, การกดซ้ำ และการไม่ให้เฉลยหลุดก่อนตอบ
+// ทดสอบตัวควบคุม Quiz หนึ่งชุด (js/study-live-quiz.js) ด้วย API จำลอง: ลำดับ intro → ถามทีละข้อ → ผลคะแนน,
+// ข้อผิดพลาดจาก Backend, การกดซ้ำ, ภาพ/วิดีโอในโจทย์ และการไม่ให้เฉลยหลุดก่อนตอบ
 import { test, describe, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 
@@ -11,8 +11,8 @@ const { createQuiz } = await import('../js/study-live-quiz.js');
 const { StudyApiError } = await import('../js/study-api.js');
 
 const QUESTIONS = [
-    { id: 'q1', n: 1, topic: 'หัวข้อ A', text: 'โจทย์ <b>หนึ่ง</b>', choices: [{ id: 'a', text: 'ก1' }, { id: 'b', text: 'ข1' }, { id: 'c', text: 'ค1' }] },
-    { id: 'q2', n: 2, topic: 'หัวข้อ B', text: 'โจทย์สอง', choices: [{ id: 'a', text: 'ก2' }, { id: 'b', text: 'ข2' }] },
+    { id: 'q1', n: 1, topic: 'หัวข้อ A', text: 'โจทย์ <b>หนึ่ง</b>', media: [], choices: [{ id: 'a', text: 'ก1' }, { id: 'b', text: 'ข1' }, { id: 'c', text: 'ค1' }] },
+    { id: 'q2', n: 2, topic: 'หัวข้อ B', text: 'โจทย์สอง', media: [], choices: [{ id: 'a', text: 'ก2' }, { id: 'b', text: 'ข2' }] },
 ];
 const KEY = { q1: 'b', q2: 'a' };
 
@@ -20,7 +20,7 @@ function fakeApi(overrides = {}) {
     const calls = [];
     const api = {
         calls,
-        startQuiz: async (s, no) => { calls.push(['start', s, no]); return { attempt: { id: 'qa_abcdefghij', questions: QUESTIONS } }; },
+        startQuiz: async (s, no, nodeId) => { calls.push(['start', s, no, nodeId]); return { attempt: { id: 'qa_abcdefghij', questions: QUESTIONS } }; },
         answerQuiz: async (attempt, q, choice) => {
             calls.push(['answer', attempt, q, choice]);
             return { alreadyAnswered: false, feedback: { questionId: q, isCorrect: choice === KEY[q], yourChoiceId: choice, correctChoiceId: KEY[q], explanation: `เพราะ ${KEY[q]}`, topic: 't' } };
@@ -31,11 +31,13 @@ function fakeApi(overrides = {}) {
                 result: {
                     attemptId: attempt, correct: 1, total: 2, answered: 2, percent: 50, passed: true,
                     review: [
-                        { questionId: 'q1', n: 1, text: 'โจทย์ <b>หนึ่ง</b>', choices: QUESTIONS[0].choices, yourChoiceId: 'a', correctChoiceId: 'b', isCorrect: false, explanation: 'เพราะ b' },
-                        { questionId: 'q2', n: 2, text: 'โจทย์สอง', choices: QUESTIONS[1].choices, yourChoiceId: 'a', correctChoiceId: 'a', isCorrect: true, explanation: 'เพราะ a' },
+                        { questionId: 'q1', n: 1, text: 'โจทย์ <b>หนึ่ง</b>', media: [], choices: QUESTIONS[0].choices, yourChoiceId: 'a', correctChoiceId: 'b', isCorrect: false, explanation: 'เพราะ b' },
+                        { questionId: 'q2', n: 2, text: 'โจทย์สอง', media: [], choices: QUESTIONS[1].choices, yourChoiceId: 'a', correctChoiceId: 'a', isCorrect: true, explanation: 'เพราะ a' },
                     ],
                 },
-                lesson: { status: 'now', quiz: { attempts: 1, best: { correct: 1, total: 2 }, last: { correct: 1, total: 2, at: 1 }, passed: true } },
+                node: { id: 'sci-z1', status: 'done', progress: { attempts: 1, best: { correct: 1, total: 2 }, last: { correct: 1, total: 2, at: 1 }, passed: true, passPct: 50 } },
+                lesson: { status: 'now', quiz: { attempts: 1, best: { correct: 1, total: 2 }, last: null, passed: true } },
+                current: { lessonNo: 1, nodeId: 'sci-z2', type: 'quiz' },
             };
         },
         ...overrides,
@@ -43,12 +45,12 @@ function fakeApi(overrides = {}) {
     return api;
 }
 
-let lesson;
+let node;
 let patches;
 let renders;
 const make = (api, extra = {}) => createQuiz({
-    subject: { id: 'sci' }, lesson, api, render: () => { renders++; }, applyProgress: (p) => patches.push(p),
-    nextHref: 'lesson.html?s=sci&l=2', courseHref: 'course.html?s=sci', ...extra,
+    subject: { id: 'sci' }, lessonNo: 1, node, api, render: () => { renders++; }, applyProgress: (p) => patches.push(p),
+    nextHref: 'lesson.html?s=sci&l=1&n=sci-p1', courseHref: 'course.html?s=sci', reviewHref: 'lesson.html?s=sci&l=1', ...extra,
 });
 
 // คลิกจำลอง: act = ชื่อ data-act, choice = id ตัวเลือก
@@ -58,44 +60,50 @@ const click = (quiz, { act, choice } = {}) => quiz.handleClick({
 const settle = () => new Promise((r) => setTimeout(r, 0));
 
 beforeEach(() => {
-    lesson = { no: 1, quiz: { available: true, questionCount: 2, passPct: 50 }, progress: { status: 'now', contentReadAt: null, quiz: { attempts: 0, best: null, last: null, passed: false } } };
+    node = {
+        id: 'sci-z1', type: 'quiz', title: 'Quiz ชุด 1',
+        quiz: { available: true, questionCount: 2, passPct: 50 },
+        progress: { attempts: 0, best: null, last: null, passed: false, passPct: 50 },
+    };
     patches = [];
     renders = 0;
 });
 
 describe('intro', () => {
-    test('บอกจำนวนข้อและเกณฑ์ผ่าน และยังไม่มีโจทย์', () => {
+    test('บอกชื่อชุด จำนวนข้อและเกณฑ์ผ่าน และยังไม่มีโจทย์', () => {
         const html = make(fakeApi()).html();
+        assert.match(html, /Quiz ชุด 1/);
         assert.match(html, /2 ข้อ/);
         assert.match(html, /อย่างน้อย 50% ในการทำ 1 ครั้ง/);
-        assert.match(html, /อ่านเนื้อหาจบ<\/b> และผ่าน Quiz/);
+        assert.match(html, /เรียนจบทุกเนื้อหา<\/b> และผ่านทุก Quiz ของบท/);
         assert.match(html, /data-act="quiz-start"/);
         assert.doesNotMatch(html, /qtext|data-choice/);
     });
-    test('ไม่มีเกณฑ์คะแนน และบทที่ไม่มีโจทย์', () => {
-        lesson.quiz.passPct = null;
+    test('ไม่มีเกณฑ์คะแนน และชุดที่ไม่มีโจทย์', () => {
+        node.quiz.passPct = null;
         assert.match(make(fakeApi()).html(), /ทำครบแล้วส่ง 1 ครั้งถือว่าผ่าน/);
-        lesson.quiz = { available: false, questionCount: 0, passPct: 50 };
+        node.quiz = { available: false, questionCount: 0, passPct: 50 };
         const html = make(fakeApi()).html();
-        assert.match(html, /ยังไม่มีโจทย์ Quiz/);
+        assert.match(html, /Quiz ชุดนี้ยังไม่มีโจทย์/);
         assert.doesNotMatch(html, /quiz-start/);
     });
     test('แสดงผลดีที่สุดและล่าสุดเมื่อเคยทำ และเปลี่ยนป้ายปุ่มเป็น "ทำอีกครั้ง"', () => {
-        lesson.progress.quiz = { attempts: 2, best: { correct: 4, total: 5 }, last: { correct: 2, total: 5, at: 1 }, passed: true };
+        node.progress = { attempts: 2, best: { correct: 4, total: 5 }, last: { correct: 2, total: 5, at: 1 }, passed: true, passPct: 50 };
         const html = make(fakeApi()).html();
         assert.match(html, /ดีที่สุด 4\/5/);
         assert.match(html, /ล่าสุด 2\/5/);
+        assert.match(html, /ผ่านแล้ว/);
         assert.match(html, /ทำ Quiz อีกครั้ง/);
     });
 });
 
 describe('ทำทีละข้อ', () => {
-    test('เริ่ม → ได้โจทย์โดยไม่มีเฉลย, ข้อความถูก escape, ปุ่มตรวจปิดอยู่จนกว่าจะเลือก', async () => {
+    test('เริ่ม → เรียกชุดนี้ (node) ได้โจทย์โดยไม่มีเฉลย, ข้อความถูก escape, ปุ่มตรวจปิดอยู่จนกว่าจะเลือก', async () => {
         const api = fakeApi();
         const quiz = make(api);
         assert.equal(click(quiz, { act: 'quiz-start' }), true);
         await settle();
-        assert.deepEqual(api.calls[0], ['start', 'sci', 1]);
+        assert.deepEqual(api.calls[0], ['start', 'sci', 1, 'sci-z1']);
         const html = quiz.html();
         assert.match(html, /ข้อ 1\/2/);
         assert.match(html, /โจทย์ &lt;b&gt;หนึ่ง&lt;\/b&gt;/);
@@ -122,12 +130,13 @@ describe('ทำทีละข้อ', () => {
         assert.match(html, /choice is-bad/);
         assert.match(html, /choice is-ok/);
         assert.match(html, /disabled/);
+        assert.match(html, /href="lesson\.html\?s=sci&amp;l=1"[^>]*>กลับไปทบทวนเนื้อหาที่เกี่ยวข้อง/);
         click(quiz, { choice: 'c' }); await settle(); // หลังเห็นเฉลยแล้วเปลี่ยนไม่ได้
         click(quiz, { act: 'quiz-check' }); await settle();
         assert.equal(api.calls.filter((c) => c[0] === 'answer').length, 1);
     });
 
-    test('จบชุด → ส่ง → ผลคะแนน พร้อมข้อที่ควรทบทวน และแจ้งสถานะบทกลับไปหน้าบทเรียน', async () => {
+    test('จบชุด → ส่ง → ผลคะแนน พร้อมข้อที่ควรทบทวน และแจ้งผลของ node กลับไปที่หน้ากิจกรรม', async () => {
         const api = fakeApi();
         const quiz = make(api);
         click(quiz, { act: 'quiz-start' }); await settle();
@@ -139,28 +148,41 @@ describe('ทำทีละข้อ', () => {
         click(quiz, { act: 'quiz-next' }); await settle();
         assert.deepEqual(api.calls.at(-1), ['submit', 'qa_abcdefghij']);
         assert.equal(patches.length, 1);
-        assert.deepEqual(patches[0].quiz.best, { correct: 1, total: 2 });
+        assert.deepEqual(patches[0].node.progress.best, { correct: 1, total: 2 });
         const html = quiz.html();
         assert.match(html, /50%/);
         assert.match(html, /ตอบถูก 1 จาก 2 ข้อ/);
-        assert.match(html, /ผ่านเกณฑ์ของบทนี้/);
+        assert.match(html, /ผ่านเกณฑ์ของ Quiz ชุดนี้/);
         assert.match(html, /ข้อที่ควรทบทวน/);
         assert.match(html, /เฉลย: ข ข1/);
         assert.equal((html.match(/review-i/g) || []).length, 1, 'แสดงเฉพาะข้อที่ผิด');
-        assert.match(html, /href="lesson\.html\?s=sci&amp;l=2"/);
+        assert.match(html, /href="lesson\.html\?s=sci&amp;l=1&amp;n=sci-p1"[^>]*><span>ไปกิจกรรมถัดไป/);
+        assert.match(html, /href="lesson\.html\?s=sci&amp;l=1"[^>]*>กลับไปทบทวนเนื้อหา/);
+        assert.match(html, /href="course\.html\?s=sci"[^>]*>กลับไปเส้นทางเรียน/);
         assert.equal(quiz.hasAbar(), false);
     });
 
-    test('ยังไม่ได้อ่านเนื้อหา → บอกว่าบทยังไม่เสร็จ; บทเสร็จแล้ว → แสดงว่าเสร็จสมบูรณ์', async () => {
-        const run = async () => {
-            const quiz = make(fakeApi());
+    test('บอกว่าบทยังมีกิจกรรมอื่น หรือบทเสร็จสมบูรณ์แล้ว ตามสถานะบทที่ Backend ส่งมา', async () => {
+        const run = async (lessonStatus) => {
+            const api = fakeApi();
+            const original = api.submitQuiz;
+            api.submitQuiz = async (a) => { const r = await original(a); r.lesson.status = lessonStatus; return r; };
+            const quiz = make(api);
             click(quiz, { act: 'quiz-start' }); await settle();
             for (let i = 0; i < 2; i++) { click(quiz, { choice: 'a' }); click(quiz, { act: 'quiz-check' }); await settle(); click(quiz, { act: 'quiz-next' }); await settle(); }
             return quiz.html();
         };
-        assert.match(await run(), /ยังเหลืออีกขั้น: อ่านเนื้อหา/);
-        lesson.progress = { status: 'done', contentReadAt: 5, quiz: lesson.progress.quiz };
-        assert.match(await run(), /บทนี้เสร็จสมบูรณ์แล้ว/);
+        assert.match(await run('now'), /ยังเหลือกิจกรรมอื่นของบทนี้/);
+        assert.match(await run('done'), /บทนี้เสร็จสมบูรณ์แล้ว/);
+    });
+
+    test('ไม่มีกิจกรรมถัดไป → ปุ่มหลักพากลับเส้นทางเรียน', async () => {
+        const quiz = make(fakeApi(), { nextHref: null });
+        click(quiz, { act: 'quiz-start' }); await settle();
+        for (let i = 0; i < 2; i++) { click(quiz, { choice: 'a' }); click(quiz, { act: 'quiz-check' }); await settle(); click(quiz, { act: 'quiz-next' }); await settle(); }
+        const html = quiz.html();
+        assert.doesNotMatch(html, /ไปกิจกรรมถัดไป/);
+        assert.match(html, /href="course\.html\?s=sci"[^>]*><span>กลับไปเส้นทางเรียน/);
     });
 
     test('ทำอีกครั้งจากหน้าผล เริ่มชุดใหม่ที่ข้อ 1', async () => {
@@ -172,6 +194,54 @@ describe('ทำทีละข้อ', () => {
         assert.equal(api.calls.filter((c) => c[0] === 'start').length, 2);
         assert.match(quiz.html(), /ข้อ 1\/2/);
         assert.doesNotMatch(quiz.html(), /class="fb/);
+    });
+});
+
+describe('ภาพและวิดีโอในโจทย์', () => {
+    const withMedia = () => [
+        {
+            id: 'q1', n: 1, topic: 'ก', text: 'ดูภาพแล้วตอบ',
+            media: [
+                { kind: 'image', url: 'assets/study/sci/a.svg', alt: 'แผนภาพ "A"', caption: 'ภาพที่ 1' },
+                { kind: 'video', url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', caption: 'คลิป' },
+                { kind: 'image', url: 'http://insecure.example.com/x.png', alt: 'x', caption: null },
+                { kind: 'image', url: 'javascript:alert(1)', alt: 'x', caption: null },
+            ],
+            choices: [{ id: 'a', text: 'ก', image: { url: 'https://example.com/a.png', alt: 'ตัวเลือก <ก>' } }, { id: 'b', text: 'ข' }],
+        },
+    ];
+
+    test('แสดงภาพ วิดีโอ (ฝังเฉพาะเว็บที่รู้จัก) และภาพของตัวเลือก; ที่อยู่ที่ไม่ปลอดภัยไม่ถูกแสดง', async () => {
+        const quiz = make(fakeApi({ startQuiz: async () => ({ attempt: { id: 'qa_abcdefghij', questions: withMedia() } }) }));
+        click(quiz, { act: 'quiz-start' }); await settle();
+        const html = quiz.html();
+        assert.match(html, /class="qmedia"/);
+        assert.match(html, /<img src="assets\/study\/sci\/a\.svg" alt="แผนภาพ &quot;A&quot;"/);
+        assert.match(html, /<iframe src="https:\/\/www\.youtube-nocookie\.com\/embed\/dQw4w9WgXcQ\?rel=0/);
+        assert.match(html, /sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"/);
+        assert.match(html, /<img class="choice-img" src="https:\/\/example\.com\/a\.png" alt="ตัวเลือก &lt;ก&gt;"/);
+        assert.doesNotMatch(html, /insecure\.example|javascript:/);
+        assert.equal((html.match(/class="choice-img"/g) || []).length, 1, 'ตัวเลือกที่ไม่มีภาพไม่มีรูป');
+    });
+
+    test('โจทย์ที่ไม่มีสื่อไม่มีกล่องสื่อ', async () => {
+        const quiz = make(fakeApi());
+        click(quiz, { act: 'quiz-start' }); await settle();
+        assert.doesNotMatch(quiz.html(), /qmedia|choice-img/);
+    });
+
+    test('ข้อที่ตอบผิดในหน้าผลแสดงภาพของโจทย์ด้วย', async () => {
+        const api = fakeApi();
+        const original = api.submitQuiz;
+        api.submitQuiz = async (a) => {
+            const r = await original(a);
+            r.result.review[0].media = [{ kind: 'image', url: 'assets/study/sci/review.svg', alt: 'ภาพทบทวน', caption: null }];
+            return r;
+        };
+        const quiz = make(api);
+        click(quiz, { act: 'quiz-start' }); await settle();
+        for (let i = 0; i < 2; i++) { click(quiz, { choice: 'a' }); click(quiz, { act: 'quiz-check' }); await settle(); click(quiz, { act: 'quiz-next' }); await settle(); }
+        assert.match(quiz.html(), /assets\/study\/sci\/review\.svg/);
     });
 });
 
@@ -207,7 +277,7 @@ describe('ข้อผิดพลาดและการกดซ้ำ', () =
         click(quiz, { act: 'quiz-start' }); await settle();
         click(quiz, { choice: 'a' }); click(quiz, { act: 'quiz-check' }); await settle();
         const html = quiz.html();
-        assert.match(html, /Quiz ท้ายบท/);
+        assert.match(html, /Quiz ชุด 1/);
         assert.match(html, /การทำครั้งนี้จบไปแล้ว กรุณาเริ่ม Quiz ใหม่/);
         assert.match(html, /data-act="quiz-start"/);
     });

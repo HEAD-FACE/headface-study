@@ -1,0 +1,43 @@
+/* HEADFACE STUDY - สีสันและการเคลื่อนไหวเพิ่มเติมที่ใช้ทุกหน้า (ไม่เปลี่ยนเลย์เอาต์ ปิดได้ด้วย prefers-reduced-motion) */
+
+/* พื้นที่สีเขียวด้านบน: แสงอ่อนไหลช้า ๆ ให้ดูมีชีวิต (ไม่กระทบคอนทราสต์ของตัวอักษรสีขาว) */
+#mainBlueBg, .header-bg-shell { overflow: hidden; }
+#mainBlueBg::after, .header-bg-shell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(140px 90px at 16% 34%, rgba(255, 255, 255, .15), transparent 70%),
+    radial-gradient(180px 100px at 84% 18%, rgba(255, 255, 255, .11), transparent 70%),
+    radial-gradient(120px 70px at 58% 92%, rgba(255, 255, 255, .09), transparent 70%);
+  animation: shellDrift 14s ease-in-out infinite alternate;
+}
+@keyframes shellDrift { from { transform: translateX(-4%) scale(1); } to { transform: translateX(4%) scale(1.06); } }
+
+/* ปุ่ม: ยกขึ้นเล็กน้อยเมื่อชี้ (เมาส์) กดแล้วจมลงเหมือนเดิม */
+.btn { transition: transform .12s ease, box-shadow .12s ease, filter .15s ease; }
+.btn:hover { filter: brightness(1.06); }
+@media (hover: hover) {
+  .btn:hover:not(:active):not([disabled]) { transform: translateY(-1px); }
+  .sc:hover, .cc:hover { transform: translateY(-3px); }
+}
+.sc, .cc { transition: transform .18s ease, box-shadow .18s ease; }
+
+/* แถบความคืบหน้าของการ์ดในหน้าหลัก: ค่อย ๆ เต็มจาก 0 (หน้าเรียนที่วาดซ้ำทุกครั้งที่กดไม่ใช้ เพื่อไม่ให้กะพริบ) */
+.sc .bar > i, .cc .bar > i, .card .bar > i { animation: barGrow .9s cubic-bezier(.2, .8, .2, 1) both; }
+@keyframes barGrow { from { width: 0; } }
+
+/* แท็บเมนูล่าง: ไอคอนของแท็บที่เลือกเด้งเข้า */
+.nav-i.on .nav-pill { animation: navPop .45s cubic-bezier(.34, 1.56, .64, 1); }
+@keyframes navPop { from { transform: scale(.7); } to { transform: scale(1); } }
+
+/* ไอคอนกล่องสีของหัวข้อ: เด้งเบา ๆ เมื่อกด */
+.tile { transition: transform .2s cubic-bezier(.34, 1.56, .64, 1); }
+.tile:active { transform: scale(.9) rotate(-4deg); }
+
+@media (prefers-reduced-motion: reduce) {
+  #mainBlueBg::after, .header-bg-shell::after, .sc .bar > i, .cc .bar > i, .card .bar > i, .nav-i.on .nav-pill { animation: none; }
+  .btn, .sc, .cc, .tile { transition: none; }
+}

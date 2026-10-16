@@ -1,31 +1,34 @@
 /**
- * js/study-live-practice.js — แท็บ Practice ของหน้าบทเรียน (โหมดข้อมูลจริง)
+ * js/study-live-practice.js — Practice หนึ่งชุด (วงกลม 1 วงบนเส้นทางเรียน) โหมดข้อมูลจริง
  *
  * โจทย์ฝึกที่ผู้เรียนทำเองบนกระดาษ แล้วดูเฉลยและกด "ทำถูก/ทำผิด" ด้วยตัวเอง ระบบไม่ตรวจให้
  * (จึงไม่นับเป็นดาวและไม่ใช้วิเคราะห์จุดอ่อน) เฉลยจะถูกขอจาก Backend เมื่อกด "ดูเฉลย" เท่านั้น
  */
 import { esc, ICON } from './study-ui.js';
 import { messageOf } from './study-live-common.js';
+import { questionMediaHtml } from './study-media.js';
+import { burst, pop } from './study-fx.js';
 
 const LEVELS = { easy: 'ง่าย', medium: 'กลาง', hard: 'ยาก' };
 
 /**
  * @param {object} deps
  * @param {{ id: string }} deps.subject
- * @param {object} deps.lesson
+ * @param {number} deps.lessonNo        เลขบทที่ชุดนี้อยู่
+ * @param {{ id: string }} deps.node     node ชนิด practice
  * @param {object} deps.api
  * @param {(opts?: {focus?: boolean}) => void} deps.render
  * @param {(summary: {total:number, done:number, ok:number, wrong:number}) => void} deps.applySummary  แจ้งสรุปกลับไปที่สถานะบทเรียน
  */
-export function createPractice({ subject, lesson, api, render, applySummary }) {
-    const s = { load: 'idle', items: [], summary: null, filter: 'all', shown: {}, solutions: {}, busy: new Set(), error: null };
+export function createPractice({ subject, lessonNo, node, api, render, applySummary }) {
+    const s = { load: 'idle', items: [], summary: null, filter: 'all', shown: {}, solutions: {}, busy: new Set(), error: null, fx: null };
 
     async function load() {
         s.load = 'loading';
         s.error = null;
         render();
         try {
-            const data = await api.getPractice(subject.id, lesson.no);
+            const data = await api.getPractice(subject.id, lessonNo, node.id);
             s.items = data.items;
             s.summary = data.summary;
             s.load = 'ready';
@@ -53,6 +56,7 @@ export function createPractice({ subject, lesson, api, render, applySummary }) {
         return `<article class="pcard${item.result === 'ok' ? ' ok' : item.result === 'wrong' ? ' bad' : ''}">
           <div class="pcard-h"><span class="lvl lvl-${esc(label)}">${esc(label)}</span><span class="cap">${esc(item.topic)}</span></div>
           <p class="pcard-q" style="white-space:pre-line">ข้อ ${item.n} ${esc(item.text)}</p>
+          ${questionMediaHtml(item.media)}
           ${solution}
           <div class="pcard-act">
             <button type="button" class="pbtn" data-pshow="${esc(item.id)}" aria-expanded="${shown}">${shown ? 'ซ่อนเฉลย' : 'ดูเฉลย'}</button>
@@ -67,7 +71,7 @@ export function createPractice({ subject, lesson, api, render, applySummary }) {
         if (s.load === 'error') {
             return `<section class="notfound" role="alert"><h2>โหลดโจทย์ไม่สำเร็จ</h2><p>${esc(s.error)}</p><div class="notfound-act"><button type="button" class="btn" data-act="practice-retry">ลองใหม่</button></div></section>`;
         }
-        if (s.items.length === 0) return '<p class="empty-p fade-in">บทนี้ยังไม่มีโจทย์ฝึก ระหว่างนี้ทำ Quiz ท้ายบทหรืออ่านเนื้อหาซ้ำได้</p>';
+        if (s.items.length === 0) return '<p class="empty-p fade-in">ชุดนี้ยังไม่มีโจทย์ฝึก ระหว่างนี้ทำ Quiz หรืออ่านเนื้อหาซ้ำได้</p>';
         const { total, done, ok } = s.summary;
         const list = s.items.filter((i) => s.filter === 'all' || (s.filter === 'wrong' ? i.result === 'wrong' : i.level === s.filter));
         return `<div class="fade-in">
@@ -76,7 +80,7 @@ export function createPractice({ subject, lesson, api, render, applySummary }) {
           <div class="pfilter" role="group" aria-label="กรองโจทย์" style="margin-top:12px">${filters().map(([k, name]) => `<button type="button" class="fchip${s.filter === k ? ' on' : ''}" data-pf="${k}" aria-pressed="${s.filter === k}">${esc(name)}</button>`).join('')}</div>
           ${s.error ? `<p class="errbox" role="alert">${esc(s.error)}</p>` : ''}
           <div class="plist">${list.length ? list.map(card).join('') : `<p class="empty-p">ยังไม่มีโจทย์ในหมวดนี้ ${s.filter === 'wrong' ? '— ข้อที่ทำผิดจะมารวมอยู่ที่นี่เพื่อให้ฝึกซ้ำ' : ''}</p>`}</div>
-          ${done ? '<p style="text-align:center;margin-top:12px"><button type="button" class="linkbtn" data-act="practice-reset" style="min-height:44px;font-size:14px;font-weight:700;text-decoration:underline;color:#475569">ล้างผลการฝึกของบทนี้</button></p>' : ''}
+          ${done ? '<p style="text-align:center;margin-top:12px"><button type="button" class="linkbtn" data-act="practice-reset" style="min-height:44px;font-size:14px;font-weight:700;text-decoration:underline;color:#475569">ล้างผลการฝึกของชุดนี้</button></p>' : ''}
         </div>`;
     }
 
@@ -87,7 +91,7 @@ export function createPractice({ subject, lesson, api, render, applySummary }) {
         document.querySelector(`[data-pshow="${CSS.escape(id)}"]`)?.focus({ preventScroll: true });
         if (!s.shown[id] || s.solutions[id] !== undefined) return;
         try {
-            s.solutions[id] = (await api.getSolution(subject.id, lesson.no, id)).solution;
+            s.solutions[id] = (await api.getSolution(subject.id, lessonNo, id, node.id)).solution;
         } catch (err) {
             s.shown[id] = false;
             s.error = messageOf(err);
@@ -101,7 +105,8 @@ export function createPractice({ subject, lesson, api, render, applySummary }) {
         s.error = null;
         render();
         try {
-            const { summary } = await api.setPracticeResult(subject.id, lesson.no, id, result);
+            const { summary } = await api.setPracticeResult(subject.id, lessonNo, id, result, node.id);
+            if (result === 'ok') s.fx = id;
             s.items = s.items.map((i) => (i.id === id ? { ...i, result } : i));
             s.summary = summary;
             applySummary(summary);
@@ -118,7 +123,7 @@ export function createPractice({ subject, lesson, api, render, applySummary }) {
         if (!s.summary || s.summary.done === 0) return;
         s.error = null;
         try {
-            const { summary } = await api.resetPractice(subject.id, lesson.no);
+            const { summary } = await api.resetPractice(subject.id, lessonNo, node.id);
             s.items = s.items.map((i) => ({ ...i, result: null }));
             s.summary = summary;
             s.shown = {};
@@ -133,6 +138,15 @@ export function createPractice({ subject, lesson, api, render, applySummary }) {
         /** เรียกเมื่อเปิดแท็บ: โหลดโจทย์ครั้งแรก */
         open() { if (s.load === 'idle') load(); },
         html,
+        /** เอฟเฟกต์หลังวาดหน้า: ทำถูกแล้วปุ่มเด้งเล็ก ๆ */
+        afterRender(root) {
+            const id = s.fx;
+            s.fx = null;
+            if (!id || !root || typeof root.querySelector !== 'function') return;
+            const btn = root.querySelector(`[data-pmark="${id}:ok"]`);
+            pop(btn);
+            burst(btn, { count: 8, radius: 50 });
+        },
         handleClick(e) {
             const act = e.target.closest('[data-act]')?.dataset.act;
             if (act === 'practice-retry') { load(); return true; }

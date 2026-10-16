@@ -5,8 +5,12 @@ import { StudyApiError } from './study-api.js';
 import { $, esc, content, notFound } from './study-ui.js';
 
 export const SUBJECT_ID_RE = /^[a-z][a-z0-9-]{1,23}$/;
+export const NODE_ID_RE = /^[a-z0-9][a-z0-9-]{1,79}$/;
 export const courseUrl = (id) => `course.html?s=${encodeURIComponent(id)}`;
+/** ลิงก์ไปบท: ไม่ระบุกิจกรรม = ระบบเลือกให้ (tab=content|quiz|practice = กิจกรรมแรกของชนิดนั้น, ไม่ระบุ = กิจกรรมถัดไปที่ต้องทำ) */
 export const lessonUrl = (id, no = 'current', tab = 'content') => `lesson.html?s=${encodeURIComponent(id)}&l=${encodeURIComponent(no)}${tab && tab !== 'content' ? `&tab=${tab}` : ''}`;
+/** ลิงก์ไปกิจกรรมหนึ่งวงกลม (node) ของบท */
+export const nodeUrl = (id, no, nodeId) => `lesson.html?s=${encodeURIComponent(id)}&l=${encodeURIComponent(no)}&n=${encodeURIComponent(nodeId)}`;
 export const mockUrl = (id) => (id ? `mock-exam.html?s=${encodeURIComponent(id)}` : 'mock-exam.html');
 
 export const loading = () => { content.innerHTML = '<div class="loading" role="status" aria-live="polite">กำลังโหลด...</div>'; };

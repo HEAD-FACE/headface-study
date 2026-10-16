@@ -13,6 +13,10 @@ export function scoreMessage(percent) {
     return 'ลองกลับไปทบทวนเนื้อหาอีกครั้ง';
 }
 
+/** สีประจำบท: บทที่ติดกันไม่เคยสีเดียวกัน (หน้าเส้นทางเรียนและหน้ากิจกรรมใช้สีเดียวกันของบทนั้นเสมอ) */
+export const LESSON_HUES = Object.freeze(['emerald', 'sky', 'violet', 'amber', 'rose', 'cyan', 'orange', 'indigo', 'blue', 'red']);
+export const lessonHue = (no) => LESSON_HUES[(((Number(no) || 1) - 1) % LESSON_HUES.length + LESSON_HUES.length) % LESSON_HUES.length];
+
 /** วินาที → "mm:ss" (ไม่ติดลบ) */
 export function formatClock(totalSeconds) {
     const s = Math.max(0, Math.round(totalSeconds));

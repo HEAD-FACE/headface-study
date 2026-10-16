@@ -9,6 +9,8 @@ import { studyApi, StudyApiError } from './study-api.js';
 import { $, esc, params, content, view, ICON, notFound, setTheme, focusView, abar, ringHtml, animateRing } from './study-ui.js';
 import { choiceLabel, scoreMessage, formatClock, formatThaiDate } from './study-format.js';
 import { SUBJECT_ID_RE, courseUrl, failure, loading, mockUrl, messageOf } from './study-live-common.js';
+import { questionMediaHtml, choiceImageHtml } from './study-media.js';
+import { confetti, countUp, pop } from './study-fx.js';
 
 const SAVE_RETRY_MS = 5000;
 const AUTO_SUBMIT_RETRY_MS = 5000;
@@ -171,7 +173,8 @@ export async function initMockExam({ api = studyApi, saveDebounceMs = 1000, tick
           <section class="qcard fade-in" aria-labelledby="q-t">
             <p class="qtopic">${esc(q.topic)}${q.special ? ' <span class="chip chip-amber" style="margin-left:6px">ข้อพิเศษ</span>' : ''}</p>
             <h2 class="qtext" id="q-t" style="white-space:pre-line">${esc(q.text)}</h2>
-            <div class="choices" role="radiogroup" aria-label="ตัวเลือกคำตอบ">${q.choices.map((c, idx) => `<button type="button" class="choice${c.id === pick ? ' is-sel' : ''}" role="radio" aria-checked="${c.id === pick}" data-choice="${esc(c.id)}"${busy ? ' disabled' : ''}><span class="choice-l">${choiceLabel(idx)}</span><span class="choice-t">${esc(c.text)}</span><span class="choice-m"></span></button>`).join('')}</div>
+            ${questionMediaHtml(q.media)}
+            <div class="choices" role="radiogroup" aria-label="ตัวเลือกคำตอบ">${q.choices.map((c, idx) => `<button type="button" class="choice${c.id === pick ? ' is-sel' : ''}" role="radio" aria-checked="${c.id === pick}" data-choice="${esc(c.id)}"${busy ? ' disabled' : ''}><span class="choice-l">${choiceLabel(idx)}</span><span class="choice-t">${choiceImageHtml(c)}<span>${esc(c.text)}</span></span><span class="choice-m"></span></button>`).join('')}</div>
           </section>
           ${abar(`<button type="button" class="btn btn-lg btn-line" data-act="prev"${i === 0 ? ' disabled' : ''} style="flex:.8">ก่อนหน้า</button>${isLast
             ? `<button type="button" class="btn btn-lg btn-orange" data-act="ask-submit"${busy ? ' disabled' : ''}>${busy ? 'กำลังส่ง...' : 'ส่งข้อสอบ'}</button>`
@@ -329,7 +332,7 @@ export async function initMockExam({ api = studyApi, saveDebounceMs = 1000, tick
               <div class="row"><span class="k">เวลาที่ใช้</span><span class="v">${formatClock(r.secondsUsed)} / ${formatClock(r.durationSec)}</span></div>
               <div class="row"><span class="k">เทียบกับครั้งก่อน</span><span class="v">${deltaHtml(r.deltaVsPrevious)}</span></div>
               ${r.passed === null ? '' : `<div class="row"><span class="k">ผลตามเกณฑ์</span><span class="v">${r.passed ? 'ผ่าน' : 'ยังไม่ผ่าน'}</span></div>`}
-              <div class="row"><span class="k">${ICON.star(16, '#D97706')} ดาวที่ได้รับ</span><span class="v">${r.starsEarned} ดาว<small style="display:block;font-size:12px;color:#475569;font-weight:600">จากข้อถูก ${r.starsBase}${r.starsTimeBonus ? ` + โบนัสเวลา ${r.starsTimeBonus}` : ''}</small></span></div>
+              <div class="row"><span class="k">${ICON.star(16, '#D97706')} ดาวที่ได้รับ</span><span class="v"><span data-countup="${r.starsEarned}">${r.starsEarned}</span> ดาว<small style="display:block;font-size:12px;color:#475569;font-weight:600">จากข้อถูก ${r.starsBase}${r.starsTimeBonus ? ` + โบนัสเวลา ${r.starsTimeBonus}` : ''}</small></span></div>
             </div>
           </section>
           <section class="fsec" aria-labelledby="h-topic"><div class="fsec-h"><h2 id="h-topic">ผลรายหัวข้อ</h2></div>
@@ -341,7 +344,7 @@ export async function initMockExam({ api = studyApi, saveDebounceMs = 1000, tick
                 const state = !x.yourChoiceId ? 'skip' : x.isCorrect ? 'ok' : 'bad';
                 const ci = x.choices.findIndex((c) => c.id === x.correctChoiceId);
                 const yi = x.choices.findIndex((c) => c.id === x.yourChoiceId);
-                return `<div class="review-i ${state === 'ok' ? 'ok' : state === 'bad' ? 'bad' : ''}"><h3>${state === 'ok' ? ICON.check(16) : state === 'bad' ? ICON.x(16) : ICON.info(16)}<span>ข้อ ${x.n} ${esc(x.text)} — ${state === 'ok' ? 'ถูก' : state === 'bad' ? 'ผิด' : 'ไม่ได้ตอบ'}${x.special ? ' • ข้อพิเศษ' : ''}</span></h3><p>เฉลย: ${ci >= 0 ? `${choiceLabel(ci)} ${esc(x.choices[ci].text)}` : ''}${state === 'bad' && yi >= 0 ? ` • คุณตอบ ${choiceLabel(yi)}` : ''}</p>${x.explanation ? `<p>${esc(x.explanation)}</p>` : ''}</div>`;
+                return `<div class="review-i ${state === 'ok' ? 'ok' : state === 'bad' ? 'bad' : ''}"><h3>${state === 'ok' ? ICON.check(16) : state === 'bad' ? ICON.x(16) : ICON.info(16)}<span>ข้อ ${x.n} ${esc(x.text)} — ${state === 'ok' ? 'ถูก' : state === 'bad' ? 'ผิด' : 'ไม่ได้ตอบ'}${x.special ? ' • ข้อพิเศษ' : ''}</span></h3>${questionMediaHtml(x.media)}<p>เฉลย: ${ci >= 0 ? `${choiceLabel(ci)} ${esc(x.choices[ci].text)}` : ''}${state === 'bad' && yi >= 0 ? ` • คุณตอบ ${choiceLabel(yi)}` : ''}</p>${x.explanation ? `<p>${esc(x.explanation)}</p>` : ''}</div>`;
               }).join('')}</div>
           </section>
           <div class="res-actions">
@@ -353,8 +356,21 @@ export async function initMockExam({ api = studyApi, saveDebounceMs = 1000, tick
     function render({ focus = false } = {}) {
         content.innerHTML = stage === 'intro' ? introView() : stage === 'run' ? runView() : resultView();
         view.classList.toggle('has-abar', (stage === 'intro' && info.mock.available) || stage === 'run');
-        if (stage === 'result') animateRing(content);
+        if (stage === 'result') {
+            animateRing(content);
+            celebrate();
+        }
         if (focus) focusView();
+    }
+
+    // ผลสรุป: ดาวนับขึ้น + ริบบิ้นเมื่อผ่านเกณฑ์ (หรือได้ตั้งแต่ 70% ถ้าไม่มีเกณฑ์) ทำครั้งเดียวต่อผลหนึ่งครั้ง
+    let celebrated = null;
+    function celebrate() {
+        if (!result || celebrated === result) return;
+        celebrated = result;
+        const el = typeof content.querySelector === 'function' ? content.querySelector('[data-countup]') : null;
+        if (el) { countUp(el, Number(el.dataset.countup)); pop(el.closest('.row')); }
+        if (result.passed === true || (result.passed === null && result.percent >= 70)) confetti();
     }
 
     async function backToIntro() {

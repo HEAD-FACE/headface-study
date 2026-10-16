@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 270" role="img" aria-label="วัตถุถูกแรง 6 นิวตันดึงไปทางขวาและแรง 4 นิวตันดึงไปทางซ้าย แรงลัพธ์ 2 นิวตันไปทางขวา">
+  <defs>
+    <marker id="fR" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto" markerUnits="strokeWidth"><path d="M0 0L7 3.5L0 7z" fill="#059669"/></marker>
+    <marker id="fL" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto" markerUnits="strokeWidth"><path d="M0 0L7 3.5L0 7z" fill="#E11D48"/></marker>
+    <marker id="fN" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto" markerUnits="strokeWidth"><path d="M0 0L7 3.5L0 7z" fill="#4338CA"/></marker>
+  </defs>
+  <rect width="480" height="270" rx="22" fill="#FFFFFF"/>
+  <g font-family="Prompt, 'Noto Sans Thai', 'Leelawadee UI', Tahoma, sans-serif" text-anchor="middle">
+    <rect x="190" y="52" width="100" height="78" rx="14" fill="#FEF3C7" stroke="#B45309" stroke-width="4"/>
+    <text x="240" y="100" font-size="26" font-weight="800" fill="#78350F">วัตถุ</text>
+    <path d="M290 91H452" stroke="#059669" stroke-width="10" stroke-linecap="round" marker-end="url(#fR)"/>
+    <text x="372" y="66" font-size="28" font-weight="800" fill="#047857">6 N</text>
+    <path d="M190 91H48" stroke="#E11D48" stroke-width="10" stroke-linecap="round" marker-end="url(#fL)"/>
+    <text x="119" y="66" font-size="28" font-weight="800" fill="#BE123C">4 N</text>
+    <path d="M30 162H450" stroke="#CBD5E1" stroke-width="3" stroke-dasharray="6 8"/>
+    <path d="M190 206H322" stroke="#4338CA" stroke-width="10" stroke-linecap="round" marker-end="url(#fN)"/>
+    <text x="240" y="192" font-size="22" font-weight="800" fill="#3730A3">แรงลัพธ์ = 6 − 4 = 2 N ไปทางขวา</text>
+    <text x="240" y="250" font-size="18" font-weight="600" fill="#475569">แรงทิศตรงข้ามกันให้ลบกัน ทิศตามแรงที่มากกว่า</text>
+  </g>
+</svg>

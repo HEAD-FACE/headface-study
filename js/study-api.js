@@ -5,7 +5,7 @@
  * ผิดพลาดทุกกรณีโยน StudyApiError ที่มี code / status / message ภาษาไทยพร้อมแสดงผู้ใช้
  * createStudyApi รับฟังก์ชันส่งคำขอเข้ามา เพื่อให้เทสต์ใน Node ไม่ต้องพึ่งเบราว์เซอร์
  */
-export const CONTRACT_VERSION = 1;
+export const CONTRACT_VERSION = 2;
 
 export class StudyApiError extends Error {
     constructor(code, status, message, body = null) {
@@ -39,22 +39,26 @@ export function createStudyApi(send) {
     }
 
     const seg = (value) => encodeURIComponent(String(value));
+    // กิจกรรม (วงกลมบนเส้นทาง) ถ้าระบุ nodeId ใช้เส้นทางของ node ไม่ระบุ = node แรกของชนิดนั้นในบท (สัญญาข้อแรก)
+    const lessonPath = (subjectId, no, nodeId) => `/subjects/${seg(subjectId)}/lessons/${seg(no)}${nodeId ? `/nodes/${seg(nodeId)}` : ''}`;
     return {
         request,
         getMe: () => request('/me'),
         listSubjects: () => request('/subjects'),
         getSubject: (subjectId) => request(`/subjects/${seg(subjectId)}`),
         getLesson: (subjectId, no) => request(`/subjects/${seg(subjectId)}/lessons/${seg(no)}`),
+        getNode: (subjectId, no, nodeId) => request(`${lessonPath(subjectId, no, nodeId)}`),
+        setNodeProgress: (subjectId, no, nodeId, progress) => request(`${lessonPath(subjectId, no, nodeId)}/progress`, { method: 'PUT', body: progress }),
         setRead: (subjectId, no, read) => request(`/subjects/${seg(subjectId)}/lessons/${seg(no)}/read`, { method: 'PUT', body: { read } }),
-        startQuiz: (subjectId, no) => request(`/subjects/${seg(subjectId)}/lessons/${seg(no)}/quiz-attempts`, { method: 'POST', body: {} }),
+        startQuiz: (subjectId, no, nodeId) => request(`${lessonPath(subjectId, no, nodeId)}/quiz-attempts`, { method: 'POST', body: {} }),
         answerQuiz: (attemptId, questionId, choiceId) => request(`/quiz-attempts/${seg(attemptId)}/answer`, { method: 'POST', body: { questionId, choiceId } }),
         submitQuiz: (attemptId) => request(`/quiz-attempts/${seg(attemptId)}/submit`, { method: 'POST', body: {} }),
         getProgress: () => request('/progress'),
         getSubjectProgress: (subjectId) => request(`/progress/subjects/${seg(subjectId)}`),
-        getPractice: (subjectId, no) => request(`/subjects/${seg(subjectId)}/lessons/${seg(no)}/practice`),
-        getSolution: (subjectId, no, questionId) => request(`/subjects/${seg(subjectId)}/lessons/${seg(no)}/practice/${seg(questionId)}/solution`),
-        setPracticeResult: (subjectId, no, questionId, result) => request(`/subjects/${seg(subjectId)}/lessons/${seg(no)}/practice/${seg(questionId)}/result`, { method: 'PUT', body: { result } }),
-        resetPractice: (subjectId, no) => request(`/subjects/${seg(subjectId)}/lessons/${seg(no)}/practice/results`, { method: 'DELETE' }),
+        getPractice: (subjectId, no, nodeId) => request(`${lessonPath(subjectId, no, nodeId)}/practice`),
+        getSolution: (subjectId, no, questionId, nodeId) => request(`${lessonPath(subjectId, no, nodeId)}/practice/${seg(questionId)}/solution`),
+        setPracticeResult: (subjectId, no, questionId, result, nodeId) => request(`${lessonPath(subjectId, no, nodeId)}/practice/${seg(questionId)}/result`, { method: 'PUT', body: { result } }),
+        resetPractice: (subjectId, no, nodeId) => request(`${lessonPath(subjectId, no, nodeId)}/practice/results`, { method: 'DELETE' }),
         getMockInfo: (subjectId) => request(`/subjects/${seg(subjectId)}/mock`),
         startMock: (subjectId) => request(`/subjects/${seg(subjectId)}/mock-attempts`, { method: 'POST', body: {} }),
         getMockAttempt: (attemptId) => request(`/mock-attempts/${seg(attemptId)}`),

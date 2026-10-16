@@ -206,8 +206,28 @@ describe('ลิงก์ไปหน้าเรียน', () => {
             const html = readFileSync(path.join(ROOT, page), 'utf8');
             assert.match(html, /src="js\/auth\.js"/, `${page}: ต้องโหลด js/auth.js`);
             assert.match(html, /src="js\/main\.js"/, `${page}: ต้องโหลด js/main.js (ตรวจเซสชัน)`);
-            assert.match(html, /src="js\/study-flow\.js"/, `${page}: ต้องโหลด js/study-flow.js`);
             assert.match(html, /<meta name="viewport"/, page);
         }
+        // หน้ากิจกรรมและ Mock Exam มีตัวควบคุมของตัวเอง; หน้าเส้นทางเรียนอยู่ใน Barba และถูกเติมโดย main.js → study-course.js
+        for (const page of ['lesson.html', 'mock-exam.html']) {
+            assert.match(readFileSync(path.join(ROOT, page), 'utf8'), /src="js\/study-flow\.js"/, `${page}: ต้องโหลด js/study-flow.js`);
+        }
+    });
+
+    test('หน้าเส้นทางเรียน (course.html) เป็นหน้า Barba ที่ใช้พื้นที่สีเขียวถาวรร่วมกับหน้าหลัก', () => {
+        const course = readFileSync(path.join(ROOT, 'course.html'), 'utf8');
+        assert.match(course, /data-barba="wrapper"/);
+        assert.match(course, /data-barba="container"[^>]*data-barba-namespace="course"|data-barba-namespace="course"[^>]*data-barba="container"/);
+        assert.match(course, /id="mainBlueBg"/);
+        assert.match(course, /<header id="shared-top-header" class="hdr is-covered">/, 'แถบหัวร่วมถูกซ้อนไว้เมื่อโหลดหน้านี้ตรง ๆ');
+        assert.match(course, /src="https:\/\/unpkg\.com\/@barba\/core"/);
+        assert.match(course, /gsap\.min\.js/);
+        assert.doesNotMatch(course, /study-flow\.js/, 'ไม่ใช้ตัวควบคุมของหน้าเรียนแบบเดิม');
+        for (const page of ['index.html', 'subject.html', 'progress.html', 'course.html']) {
+            assert.match(readFileSync(path.join(ROOT, page), 'utf8'), /href="css\/course\.css"/, `${page}: Barba ไม่โหลด CSS ของหน้าใหม่ จึงต้องมี course.css ในทุกหน้า`);
+        }
+        const main = readFileSync(path.join(ROOT, 'js/main.js'), 'utf8');
+        assert.match(main, /HEADER_HEIGHTS = \{[^}]*'course'/);
+        assert.match(main, /NAV_FOR_NAMESPACE = \{ course: 'subject' \}/);
     });
 });

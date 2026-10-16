@@ -1,4 +1,4 @@
-// ทดสอบแท็บ Practice (js/study-live-practice.js): โหลดโจทย์, เฉลยเฉพาะเมื่อขอ, ทำถูก/ทำผิด, กรอง, ล้างผล, ข้อผิดพลาด
+// ทดสอบ Practice หนึ่งชุด (js/study-live-practice.js): โหลดโจทย์, เฉลยเฉพาะเมื่อขอ, ทำถูก/ทำผิด, กรอง, ล้างผล, ข้อผิดพลาด
 import { test, describe, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { installFakeDom, wait } from './fakeDom.mjs';
@@ -24,13 +24,13 @@ function setup(over = {}) {
     const calls = [];
     const api = {
         calls,
-        getPractice: async () => { calls.push(['list']); return { summary: summaryOf(store), items: store.map((i) => ({ ...i })) }; },
-        getSolution: async (s, no, id) => { calls.push(['solution', id]); return { questionId: id, solution: `เฉลย ${id}\n<script>x</script>` }; },
-        setPracticeResult: async (s, no, id, result) => { calls.push(['mark', id, result]); store = store.map((i) => (i.id === id ? { ...i, result } : i)); return { summary: summaryOf(store) }; },
-        resetPractice: async () => { calls.push(['reset']); store = store.map((i) => ({ ...i, result: null })); return { summary: summaryOf(store) }; },
+        getPractice: async (s, no, nodeId) => { calls.push(['list', s, no, nodeId]); return { summary: summaryOf(store), items: store.map((i) => ({ ...i })) }; },
+        getSolution: async (s, no, id, nodeId) => { calls.push(['solution', id, nodeId]); return { questionId: id, solution: `เฉลย ${id}\n<script>x</script>` }; },
+        setPracticeResult: async (s, no, id, result, nodeId) => { calls.push(['mark', id, result, nodeId]); store = store.map((i) => (i.id === id ? { ...i, result } : i)); return { summary: summaryOf(store) }; },
+        resetPractice: async (s, no, nodeId) => { calls.push(['reset', nodeId]); store = store.map((i) => ({ ...i, result: null })); return { summary: summaryOf(store) }; },
         ...over,
     };
-    const practice = createPractice({ subject: { id: 'sci' }, lesson: { no: 1 }, api, render: () => { renders++; }, applySummary: (s) => summaries.push(s) });
+    const practice = createPractice({ subject: { id: 'sci' }, lessonNo: 1, node: { id: 'sci-p1' }, api, render: () => { renders++; }, applySummary: (s) => summaries.push(s) });
     return { practice, api };
 }
 const click = (practice, t = {}) => practice.handleClick({
@@ -54,6 +54,7 @@ describe('โหลดโจทย์', () => {
         practice.open();
         await wait(5);
         assert.equal(api.calls.filter((c) => c[0] === 'list').length, 1);
+        assert.deepEqual(api.calls[0], ['list', 'sci', 1, 'sci-p1'], 'ขอโจทย์ของชุด (node) นี้');
         assert.deepEqual(summaries.at(-1), { total: 3, done: 2, ok: 1, wrong: 1 });
         assert.match(practice.html(), /ทำแล้ว 2\/3/);
         assert.match(practice.html(), /ถูก 1/);
@@ -72,9 +73,9 @@ describe('โหลดโจทย์', () => {
         assert.match(h, /ระบบไม่ตรวจให้/);
     });
 
-    test('บทที่ไม่มีโจทย์ → ข้อความว่าง; โหลดไม่ได้ → ผิดพลาดพร้อมลองใหม่ได้', async () => {
+    test('ชุดที่ไม่มีโจทย์ → ข้อความว่าง; โหลดไม่ได้ → ผิดพลาดพร้อมลองใหม่ได้', async () => {
         const empty = await opened({ getPractice: async () => ({ summary: { total: 0, done: 0, ok: 0, wrong: 0 }, items: [] }) });
-        assert.match(empty.practice.html(), /บทนี้ยังไม่มีโจทย์ฝึก/);
+        assert.match(empty.practice.html(), /ชุดนี้ยังไม่มีโจทย์ฝึก/);
         let fail = true;
         const { practice } = await opened({ getPractice: async () => { if (fail) throw new StudyApiError('NETWORK', 0, 'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้'); return { summary: summaryOf(ITEMS), items: ITEMS }; } });
         assert.match(practice.html(), /เชื่อมต่อเซิร์ฟเวอร์ไม่ได้/);
@@ -101,6 +102,16 @@ describe('เฉลยและการให้ผล', () => {
         await wait(5);
         assert.match(practice.html(), /เฉลย p1/);
         assert.equal(api.calls.filter((c) => c[0] === 'solution').length, 1);
+        assert.deepEqual(api.calls.find((c) => c[0] === 'solution'), ['solution', 'p1', 'sci-p1']);
+    });
+
+    test('โจทย์ฝึกแสดงภาพ/วิดีโอประกอบได้ และไม่แสดงที่อยู่ที่ไม่ปลอดภัย', async () => {
+        const items = [{ id: 'p1', n: 1, level: 'easy', topic: 'ก', text: 'ดูภาพ', result: null, media: [{ kind: 'image', url: 'assets/study/sci/p.svg', alt: 'ภาพประกอบ', caption: null }, { kind: 'image', url: 'http://x.example/p.png', alt: 'x', caption: null }] }];
+        const { practice } = await opened({ getPractice: async () => ({ summary: summaryOf(items), items }) });
+        const h = practice.html();
+        assert.match(h, /class="qmedia"/);
+        assert.match(h, /assets\/study\/sci\/p\.svg/);
+        assert.doesNotMatch(h, /x\.example/);
     });
 
     test('ขอเฉลยไม่ได้ → ปิดเฉลยและแจ้งข้อความ', async () => {
@@ -115,7 +126,7 @@ describe('เฉลยและการให้ผล', () => {
         const { practice, api } = await opened();
         assert.equal(click(practice, { mark: 'p1:ok' }), true);
         await wait(5);
-        assert.deepEqual(api.calls.at(-1), ['mark', 'p1', 'ok']);
+        assert.deepEqual(api.calls.at(-1), ['mark', 'p1', 'ok', 'sci-p1']);
         assert.deepEqual(summaries.at(-1), { total: 3, done: 3, ok: 2, wrong: 1 });
         assert.match(practice.html(), /ทำแล้ว 3\/3/);
         click(practice, { mark: 'p1:wrong' });
@@ -165,17 +176,17 @@ describe('กรองและล้างผล', () => {
         assert.match(h, /ยังไม่มีโจทย์ในหมวดนี้ — ข้อที่ทำผิดจะมารวมอยู่ที่นี่/);
     });
 
-    test('ล้างผลของบท → ทุกข้อกลับเป็นยังไม่ทำ และซ่อนเฉลยที่เปิดอยู่', async () => {
+    test('ล้างผลของชุด → ทุกข้อกลับเป็นยังไม่ทำ และซ่อนเฉลยที่เปิดอยู่', async () => {
         const { practice, api } = await opened();
         click(practice, { show: 'p1' });
         await wait(5);
-        assert.match(practice.html(), /ล้างผลการฝึกของบทนี้/);
+        assert.match(practice.html(), /ล้างผลการฝึกของชุดนี้/);
         click(practice, { act: 'practice-reset' });
         await wait(5);
-        assert.ok(api.calls.some((c) => c[0] === 'reset'));
+        assert.deepEqual(api.calls.find((c) => c[0] === 'reset'), ['reset', 'sci-p1']);
         const h = practice.html();
         assert.match(h, /ทำแล้ว 0\/3/);
-        assert.doesNotMatch(h, /pcard-sol|ล้างผลการฝึกของบทนี้|class="pcard (ok|bad)"/);
+        assert.doesNotMatch(h, /pcard-sol|ล้างผลการฝึกของชุดนี้|class="pcard (ok|bad)"/);
         assert.deepEqual(summaries.at(-1), { total: 3, done: 0, ok: 0, wrong: 0 });
     });
 

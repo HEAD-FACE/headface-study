@@ -172,6 +172,23 @@ describe('ทำข้อสอบ', () => {
         assert.match(h, /ข้อพิเศษ/, 'ข้อใน pool ขั้นสูงมีป้าย');
     });
 
+    test('ข้อสอบแสดงภาพ/วิดีโอของโจทย์และภาพของตัวเลือก; ที่อยู่ที่ไม่ปลอดภัยไม่ถูกแสดง', async () => {
+        const questions = [
+            { ...QUESTIONS[0], media: [{ kind: 'image', url: 'assets/study/sci/m.svg', alt: 'แผนภาพข้อสอบ', caption: 'รูป 1' }, { kind: 'video', url: 'https://youtu.be/dQw4w9WgXcQ?t=30', caption: 'คลิป' }, { kind: 'image', url: 'http://bad.example/x.png', alt: 'x', caption: null }], choices: [{ id: 'a', text: 'ก1', image: { url: 'https://example.com/a.png', alt: 'ภาพ ก' } }, { id: 'b', text: 'ข1' }] },
+            QUESTIONS[1], QUESTIONS[2],
+        ];
+        const api = fakeApi({ startMock: async () => ({ resumed: false, serverNow: Date.now(), attempt: { id: 'ma_abcdefghij', status: 'in_progress', startedAt: Date.now(), deadlineAt: Date.now() + 1200000, durationSec: 1200, total: 3, questions, answers: {}, flags: [] } }) });
+        await started(api);
+        const h = html();
+        assert.match(h, /class="qmedia"/);
+        assert.match(h, /<img src="assets\/study\/sci\/m\.svg" alt="แผนภาพข้อสอบ"/);
+        assert.match(h, /youtube-nocookie\.com\/embed\/dQw4w9WgXcQ\?rel=0&amp;modestbranding=1&amp;start=30/);
+        assert.match(h, /<img class="choice-img" src="https:\/\/example\.com\/a\.png" alt="ภาพ ก"/);
+        assert.doesNotMatch(h, /bad\.example/);
+        dom.click({ act: 'next' });
+        assert.doesNotMatch(html(), /qmedia/, 'ข้อที่ไม่มีสื่อไม่มีกล่องสื่อ');
+    });
+
     test('เลือกคำตอบ → บันทึกอัตโนมัติด้วย state ทั้งหมด; ติดธงก็บันทึก; กดหลายครั้งรวมเป็นครั้งเดียว', async () => {
         const api = fakeApi();
         await started(api);
@@ -239,7 +256,7 @@ describe('ทำข้อสอบ', () => {
         assert.match(h, /สรุปผล Mock Exam ประจำวิชาวิทยาศาสตร์/);
         assert.match(h, /ตอบถูก<\/span><span class="v">2 \/ 3/);
         assert.match(h, /เวลาที่ใช้<\/span><span class="v">02:05 \/ 20:00/);
-        assert.match(h, /7 ดาว[\s\S]*จากข้อถูก 6 \+ โบนัสเวลา 1/);
+        assert.match(h, /<span data-countup="7">7<\/span> ดาว[\s\S]*จากข้อถูก 6 \+ โบนัสเวลา 1/);
         assert.match(h, /▲ \+10%/);
         assert.match(h, /หัวข้อ A<\/span><span>2\/2/);
         assert.match(h, /ข้อ 2 โจทย์สอง — ผิด • ข้อพิเศษ/);

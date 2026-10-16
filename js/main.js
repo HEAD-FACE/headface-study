@@ -5,11 +5,17 @@
 const HEADER_HEIGHTS = {
   'home': 366,
   'subject': 96,
-  'progress': 244
+  'progress': 244,
+  // หน้าเส้นทางเรียน: ค่าเริ่มต้นก่อนข้อมูลมา (study-course.js ปรับให้พอดีกับส่วนหัวจริงผ่าน window.StudyShell.setHeaderHeight)
+  'course': 150
 };
 
-// หน้าเรียน (รายละเอียดวิชา / บทเรียน / Mock Exam) เป็นหน้าอิสระที่ไม่ใช้ Barba — ให้เบราว์เซอร์เปิดหน้าตามปกติ
-const FLOW_PAGE_PATTERN = /\/(course|lesson|mock-exam|report)\.html(?:[?#]|$)/;
+// แท็บเมนูล่างที่ต้องไฮไลต์ของแต่ละหน้า (หน้าเส้นทางเรียนอยู่ใต้แท็บ "รายวิชา")
+const NAV_FOR_NAMESPACE = { course: 'subject' };
+
+// หน้ากิจกรรม (lesson) / Mock Exam / ผลการเรียน เป็นหน้าอิสระแบบเต็มจอที่ไม่ใช้ Barba — ให้เบราว์เซอร์เปิดหน้าตามปกติ
+// หน้าเส้นทางเรียนของวิชา (course) ใช้ Barba ร่วมกับหน้าหลัก: พื้นที่สีเขียวด้านบนจึงต่อเนื่องไปด้วยกัน
+const FLOW_PAGE_PATTERN = /\/(lesson|mock-exam|report)\.html(?:[?#]|$)/;
 
 // 🖼️ Function จัดการ Fallback และตรวจจับภาพพื้นหลังการ์ดรายวิชาใน assets/ อัตโนมัติ (เน้น .webp)
 window.handleCardImgError = function(img, id, altName) {
@@ -41,6 +47,7 @@ window.handleCardImgError = function(img, id, altName) {
 // แปลง href เป็น namespace
 function getNamespaceFromHref(href) {
   if (!href) return 'home';
+  if (href.includes('course.html')) return 'course';
   if (href.includes('subject.html')) return 'subject';
   if (href.includes('progress.html')) return 'progress';
   if (href.includes('index.html') || href === '/' || href.endsWith('/')) return 'home';
@@ -69,7 +76,7 @@ function updateActiveNav(namespace) {
   navLinks.forEach(link => {
     const target = link.getAttribute('data-nav');
     const iconContainer = link.querySelector('.nav-icon-box');
-    const isActive = target === namespace;
+    const isActive = target === (NAV_FOR_NAMESPACE[namespace] || namespace);
 
     // สีและพื้นหลังของแท็บที่เลือกอยู่ใน CSS (.nav-i.on) — ที่นี่สลับแค่สถานะกับไอคอน
     link.classList.toggle('on', isActive);
@@ -86,8 +93,27 @@ function updateActiveNav(namespace) {
   });
 }
 
+// ตัวช่วยให้หน้าที่ฝังอยู่ใน Barba ปรับพื้นที่สีเขียวถาวรได้ (ใช้โดย js/study-course.js)
+window.StudyShell = {
+  setHeaderHeight(px, seconds = 0.45) {
+    const bg = document.getElementById('mainBlueBg') || document.querySelector('.header-bg-shell');
+    if (!bg || !Number.isFinite(px)) return;
+    gsap.to(bg, { height: Math.max(80, Math.round(px)), duration: seconds, ease: 'power3.inOut', overwrite: 'auto' });
+  }
+};
+
+// หน้าเส้นทางเรียน: เติมข้อมูลลง container ที่เพิ่งแสดง (โหลดตรง หรือ Barba สลับเข้ามา)
+function initCoursePageIn(container, url) {
+  const root = container.matches && container.matches('[data-barba-namespace="course"]') ? container : container.querySelector && container.querySelector('[data-barba-namespace="course"]');
+  if (!root) return;
+  import('./study-course.js')
+    .then((m) => m.initCoursePage(root, { url }))
+    .then((controller) => { root.__courseCtl = controller; })
+    .catch((err) => console.error('[Course] init failed:', err));
+}
+
 // Function สำหรับ Initialise ฟีเจอร์ในแต่ละหน้า
-function initPageFeatures(container) {
+function initPageFeatures(container, url = location.href) {
   if (!container) container = document;
 
   // หน้า Home: Continued Carousel Drag Scroll
@@ -279,6 +305,10 @@ function initPageFeatures(container) {
 
   // ให้ js/study-hydrate.js เติมข้อมูลจริงลงหน้าที่เพิ่งแสดง (โหลดครั้งแรก และตอน Barba สลับหน้า)
   document.dispatchEvent(new CustomEvent('study:page', { detail: { container } }));
+  initCoursePageIn(container, url);
+
+  // การ์ดของหน้าหลักทยอยลอยเข้ามาทีละใบ (หน้าเส้นทางเรียนมีแอนิเมชันของตัวเองใน CSS)
+  import('./study-fx.js').then((fx) => fx.staggerIn(container.querySelectorAll('.sc, .cc, .card, .exam, .it, .rank'), { delay: 40, ms: 420 })).catch(() => {});
 }
 
 // Floating Feedback Toast for Card Action
@@ -303,6 +333,22 @@ function showLearningToast(subjectTitle) {
 
 // อัปเดตชื่อหน้าและ Badge ใน Persistent Shared Header
 function updateSharedHeader(ns) {
+  // หน้าเส้นทางเรียนมีส่วนหัวของตัวเองซ้อนทับตำแหน่งนี้: ซ่อนแถบหัวร่วมแบบเฟด (พื้นที่สีเขียวด้านหลังยังเป็นชิ้นเดียวกัน)
+  const sharedHeader = document.getElementById('shared-top-header');
+  if (sharedHeader) {
+    if (ns === 'course') {
+      if (!sharedHeader.classList.contains('is-covered')) {
+        gsap.to(sharedHeader, { opacity: 0, duration: 0.18, onComplete: () => sharedHeader.classList.add('is-covered') });
+      }
+      return;
+    }
+    if (sharedHeader.classList.contains('is-covered')) {
+      gsap.killTweensOf(sharedHeader);
+      sharedHeader.classList.remove('is-covered');
+      gsap.fromTo(sharedHeader, { opacity: 0 }, { opacity: 1, duration: 0.3, delay: 0.1 });
+    }
+  }
+
   const titleEl = document.getElementById('header-page-title');
   const badgeEl = document.getElementById('header-page-badge');
 
@@ -632,6 +678,8 @@ document.addEventListener('DOMContentLoaded', () => {
       transitions: [{
         name: 'fade-slide-transition',
         leave(data) {
+          // หน้าเส้นทางเรียน: ถอดตัวฟังเหตุการณ์ออกก่อนสลับหน้า
+          if (data.current.container && data.current.container.__courseCtl) data.current.container.__courseCtl.dispose();
           gsap.killTweensOf([
             data.current.container,
             '#mainBlueBg',
@@ -691,7 +739,7 @@ document.addEventListener('DOMContentLoaded', () => {
           window.scrollTo(0, 0);
         },
         async enter(data) {
-          initPageFeatures(data.next.container);
+          initPageFeatures(data.next.container, data.next.url.href);
 
           // 🛡️ Request Auth ยืนยันตัวตนกับ Backend ทุกครั้งที่มีการเปลี่ยนหน้าภายในเว็บ (Strict Route Guard)
           if (window.StudyAuth) {

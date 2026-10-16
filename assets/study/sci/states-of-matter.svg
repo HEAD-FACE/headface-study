@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 450" role="img" aria-label="เปรียบเทียบอนุภาคของของแข็ง ของเหลว และแก๊ส">
+  <rect width="480" height="450" rx="22" fill="#FFFFFF"/>
+  <g font-family="Prompt, 'Noto Sans Thai', 'Leelawadee UI', Tahoma, sans-serif">
+    <!-- ของแข็ง -->
+    <rect x="14" y="14" width="452" height="132" rx="18" fill="#ECFDF5" stroke="#6EE7B7" stroke-width="3"/>
+    <g fill="#10B981" stroke="#047857" stroke-width="2.5">
+      <circle cx="42" cy="46" r="11"/><circle cx="66" cy="46" r="11"/><circle cx="90" cy="46" r="11"/><circle cx="114" cy="46" r="11"/>
+      <circle cx="42" cy="70" r="11"/><circle cx="66" cy="70" r="11"/><circle cx="90" cy="70" r="11"/><circle cx="114" cy="70" r="11"/>
+      <circle cx="42" cy="94" r="11"/><circle cx="66" cy="94" r="11"/><circle cx="90" cy="94" r="11"/><circle cx="114" cy="94" r="11"/>
+      <circle cx="42" cy="118" r="11"/><circle cx="66" cy="118" r="11"/><circle cx="90" cy="118" r="11"/><circle cx="114" cy="118" r="11"/>
+    </g>
+    <text x="150" y="50" font-size="28" font-weight="800" fill="#047857">ของแข็ง</text>
+    <text x="150" y="82" font-size="19" font-weight="600" fill="#065F46">รูปร่างและปริมาตรคงที่</text>
+    <text x="150" y="108" font-size="19" font-weight="600" fill="#065F46">อนุภาคเรียงชิดกันเป็นระเบียบ</text>
+    <text x="150" y="134" font-size="17" fill="#047857">เช่น น้ำแข็ง เหล็ก</text>
+    <!-- ของเหลว -->
+    <rect x="14" y="160" width="452" height="132" rx="18" fill="#F0F9FF" stroke="#7DD3FC" stroke-width="3"/>
+    <g fill="#38BDF8" stroke="#0369A1" stroke-width="2.5">
+      <circle cx="40" cy="236" r="11"/><circle cx="64" cy="226" r="11"/><circle cx="88" cy="238" r="11"/><circle cx="112" cy="226" r="11"/>
+      <circle cx="50" cy="262" r="11"/><circle cx="76" cy="258" r="11"/><circle cx="102" cy="262" r="11"/>
+      <circle cx="52" cy="200" r="11"/><circle cx="88" cy="204" r="11"/><circle cx="118" cy="202" r="11"/><circle cx="122" cy="252" r="11"/>
+    </g>
+    <text x="150" y="196" font-size="28" font-weight="800" fill="#0369A1">ของเหลว</text>
+    <text x="150" y="228" font-size="19" font-weight="600" fill="#075985">ปริมาตรคงที่ รูปร่างตามภาชนะ</text>
+    <text x="150" y="254" font-size="19" font-weight="600" fill="#075985">อนุภาคเคลื่อนที่ผ่านกันได้</text>
+    <text x="150" y="280" font-size="17" fill="#0369A1">เช่น น้ำ น้ำมัน</text>
+    <!-- แก๊ส -->
+    <rect x="14" y="306" width="452" height="132" rx="18" fill="#FFF7ED" stroke="#FDBA74" stroke-width="3"/>
+    <g fill="#FB923C" stroke="#C2410C" stroke-width="2.5">
+      <circle cx="36" cy="338" r="10"/><circle cx="98" cy="332" r="10"/><circle cx="124" cy="372" r="10"/>
+      <circle cx="62" cy="366" r="10"/><circle cx="36" cy="406" r="10"/><circle cx="92" cy="410" r="10"/>
+    </g>
+    <text x="150" y="342" font-size="28" font-weight="800" fill="#9A3412">แก๊ส</text>
+    <text x="150" y="374" font-size="19" font-weight="600" fill="#9A3412">รูปร่างและปริมาตรตามภาชนะ</text>
+    <text x="150" y="400" font-size="19" font-weight="600" fill="#9A3412">อนุภาคห่างกันมาก</text>
+    <text x="150" y="426" font-size="17" fill="#C2410C">เช่น อากาศ ไอน้ำ</text>
+  </g>
+</svg>

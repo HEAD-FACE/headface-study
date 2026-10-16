@@ -1,5 +1,5 @@
 // ทดสอบส่วนข้อมูลจริงของหน้าเรียน: ตัวเรียก API (study-api.js), เลือกโหมด (study-source.js),
-// ตัวแปลงเนื้อหาบทเรียนเป็น HTML (study-live.js) และตัวเติมข้อมูลการ์ดวิชา (study-hydrate.js)
+// ตัวแปลงเนื้อหาบทเรียนเป็น HTML (study-blocks.js) และตัวเติมข้อมูลการ์ดวิชา (study-hydrate.js)
 import { test, describe, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -8,7 +8,8 @@ import { fileURLToPath } from 'node:url';
 
 import { createStudyApi, StudyApiError, CONTRACT_VERSION } from '../js/study-api.js';
 import { isDemo } from '../js/study-source.js';
-import { blocksHtml, lessonUrl, courseUrl, FEATURES } from '../js/study-live.js';
+import { lessonUrl, courseUrl, nodeUrl, FEATURES } from '../js/study-live.js';
+import { blocksHtml } from '../js/study-blocks.js';
 import { cardKey, subjectCardView, railSubjects, railCardHtml, answersStats, progressSectionHtml } from '../js/study-hydrate.js';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -32,6 +33,40 @@ describe('study-api: ตัวเรียก API', () => {
         await api.getLesson('sci', 'current');
         await api.getLesson('a/b', '../x');
         assert.deepEqual(calls, ['/api/study/subjects/sci', '/api/study/subjects/sci/lessons/current', '/api/study/subjects/a%2Fb/lessons/..%2Fx']);
+    });
+
+    test('endpoint ของ node (วงกลมบนเส้นทางเรียน): ใช้เส้นทาง /nodes/:id เมื่อระบุ node และเส้นทางระดับบทเมื่อไม่ระบุ', async () => {
+        const calls = [];
+        const api = createStudyApi(async (p, o) => { calls.push([p, o.method, o.body]); return reply(200, { success: true }); });
+        await api.getNode('sci', 2, 'sci-n1');
+        await api.setNodeProgress('sci', 2, 'sci-n1', { page: 1, completed: true });
+        await api.startQuiz('sci', 2, 'sci-z1');
+        await api.startQuiz('sci', 2);
+        await api.getPractice('sci', 2, 'sci-p1');
+        await api.getPractice('sci', 2);
+        await api.getSolution('sci', 2, 'sci-p1a', 'sci-p1');
+        await api.setPracticeResult('sci', 2, 'sci-p1a', 'ok', 'sci-p1');
+        await api.resetPractice('sci', 2, 'sci-p1');
+        await api.resetPractice('sci', 2);
+        assert.deepEqual(calls, [
+            ['/api/study/subjects/sci/lessons/2/nodes/sci-n1', 'GET', undefined],
+            ['/api/study/subjects/sci/lessons/2/nodes/sci-n1/progress', 'PUT', '{"page":1,"completed":true}'],
+            ['/api/study/subjects/sci/lessons/2/nodes/sci-z1/quiz-attempts', 'POST', '{}'],
+            ['/api/study/subjects/sci/lessons/2/quiz-attempts', 'POST', '{}'],
+            ['/api/study/subjects/sci/lessons/2/nodes/sci-p1/practice', 'GET', undefined],
+            ['/api/study/subjects/sci/lessons/2/practice', 'GET', undefined],
+            ['/api/study/subjects/sci/lessons/2/nodes/sci-p1/practice/sci-p1a/solution', 'GET', undefined],
+            ['/api/study/subjects/sci/lessons/2/nodes/sci-p1/practice/sci-p1a/result', 'PUT', '{"result":"ok"}'],
+            ['/api/study/subjects/sci/lessons/2/nodes/sci-p1/practice/results', 'DELETE', undefined],
+            ['/api/study/subjects/sci/lessons/2/practice/results', 'DELETE', undefined],
+        ]);
+    });
+
+    test('id ของ node ถูก encode ใน path', async () => {
+        const calls = [];
+        const api = createStudyApi(async (p) => { calls.push(p); return reply(200, { success: true }); });
+        await api.getNode('sci', 1, 'a/../b');
+        assert.deepEqual(calls, ['/api/study/subjects/sci/lessons/1/nodes/a%2F..%2Fb']);
     });
 
     test('POST ส่ง body เป็น JSON', async () => {
@@ -58,8 +93,8 @@ describe('study-api: ตัวเรียก API', () => {
     });
 
     test('เวอร์ชันสัญญาตรงกับเอกสาร', () => {
-        assert.equal(CONTRACT_VERSION, 1);
-        assert.match(read('docs/study-api-contract.md'), /Contract v1/);
+        assert.equal(CONTRACT_VERSION, 2);
+        assert.match(read('docs/study-api-contract.md'), /Contract v2/);
     });
 });
 
@@ -97,8 +132,7 @@ describe('study-source: โหมดตัวอย่างเปิดได�
     });
 });
 
-describe('study-live: แปลงบล็อกเนื้อหาเป็น HTML', () => {
-    const ctx = { unitLabel: 'หน่วยที่ 1', lessonNo: 3 };
+describe('study-blocks: แปลงบล็อกเนื้อหาเป็น HTML', () => {
 
     test('ข้อความทุกช่องถูก escape (ไม่ให้ HTML/สคริปต์หลุดเข้าหน้า)', () => {
         const html = blocksHtml([
@@ -107,51 +141,49 @@ describe('study-live: แปลงบล็อกเนื้อหาเป็�
             { type: 'callout', title: '<b>t</b>', text: "a'b" },
             { type: 'steps', title: null, items: ['<i>1</i>'] },
             { type: 'checklist', title: null, items: ['</li><li>x'] },
-        ], ctx);
+        ]);
         assert.doesNotMatch(html, /<img |<script|<b>t|<i>1|<\/li><li>x/);
         assert.match(html, /&lt;img src=x onerror=alert\(1\)&gt;/);
         assert.match(html, /a&#39;b/);
     });
 
     test('ข้อความหลายบรรทัดคงการขึ้นบรรทัดด้วย white-space:pre-line และสูตรที่มี < ไม่พัง', () => {
-        const html = blocksHtml([{ type: 'paragraph', text: 'pH < 7\nx<y' }], ctx);
+        const html = blocksHtml([{ type: 'paragraph', text: 'pH < 7\nx<y' }]);
         assert.match(html, /white-space:pre-line/);
         assert.match(html, /pH &lt; 7\nx&lt;y/);
     });
 
-    test('heading/paragraph/figure ที่ติดกันรวมเป็นบล็อกเดียว; callout/steps/checklist แยกบล็อก; มีป้ายบท/หน่วยเฉพาะบล็อกแรก', () => {
+    test('heading/paragraph/figure ที่ติดกันรวมเป็นบล็อกเดียว; callout/steps/checklist แยกบล็อก', () => {
         const html = blocksHtml([
             { type: 'heading', text: 'H' }, { type: 'paragraph', text: 'P' },
             { type: 'callout', title: 'C', text: 'c' },
             { type: 'paragraph', text: 'Q' },
             { type: 'steps', title: 'S', items: ['a', 'b'] },
             { type: 'checklist', title: 'K', items: ['x'] },
-        ], ctx);
+        ]);
         assert.equal((html.match(/<article class="rblock">/g) || []).length, 4);
-        assert.equal((html.match(/class="rmeta"/g) || []).length, 1);
-        assert.match(html, /บทที่ 3/);
-        assert.match(html, /หน่วยที่ 1/);
         assert.equal((html.match(/<li>/g) || []).length, 3);
         assert.ok(html.indexOf('>H<') < html.indexOf('class="rblock callout"'));
     });
 
-    test('รูปและวิดีโอ: รับเฉพาะ https; ไฟล์วิดีโอใช้ <video>, ลิงก์อื่นเปิดแท็บใหม่แบบ noopener', () => {
+    test('รูปและวิดีโอ: รับเฉพาะ https หรือไฟล์ใต้ assets/; ไฟล์วิดีโอใช้ <video>, ลิงก์อื่นเปิดแท็บใหม่แบบ noopener', () => {
         const html = blocksHtml([
             { type: 'figure', kind: 'image', url: 'https://example.com/a.png?x=1&y=2', alt: 'แผนภาพ "1"', caption: 'ภาพ' },
             { type: 'figure', kind: 'video', url: 'https://example.com/v.mp4', caption: 'วิดีโอ' },
             { type: 'figure', kind: 'video', url: 'https://www.youtube.com/watch?v=abc', caption: null },
             { type: 'figure', kind: 'image', url: 'http://example.com/insecure.png', alt: 'x', caption: null },
             { type: 'figure', kind: 'image', url: 'javascript:alert(1)', alt: 'x', caption: null },
-        ], ctx);
+        ]);
         assert.match(html, /<img src="https:\/\/example\.com\/a\.png\?x=1&amp;y=2" alt="แผนภาพ &quot;1&quot;" loading="lazy"/);
+        assert.match(html, /<figcaption class="cap rcap">ภาพ<\/figcaption>/);
         assert.match(html, /<video controls preload="metadata" playsinline src="https:\/\/example\.com\/v\.mp4"/);
         assert.match(html, /<a class="btn btn-line" href="https:\/\/www\.youtube\.com\/watch\?v=abc" target="_blank" rel="noopener noreferrer"/);
         assert.doesNotMatch(html, /insecure|javascript:/);
     });
 
     test('ไม่มีบล็อก → ข้อความว่าง; ชนิดบล็อกที่ไม่รู้จักถูกข้าม', () => {
-        assert.equal(blocksHtml([], ctx), '');
-        assert.equal(blocksHtml([{ type: 'script', text: 'x' }], ctx), '');
+        assert.equal(blocksHtml([]), '');
+        assert.equal(blocksHtml([{ type: 'script', text: 'x' }]), '');
     });
 });
 
@@ -162,6 +194,8 @@ describe('study-live: ลิงก์และการเปิดฟีเจ�
         assert.equal(lessonUrl('sci'), 'lesson.html?s=sci&l=current');
         assert.equal(lessonUrl('sci', 3, 'quiz'), 'lesson.html?s=sci&l=3&tab=quiz');
         assert.equal(lessonUrl('a&b', '1&2'), 'lesson.html?s=a%26b&l=1%262');
+        assert.equal(nodeUrl('sci', 3, 'sci-n1'), 'lesson.html?s=sci&l=3&n=sci-n1');
+        assert.equal(nodeUrl('a&b', 1, 'x&y'), 'lesson.html?s=a%26b&l=1&n=x%26y');
     });
     test('ทุกฟีเจอร์ที่ Backend มี endpoint รองรับแล้วเปิดอยู่ (ความคืบหน้า, Quiz, Practice, Mock)', () => {
         assert.deepEqual({ ...FEATURES }, { progress: true, quiz: true, practice: true, mock: true });
@@ -220,13 +254,14 @@ describe('การเชื่อมหน้า', () => {
         assert.match(progress, /data-study-stat="accuracy"/);
     });
 
-    test('Barba ปล่อยหน้า course/lesson/mock-exam/report ให้เป็นหน้าแยก', () => {
+    test('Barba ปล่อยหน้า lesson/mock-exam/report ให้เป็นหน้าแยก แต่ course อยู่ใน Barba ร่วมกับหน้าหลัก', () => {
         const main = read('js/main.js');
         const m = /const FLOW_PAGE_PATTERN = (\/.*\/);/.exec(main);
         assert.ok(m, 'พบ FLOW_PAGE_PATTERN');
         const re = eval(m[1]); // eslint-disable-line no-eval
-        for (const page of ['course', 'lesson', 'mock-exam', 'report']) assert.equal(re.test(`/${page}.html?s=sci`), true, page);
+        for (const page of ['lesson', 'mock-exam', 'report']) assert.equal(re.test(`/${page}.html?s=sci`), true, page);
         for (const page of ['index', 'subject', 'progress']) assert.equal(re.test(`/${page}.html`), false, page);
+        assert.equal(re.test('/course.html?s=sci'), false, 'course.html');
     });
 
     test('main.js ส่งเหตุการณ์ study:page จาก initPageFeatures', () => {

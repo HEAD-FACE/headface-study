@@ -2,36 +2,156 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>HEADFACE Study - รายละเอียดวิชา</title>
-
+  
   <!-- Google Fonts: Prompt -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
-
-  <!-- Stylesheet ร่วม + สไตล์หน้าเรียน (ไม่ใช้ Tailwind ในหน้ากลุ่มนี้) -->
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Prompt', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              DEFAULT: '#10b981',
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              500: '#10b981',
+              600: '#059669',
+            },
+            mint: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              200: '#a7f3d0',
+              300: '#6ee7b7',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+            },
+            sky: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              300: '#7dd3fc',
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Custom Stylesheet -->
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/flow.css">
+  <link rel="stylesheet" href="css/course.css">
+  <link rel="stylesheet" href="css/fx.css">
+  
+  <script>
+    window.handleCardImgError = window.handleCardImgError || function(img, id, altName) {
+      if (!img) return;
+      const step = parseInt(img.dataset.errStep || '0', 10);
+      img.dataset.errStep = step + 1;
+      if (step === 0) img.src = 'assets/' + id + '.webp';
+      else if (step === 1 && altName) img.src = 'assets/' + altName + '.webp';
+      else if (step === 2) img.src = 'assets/subject-' + id + '.png';
+      else if (step === 3) img.src = 'assets/subject-' + id + '.jpg';
+      else if (step === 4) img.src = 'assets/' + id + '.png';
+      else img.style.display = 'none';
+    };
+  </script>
+  
+  <!-- Instant Preload for Smooth Barba Transitions -->
+  <link rel="prefetch" href="index.html">
+  <link rel="prefetch" href="subject.html">
+  <link rel="prefetch" href="progress.html">
 </head>
-<body class="flow" data-page="course" data-nav="subject">
+<body class="bg-[#EEF4F8] text-slate-800 antialiased selection:bg-mint-200">
 
-  <!-- หัวหน้าสีเขียว: พื้นที่เขียวยืดตามความสูงของหัว + 64px ด้วย CSS (.ctop) -->
-  <div class="ctop">
-    <div class="flow-shell" aria-hidden="true"></div>
-    <header id="chd" class="chd">
-      <a id="backLink" class="back" href="subject.html" aria-label="กลับไปหน้ารายวิชา"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6l6 6"/></svg></a>
-      <div class="chd-t">
-        <p id="eyebrow" class="eyebrow"></p>
-        <h1 id="pageTitle" class="chd-title">กำลังโหลด...</h1>
-        <p id="pageMeta" class="chd-meta"></p>
+  <!-- Full-Width Fluid Desktop Outer Wrapper -->
+  <div class="min-h-screen w-full bg-[#EEF4F8] flex flex-col relative overflow-x-hidden" data-barba="wrapper">
+
+    <!-- 🛡️ PERSISTENT HEADER BACKGROUND (หน้านี้สูงตามส่วนหัวของหน้า: study-course.js ตั้งผ่าน window.StudyShell.setHeaderHeight) -->
+    <div id="mainBlueBg" class="header-bg-shell bg-curve" style="height: 150px;"></div>
+
+    <!-- 🛡️ PERSISTENT TOP APP BAR (อยู่นอก Barba Container เพื่อไม่ให้มีแอนิเมชันเวลาเปลี่ยนหน้า เป็น component ร่วมกัน) -->
+    <header id="shared-top-header" class="hdr is-covered">
+
+      <!-- ซ้าย: โลโก้แบรนด์ HEADFACE STUDY และ ชื่อหน้า -->
+      <div>
+        <div class="brand">
+          <span class="brand-name">HEADFACE</span>
+          <span class="pill-dark">STUDY</span>
+          <span id="header-page-badge" class="pill-dark">10 วิชา 🎒</span>
+        </div>
+        <h1 id="header-page-title" class="hdr-title">คลังรายวิชาทั้งหมด</h1>
       </div>
-    </header>
-  </div>
 
-  <main id="view" class="fmain has-nav" tabindex="-1">
-    <div id="content" class="fwrap"></div>
-  </main>
+      <!-- ขวา: ไอคอนตั้งค่า และ โปรไฟล์ (อยู่ในแนวเดียวกับชื่อหน้า และอยู่นิ่งไม่ขยับ) -->
+      <div class="hdr-act">
+        <!-- ปุ่มการตั้งค่า (Settings) -->
+        <button type="button" class="icon-btn" title="การตั้งค่า" aria-label="การตั้งค่า">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14.647 4.081a.724 .724 0 0 0 1.08 .448c2.439 -1.485 5.23 1.305 3.745 3.744a.724 .724 0 0 0 .447 1.08c2.775 .673 2.775 4.62 0 5.294a.724 .724 0 0 0 -.448 1.08c1.485 2.439 -1.305 5.23 -3.744 3.745a.724 .724 0 0 0 -1.08 .447c-.673 2.775 -4.62 2.775 -5.294 0a.724 .724 0 0 0 -1.08 -.448c-2.439 1.485 -5.23 -1.305 -3.745 -3.744a.724 .724 0 0 0 -.447 -1.08c-2.775 -.673 -2.775 -4.62 0 -5.294a.724 .724 0 0 0 .448 -1.08c-1.485 -2.439 1.305 -5.23 3.744 -3.745a.722 .722 0 0 0 1.08 -.447c.673 -2.775 4.62 -2.775 5.294 0zm-2.647 4.919a3 3 0 1 0 0 6a3 3 0 0 0 0 -6" /></svg>
+        </button>
+
+        <!-- Container ของ Profile Button และ Popup Dropdown -->
+        <div class="profile-wrap">
+          <!-- 1. ปุ่ม Profile แสดงรูป Avatar และชื่อผู้ใช้ -->
+          <button id="profileBtn" type="button" class="profile-btn" aria-haspopup="true" aria-expanded="false" aria-controls="profileDropdown" aria-label="โปรไฟล์ผู้ใช้">
+            <span class="profile-text">
+              <span id="headerName" class="profile-name">กำลังโหลด...</span>
+              <span id="headerStudentId" class="profile-id">เลขประจำตัว: -</span>
+            </span>
+            <img id="headerAvatar" src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix&amp;backgroundColor=e2e8f0" alt="Profile" width="44" height="44">
+          </button>
+
+          <!-- 2. Profile Popup Dropdown Card -->
+          <div id="profileDropdown" class="menu hidden" role="dialog" aria-label="เมนูโปรไฟล์">
+            <div class="menu-h">
+              <p id="dropdownName" class="menu-n">กำลังโหลด...</p>
+              <p id="dropdownNumber" class="menu-s">เลขที่ -</p>
+              <p id="dropdownStudentId" class="menu-s">เลขประจำตัว: -</p>
+            </div>
+            <a id="dropdownProfileLink" href="#" class="menu-a">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"/><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/></svg>
+              <span>ดูโปรไฟล์ส่วนตัว</span>
+            </a>
+            <button type="button" id="dropdownLogoutBtn" class="menu-a danger">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2"/><path d="M9 12h12l-3 -3"/><path d="M18 15l3 -3"/></svg>
+              <span>ออกจากระบบ</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ฉากหลังมืดตอนเปิดเมนูโปรไฟล์ (main.js เปิด/ปิดพร้อม Dropdown) -->
+      <div id="profileScrim" class="scrim hidden" aria-hidden="true"></div>
+    </header>
+
+    <!-- Barba Container: course (เส้นทางเรียนของวิชา) — ส่วนหัวของหน้านี้ซ้อนทับแถบหัวร่วม (ซ่อนอยู่) และใช้พื้นที่สีเขียวถาวรเดียวกัน -->
+    <main id="cpRoot" class="barba-container cp flex-1 pb-28 w-full" data-barba="container" data-barba-namespace="course">
+      <header id="cpHead" class="cp-head">
+        <a id="cpBack" class="cp-back" href="subject.html" aria-label="กลับไปหน้ารายวิชา"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6l6 6"/></svg></a>
+        <div class="cp-ht">
+          <p id="cpEyebrow" class="cp-eyebrow"></p>
+          <h1 id="cpTitle" class="cp-title">กำลังโหลด...</h1>
+          <p id="cpMeta" class="cp-meta"></p>
+        </div>
+        <span id="cpEmoji" class="cp-emoji" aria-hidden="true"></span>
+      </header>
+      <div id="cpBody"><div class="cp-in"><div class="cp-state cp-loading" role="status" aria-live="polite"><span class="cp-spin" aria-hidden="true"></span>กำลังโหลดเส้นทางเรียน...</div></div></div>
+    </main>
+
 
     <!-- ============================================== -->
     <!-- BOTTOM NAVBAR -->
@@ -53,10 +173,14 @@
       </div>
     </nav>
 
-  <!-- Scripts: ตรวจสิทธิ์ (Strict Route Guard เหมือนทุกหน้า) + ตัวควบคุมหน้าเรียน -->
+  </div>
+
+  <!-- Scripts: GSAP + Barba.js + Auth & App Core -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://unpkg.com/@barba/core"></script>
   <script type="module" src="js/auth.js"></script>
   <script type="module" src="js/api-client.js"></script>
+  <script type="module" src="js/study-hydrate.js"></script>
   <script src="js/main.js"></script>
-  <script type="module" src="js/study-flow.js"></script>
 </body>
 </html>

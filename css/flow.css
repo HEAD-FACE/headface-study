@@ -381,3 +381,53 @@ a.ls:hover { background: #F8FAFC; }
 .lr-n.st-now { background: var(--chip); color: var(--strong); }
 .lr-b { min-width: 0; }
 .lr-t { font-size: 14px; line-height: 20px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ───── ชุดเนื้อหาหลายหน้า (js/study-live-content.js) ───── */
+.cn { margin-top: 14px; }
+.cn-dots { display: flex; gap: 5px; }
+.cn-dots i { flex: 1; height: 8px; border-radius: 999px; background: #E2E8F0; transition: background-color .3s; }
+.cn-dots i.on { background: var(--bar); }
+.cn-dots i.cur { background: var(--bar); animation: cnCur 1.5s ease-in-out infinite; }
+@keyframes cnCur { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
+.cn-meta { margin: 10px 0 12px; font-size: 13px; line-height: 20px; font-weight: 700; color: var(--strong); }
+.cn-page { min-height: 36vh; }
+.cn-done { margin-top: 20px; }
+.cn-medal { font-size: 64px; line-height: 1; margin-bottom: 4px; animation: cnMedal 2s ease-in-out infinite; }
+@keyframes cnMedal { 0%, 100% { transform: translateY(0) rotate(-6deg); } 50% { transform: translateY(-8px) rotate(6deg); } }
+
+/* ───── ภาพ / วิดีโอ ในเนื้อหา โจทย์ และตัวเลือก (js/study-media.js) ───── */
+.rfig.has-media { display: block; }
+.rfig.has-media .rcap { margin: 0; padding: 8px 12px 10px; text-align: center; }
+.rfig img[data-zoom] { cursor: zoom-in; }
+.rvid { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #0F172A; }
+.rvid iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.rfig.is-video video { background: #0F172A; }
+.qmedia { display: grid; gap: 10px; margin-top: 12px; }
+.qmedia .rfig { margin-top: 0; }
+.choice-t { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.choice-img { display: block; max-width: 100%; max-height: 150px; border-radius: 10px; object-fit: contain; background: #fff; }
+.zoomv { position: fixed; inset: 0; z-index: 400; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(15, 23, 42, .86); cursor: zoom-out; animation: ovIn .18s ease-out; }
+.zoomv img { max-width: 100%; max-height: 100%; border-radius: 12px; background: #fff; object-fit: contain; }
+.zoomv-x { position: absolute; top: 12px; right: 12px; width: 44px; height: 44px; border-radius: 50%; background: rgba(255, 255, 255, .92); color: #0F172A; font-size: 18px; font-weight: 800; }
+
+/* ───── สีสันและการเคลื่อนไหวของหน้าเรียน ───── */
+.read > .rblock { animation: fbIn .4s both; }
+.read > :nth-child(2) { animation-delay: .06s; }
+.read > :nth-child(3) { animation-delay: .12s; }
+.read > :nth-child(4) { animation-delay: .18s; }
+.read > :nth-child(5) { animation-delay: .24s; }
+.intro .tile, .intro-tile { animation: tileBob 2.8s ease-in-out infinite; }
+@keyframes tileBob { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-6px) rotate(3deg); } }
+.qcard { animation: fbIn .3s both; }
+.choice:hover:not(:disabled) { border-color: var(--strong); transform: translateY(-1px); }
+.fb.ok { background: linear-gradient(135deg, #ECFDF5, #D1FAE5); }
+.fb.bad { background: linear-gradient(135deg, #FFF1F2, #FFE4E6); }
+.result .ring { animation: ringIn .6s cubic-bezier(.34, 1.56, .64, 1) both; }
+@keyframes ringIn { from { opacity: 0; transform: scale(.6) rotate(-30deg); } to { opacity: 1; transform: none; } }
+.fbar { background: linear-gradient(180deg, rgba(255, 255, 255, .98), rgba(255, 255, 255, .94)); border-bottom-color: var(--bd, #E2E8F0); }
+.fbar-e { color: var(--strong, #047857); }
+body.flow .qbar > i, body.flow .bar > i { background: linear-gradient(90deg, var(--bar), var(--strong)); }
+
+@media (prefers-reduced-motion: reduce) {
+  .read > .rblock, .intro .tile, .intro-tile, .qcard, .cn-dots i.cur, .cn-medal, .result .ring, .zoomv { animation: none; }
+}
