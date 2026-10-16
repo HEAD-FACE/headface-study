@@ -26,6 +26,8 @@ export const ICON = {
     list: (s = 20) => line(s, '<path d="M13 5h8"/><path d="M13 9h5"/><path d="M13 15h8"/><path d="M13 19h5"/><path d="M3 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"/><path d="M3 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z"/>'),
     star: (s = 18, fill = 'currentColor') => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="${fill}" aria-hidden="true"><path d="${STAR_D}"/></svg>`,
     next: (s = 14) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="${CHEV_D}"/></svg>`,
+    prev: (s = 14) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path transform="translate(24 0) scale(-1 1)" d="${CHEV_D}"/></svg>`,
+    flame: (s = 16) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2c.5 3.2-1.2 4.8-2.6 6.4C8.2 9.8 7 11.2 7 13.6A5 5 0 0 0 17 14c0-1.7-.7-2.9-1.6-4 .1 1.2-.4 2-1.2 2.4C14.6 9 14.2 4.6 12 2z"/></svg>`,
     lessonDone: '<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#059669"/><path d="M7.5 12.5l3 3l6 -6.5" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     lessonNow: '<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="#059669" stroke-width="2"/><path d="M12 2.5a9.5 9.5 0 0 0 0 19z" fill="#059669"/></svg>',
     lessonTodo: '<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="#64748B" stroke-width="2"/></svg>',
@@ -61,4 +63,5 @@ export function animateRing(root) {
     if (val) setTimeout(() => { val.style.strokeDashoffset = val.dataset.target; }, 40);
 }
 
-export const abar = (inner) => `<div class="abar"><div class="abar-in">${inner}</div></div>`;
+/** แถบปุ่มค้างด้านล่าง; cls = is-ok / is-bad ย้อมแถบเป็นสีเขียว/แดงตามผลของข้อ (เหมือนการตอบในแอปเรียนภาษา) */
+export const abar = (inner, cls = '') => `<div class="abar${cls ? ` ${cls}` : ''}"><div class="abar-in">${inner}</div></div>`;

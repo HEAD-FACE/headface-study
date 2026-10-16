@@ -42,11 +42,13 @@ describe('อ่านทีละหน้า', () => {
         const { content } = setup();
         const html = content.html();
         assert.match(html, /class="cn-dots" role="progressbar" aria-valuemin="1" aria-valuemax="3" aria-valuenow="1" aria-label="หน้า 1 จาก 3"><i class="cur"><\/i><i class=""><\/i><i class=""><\/i>/);
-        assert.match(html, /หน้า 1\/3 • สสารคืออะไร/);
+        assert.match(html, /<span class="cn-count">1\/3<\/span>/);
+        assert.match(html, /<p class="cn-kicker">สสารคืออะไร<\/p>/);
+        assert.match(html, /data-key="p0" data-dir="0"/);
         assert.match(html, /หัวข้อ &lt;หนึ่ง&gt;/);
         assert.doesNotMatch(html, /<หนึ่ง>/);
         assert.match(html, /<img src="assets\/study\/sci\/a\.svg"/);
-        assert.match(html, /data-act="cn-prev" disabled/);
+        assert.match(html, /data-act="cn-prev" aria-label="หน้าก่อนหน้า" disabled/);
         assert.match(html, /data-act="cn-next"/);
         assert.doesNotMatch(html, /cn-finish/);
         assert.equal(content.hasAbar(), true);
@@ -60,7 +62,9 @@ describe('อ่านทีละหน้า', () => {
         assert.match(html, /aria-valuenow="2"/);
         assert.match(html, /<i class="on"><\/i><i class="cur"><\/i><i class=""><\/i>/);
         assert.match(html, /youtube-nocookie\.com\/embed\/dQw4w9WgXcQ/);
-        assert.match(html, /หน้า 2\/3<\/p>/, 'หน้าที่ไม่มีชื่อ แสดงแค่ลำดับ');
+        assert.match(html, /<span class="cn-count">2\/3<\/span>/);
+        assert.doesNotMatch(html, /cn-kicker/, 'หน้าที่ไม่มีชื่อ แสดงแค่ลำดับ');
+        assert.match(html, /data-key="p1" data-dir="1"/, 'หน้าใหม่เลื่อนเข้ามาจากทางขวา');
         await settle();
         assert.deepEqual(api.calls, [['progress', 'sci', 2, 'sci-n1', { page: 1 }]]);
         click(content, 'cn-prev');
@@ -77,7 +81,7 @@ describe('อ่านทีละหน้า', () => {
         assert.equal(content.step(1), true);
         assert.equal(content.step(1), false, 'หน้าสุดท้ายไปต่อไม่ได้');
         const html = content.html();
-        assert.match(html, /data-act="cn-finish"[^>]*><span>จบเนื้อหา ✓<\/span>/);
+        assert.match(html, /data-act="cn-finish"[^>]*><span>จบเนื้อหา<\/span>/);
         assert.doesNotMatch(html, /cn-next/);
         assert.match(html, /i class="on"><\/i><i class="on"><\/i><i class="cur">/);
     });
@@ -89,7 +93,7 @@ describe('อ่านทีละหน้า', () => {
         const { content } = setup();
         assert.match(content.html(), /aria-valuenow="1"/, 'จบแล้ว → อ่านทบทวนตั้งแต่ต้น');
         content.step(2);
-        assert.match(content.html(), /จบ ✓/, 'จบแล้ว ปุ่มสุดท้ายไม่ใช่ "จบเนื้อหา"');
+        assert.match(content.html(), /<span>จบ<\/span>/, 'จบแล้ว ปุ่มสุดท้ายไม่ใช่ "จบเนื้อหา"');
         node.progress = { pageCount: 3, pageReached: 99, completedAt: null };
         assert.match(setup().content.html(), /aria-valuenow="3"/, 'ค่าเกินขอบถูกตัดที่หน้าสุดท้าย');
     });
@@ -98,7 +102,8 @@ describe('อ่านทีละหน้า', () => {
         node.pages = [PAGES[2]];
         const html = setup().content.html();
         assert.doesNotMatch(html, /cn-dots/);
-        assert.match(html, /<p class="cn-meta">เนื้อหา • สรุป<\/p>/);
+        assert.match(html, /<p class="cn-kicker">สรุป<\/p>/);
+        assert.doesNotMatch(html, /cn-count/, 'หน้าเดียวไม่มีตัวนับ');
         assert.match(html, /cn-finish/);
     });
 
@@ -136,7 +141,7 @@ describe('จบเนื้อหา', () => {
         assert.deepEqual(api.calls, [['progress', 'sci', 2, 'sci-n1', { page: 2, completed: true }]]);
         assert.equal(applied.length, 1);
         const html = content.html();
-        assert.match(html, /เรียนจบ “สสารและสถานะ” แล้ว/);
+        assert.match(html, /เรียนจบแล้ว![\s\S]*“สสารและสถานะ”/);
         assert.match(html, /อ่านครบ 3 หน้า/);
         assert.match(html, /href="lesson\.html\?s=sci&amp;l=2&amp;n=sci-z1"[^>]*><span>ไปกิจกรรมถัดไป/);
         assert.match(html, /href="course\.html\?s=sci"[^>]*>กลับไปเส้นทางเรียน/);
@@ -174,7 +179,7 @@ describe('จบเนื้อหา', () => {
         await settle();
         const html = content.html();
         assert.match(html, /role="alert">เชื่อมต่อเซิร์ฟเวอร์ไม่ได้/);
-        assert.match(html, /จบเนื้อหา ✓/);
+        assert.match(html, /จบเนื้อหา/);
         assert.doesNotMatch(html, /cn-finish"[^>]* disabled/);
         fail = false;
         click(content, 'cn-finish');

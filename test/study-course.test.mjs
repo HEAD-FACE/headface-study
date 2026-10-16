@@ -62,21 +62,22 @@ describe('วงกลมและตำแหน่ง', () => {
         assert.deepEqual([i.chip, i.label, i.href], ['เนื้อหา • 3 หน้า', 'เริ่ม', href('sci-n1')]);
         i = C.nodeInfo(node({ status: 'now', progress: { pageCount: 3, pageReached: 1, completedAt: null } }), 'sci', 2);
         assert.deepEqual([i.label, i.line], ['อ่านต่อ', 'อ่านถึงหน้า 2/3']);
+        assert.equal(C.nodeInfo(node({ status: 'now' }), 'sci', 2).line, '', 'ยังไม่เริ่ม = ไม่มีบรรทัดสถานะ (ข้อความน้อยที่สุด)');
         i = C.nodeInfo(node({ status: 'done' }), 'sci', 2);
         assert.deepEqual([i.label, i.line], ['ทบทวน', 'เรียนจบแล้ว ✓']);
 
         i = C.nodeInfo(quizNode(), 'sci', 2);
         assert.deepEqual([i.chip, i.label], ['Quiz • 4 ข้อ', 'เริ่ม']);
-        assert.match(i.line, /ผ่านเมื่อตอบถูก ≥ 60%/);
+        assert.equal(i.line, '', 'ยังไม่เคยทำ = ไม่มีบรรทัดสถานะ (เกณฑ์ผ่านอยู่ในหน้าแนะนำ Quiz)');
         i = C.nodeInfo(quizNode({ progress: { attempts: 2, best: { correct: 2, total: 4 }, passed: false, passPct: 60 } }), 'sci', 2);
         assert.deepEqual([i.label], ['ลองอีกครั้ง']);
         assert.match(i.line, /ดีที่สุด 2\/4/);
         i = C.nodeInfo(quizNode({ status: 'done', progress: { attempts: 1, best: { correct: 4, total: 4 }, passed: true, passPct: null } }), 'sci', 2);
         assert.deepEqual([i.label, i.line], ['ทำอีกครั้ง', 'ผ่านแล้ว ✓ • ดีที่สุด 4/4']);
-        assert.match(C.nodeInfo(quizNode({ progress: { attempts: 0, best: null, passed: false, passPct: null } }), 'sci', 2).line, /ทำครบแล้วส่ง 1 ครั้งถือว่าผ่าน/);
+        assert.equal(C.nodeInfo(quizNode({ progress: { attempts: 1, best: { correct: 1, total: 4 }, passed: false, passPct: 60 } }), 'sci', 2).line, 'ดีที่สุด 1/4');
 
         i = C.nodeInfo(practiceNode(), 'sci', 2);
-        assert.deepEqual([i.chip, i.label, i.line], ['Practice • ไม่บังคับ', 'เริ่ม', 'ทำแล้ว 0/3 ข้อ • ฝึกเองแล้วกดทำถูก/ทำผิด']);
+        assert.deepEqual([i.chip, i.label, i.line], ['Practice • ไม่บังคับ', 'เริ่ม', 'ทำแล้ว 0/3 ข้อ']);
         assert.equal(C.nodeInfo(practiceNode({ progress: { done: 1, ok: 1, wrong: 0, total: 3 } }), 'sci', 2).label, 'ทำต่อ');
         assert.equal(C.nodeInfo(practiceNode({ status: 'done', progress: { done: 3, ok: 3, wrong: 0, total: 3 } }), 'sci', 2).label, 'ทบทวน');
     });
@@ -84,22 +85,72 @@ describe('วงกลมและตำแหน่ง', () => {
     test('nodeHtml: ปุ่มวงกลมมี id, สถานะ, ตำแหน่ง, ป้ายเริ่มเฉพาะวงที่ถัดไป, วงแหวนเฉพาะเมื่อมีความคืบหน้า; ข้อความถูก escape', () => {
         const ctx = { subjectId: 'sci', lessonNo: 2, index: 1, seq: 4 };
         const now = C.nodeHtml(node({ status: 'now', title: '<img src=x onerror=alert(1)>', progress: { pageCount: 4, pageReached: 2, completedAt: null } }), ctx);
-        assert.match(now, /class="cp-n is-now" data-kind="content" style="--dx:34px;--i:4"/);
+        assert.match(now, /class="cp-n is-now" data-kind="content" data-dx="34" style="--dx:34px;--i:4;--off:50"/);
         assert.match(now, /data-node="sci-n1" aria-expanded="false"/);
-        assert.match(now, /class="cp-start"/);
-        assert.match(now, /class="cp-ring" style="--p:50"/);
+        assert.match(now, /class="cp-start" aria-hidden="true">ต่อ</, 'อ่านค้างไว้แล้ว = ป้าย "ต่อ"');
+        assert.match(now, /class="cp-arc"[^>]*pathLength="100"/, 'วงแหวนความคืบหน้าเป็น SVG (ค่าที่เหลืออยู่ใน --off)');
         assert.match(now, /&lt;img src=x onerror=alert\(1\)&gt;/);
         assert.doesNotMatch(now, /<img src=x/);
         assert.match(now, /<template class="cp-tpl">[\s\S]*href="lesson\.html\?s=sci&amp;l=2&amp;n=sci-n1"/);
 
         const todo = C.nodeHtml(node({ status: 'todo' }), ctx);
-        assert.doesNotMatch(todo, /cp-start|cp-ring/);
+        assert.doesNotMatch(todo, /cp-start|cp-arc|cp-track|--off/);
+        assert.match(C.nodeHtml(node({ status: 'now' }), ctx), /class="cp-start" aria-hidden="true">เริ่ม</, 'ยังไม่เคยอ่าน = ป้าย "เริ่ม"');
         const done = C.nodeHtml(node({ status: 'done', progress: { pageCount: 3, pageReached: 2, completedAt: 1 } }), ctx);
-        assert.doesNotMatch(done, /cp-ring|cp-start/);
+        assert.doesNotMatch(done, /cp-arc|cp-start/);
         assert.match(done, /M5 12l5 5l10 -10/, 'วงที่เสร็จแล้วเป็นเครื่องหมายถูก');
+        assert.match(done, /cp-spark/, 'วงที่เสร็จแล้วมีประกาย');
         const practice = C.nodeHtml(practiceNode(), ctx);
         assert.match(practice, /cp-n is-todo is-optional/);
-        assert.match(practice, /<small>Practice • ไม่บังคับ<\/small>/);
+        assert.doesNotMatch(practice, /<small>|cp-nl/, 'ไม่มีข้อความกำกับใต้วงกลม (ข้อความอยู่ในการ์ดที่เด้ง)');
+        assert.match(practice, /<span class="cp-pop-chip">Practice • ไม่บังคับ<\/span>/);
+    });
+});
+
+describe('วงกลม SVG เส้นประ และโครงเปล่า', () => {
+    test('nodeSvg: วงแหวนเฉพาะเมื่อมีความคืบหน้าและยังไม่เสร็จ, ไอคอนตามชนิด, วงกลมกับเงาอยู่กึ่งกลางเดียวกับวงแหวน', () => {
+        const base = { type: 'quiz', status: 'now' };
+        const plain = C.nodeSvg({ ...base, ring: 0 });
+        assert.doesNotMatch(plain, /cp-arc|cp-track/);
+        assert.match(plain, /viewBox="0 0 100 100"/);
+        assert.match(plain, /M13 3l0 7l6 0l-8 11l0 -7l-6 0l8 -11/, 'Quiz = สายฟ้า');
+        const ring = C.nodeSvg({ ...base, ring: 40 });
+        assert.match(ring, /class="cp-track" cx="50" cy="50" r="46"/);
+        assert.match(ring, /class="cp-arc" cx="50" cy="50" r="46" pathLength="100" transform="rotate\(-90 50 50\)"/);
+        // ตัววงกลม (47) กับเงา (54) ห่างจากกึ่งกลาง (50) เท่ากันคนละด้าน → ดูสมมาตรกับวงแหวน ไม่เพี้ยนเหมือนเดิม
+        assert.match(ring, /class="cp-disc" cx="50" cy="47" r="35"/);
+        assert.match(ring, /class="cp-depth" cx="50" cy="54" r="35"/);
+        assert.match(C.nodeSvg({ type: 'content', status: 'todo', ring: 0 }), /M3 19a9 9 0 0 1 9 0/, 'เนื้อหา = หนังสือ');
+        assert.match(C.nodeSvg({ type: 'practice', status: 'todo', ring: 0 }), /M4 20h4l10\.5 -10\.5/, 'Practice = ดินสอ');
+        assert.match(C.nodeSvg({ type: 'mock', status: 'now', ring: 0 }), /M8 21l8 0/, 'Mock = ถ้วยรางวัล');
+        const done = C.nodeSvg({ type: 'quiz', status: 'done', ring: 100 });
+        assert.doesNotMatch(done, /cp-arc|cp-track/, 'เสร็จแล้วไม่มีวงแหวน');
+        assert.match(done, /M5 12l5 5l10 -10/);
+        assert.equal((done.match(/cp-spark/g) || []).length, 2);
+        assert.match(done, /stroke-width="3.4"/);
+    });
+
+    test('trailPath: เส้นโค้งตัว S ผ่านทุกจุด (เส้นสัมผัสแนวตั้ง) จุดน้อยกว่า 2 = ว่าง', () => {
+        assert.equal(C.trailPath([]), '');
+        assert.equal(C.trailPath([{ x: 1, y: 2 }]), '');
+        assert.equal(C.trailPath(null), '');
+        assert.equal(C.trailPath([{ x: 10, y: 0 }, { x: 40, y: 100 }]), 'M10 0C10 50 40 50 40 100');
+        assert.equal(C.trailPath([{ x: 10, y: 0 }, { x: 40, y: 100 }, { x: 5.55, y: 150 }]), 'M10 0C10 50 40 50 40 100C40 125 5.6 125 5.6 150');
+    });
+
+    test('trailDonePath: วาดเข้มเฉพาะช่วงที่ออกจากวงที่เรียนจบแล้ว', () => {
+        const pts = [{ x: 0, y: 0, done: true }, { x: 10, y: 50, done: true }, { x: 20, y: 100, done: false }, { x: 30, y: 150, done: false }];
+        assert.equal(C.trailDonePath(pts), 'M0 0C0 25 10 25 10 50M10 50C10 75 20 75 20 100');
+        assert.equal(C.trailDonePath([{ x: 0, y: 0, done: false }, { x: 1, y: 1, done: false }]), '');
+        assert.equal(C.trailDonePath([{ x: 0, y: 0, done: true }]), '', 'วงเดียว ไม่มีช่วงให้วาด');
+        assert.equal(C.trailDonePath(undefined), '');
+    });
+
+    test('skeletonHtml: โครงเปล่ามีข้อความให้เครื่องอ่านหน้าจอและไม่มีข้อมูลจริง', () => {
+        const html = C.skeletonHtml();
+        assert.match(html, /role="status"[^>]*aria-busy="true"/);
+        assert.match(html, /<span class="cp-sr">กำลังโหลดเส้นทางเรียน<\/span>/);
+        assert.doesNotMatch(html, /<a |href=/);
     });
 });
 
@@ -111,7 +162,8 @@ describe('บท หน่วย และทั้งหน้า', () => {
         assert.match(html, /class="cp-lesson hue-sky" id="lesson-2"/);
         assert.match(html, /class="cp-lesson hue-violet" id="lesson-3"/);
         assert.equal(lessonHue(1) !== lessonHue(2), true);
-        assert.match(html, /<span class="cp-lchip"><b>บทที่ 2<\/b><span>บทที่ 2<\/span><\/span>/);
+        assert.match(html, /<span class="cp-lchip"><i class="cp-lnum">2<\/i><span class="cp-lt">บทที่ 2<\/span><em class="cp-lc">0\/3<\/em><\/span>/, 'เลขบท ชื่อบท และจำนวนกิจกรรมที่เสร็จ');
+        assert.match(html, /aria-label="บทที่ 2 บทที่ 2 เสร็จ 0 จาก 3 กิจกรรม"/);
         assert.equal((html.match(/class="cp-lline"/g) || []).length, 6, 'เส้นคั่นสองข้างของทุกบท');
     });
 
@@ -125,7 +177,8 @@ describe('บท หน่วย และทั้งหน้า', () => {
     test('หน่วยมีแบนเนอร์ติดขอบ (ชื่อหน่วย + จำนวนบทที่เสร็จ) และเส้นทางต่อเนื่องข้ามบท: คลื่นเริ่มใหม่ทุกหน่วย', () => {
         const html = C.courseBodyHtml(DATA());
         assert.match(html, /<section class="cp-unit" id="unit-1" aria-label="หน่วยที่ 1 หน่วย &lt;1&gt;">/);
-        assert.match(html, /หน่วยที่ 1 • เสร็จ 1\/2 บท<\/p><h2>หน่วย &lt;1&gt;<\/h2>/);
+        assert.match(html, /หน่วยที่ 1 • 1\/2 บท<\/p><h2>หน่วย &lt;1&gt;<\/h2>/);
+        assert.match(html, /class="cp-banner" style="--u:50"/, 'แถบความคืบหน้าของหน่วย');
         assert.doesNotMatch(html, /<h2>หน่วย <1>/);
         const dx = (id) => new RegExp(`--dx:(-?\\d+)px;--i:(\\d+)"[^>]*>\\s*<button[^>]*data-node="${id}"`).exec(html);
         assert.deepEqual(dx('sci-n1').slice(1), ['0', '0']);
@@ -144,8 +197,9 @@ describe('บท หน่วย และทั้งหน้า', () => {
 
     test('สรุปความคืบหน้า + ปุ่มเรียนต่อชี้ไปกิจกรรมถัดไปที่ Backend บอก', () => {
         const html = C.courseBodyHtml(DATA());
-        assert.match(html, /<span class="num">33%<\/span>/);
-        assert.match(html, /เรียนแล้ว 1 จาก 3 บทเรียน/);
+        assert.match(html, /<span class="num" data-count="33">33%<\/span>/);
+        assert.match(html, /class="cp-pring" role="img" aria-label="ความคืบหน้า 33%" style="--off:67"/);
+        assert.match(html, /เรียนแล้ว 1\/3 บท/);
         assert.match(html, /class="btn btn-lg btn-block cp-cta" href="lesson\.html\?s=sci&amp;l=2&amp;n=sci-n2"><span>เรียนต่อ<\/span>/);
         assert.match(html, /บทที่ 2 • เรื่องที่ 2/);
     });
@@ -176,6 +230,7 @@ describe('บท หน่วย และทั้งหน้า', () => {
         assert.match(available, /id="mock"[\s\S]*Mock Exam ประจำวิชา/);
         assert.match(available, /cp-trophy is-now/);
         assert.match(available, /href="mock-exam\.html\?s=sci"><span>เข้าสอบ<\/span>/);
+        assert.match(available, /จับเวลา • ตรวจเฉลย • ได้ดาว/);
         const done = DATA();
         done.mock = { available: true, attempts: 2, lastPercent: 75, lastAt: 1 };
         const h = C.courseBodyHtml(done);
@@ -199,9 +254,9 @@ describe('บท หน่วย และทั้งหน้า', () => {
     });
 
     test('headerView: ข้อความในแถบสีเขียว', () => {
-        assert.deepEqual(C.headerView(DATA()), { eyebrow: 'วิชาที่ 1 • วิทยาศาสตร์', title: 'วิทยาศาสตร์', meta: '4 บทเรียน', emoji: '🔬' });
+        assert.deepEqual(C.headerView(DATA()), { eyebrow: 'วิชาที่ 1', title: 'วิทยาศาสตร์', meta: '4 บทเรียน', emoji: '🔬' });
         const bare = DATA();
-        bare.subject = { ...bare.subject, eyebrow: null, metaText: null, emoji: null };
+        bare.subject = { ...bare.subject, no: null, eyebrow: null, metaText: null, emoji: null };
         assert.deepEqual(C.headerView(bare), { eyebrow: '', title: 'วิทยาศาสตร์', meta: '3 บทเรียน', emoji: '📘' });
     });
 });
@@ -236,7 +291,7 @@ describe('initCoursePage', () => {
         const ctl = await C.initCoursePage(root, { api, url: 'https://study.test/course.html?s=sci' });
         assert.equal(api.key, 'sci');
         assert.equal(root.els.cpTitle.textContent, 'วิทยาศาสตร์');
-        assert.equal(root.els.cpEyebrow.textContent, 'วิชาที่ 1 • วิทยาศาสตร์');
+        assert.equal(root.els.cpEyebrow.textContent, 'วิชาที่ 1');
         assert.equal(root.els.cpEmoji.textContent, '🔬');
         assert.deepEqual(root.classes, ['hue-emerald']);
         assert.match(root.els.cpBody.innerHTML, /class="cp-path"/);
@@ -262,6 +317,28 @@ describe('initCoursePage', () => {
         calls.winListeners.pageshow[0]({ persisted: true });
         await settle();
         assert.equal(loads, 2);
+    });
+
+    test('โหลดซ้ำตอนกลับมาจากแคชเป็นแบบเงียบ: ไม่ล้างหน้าเป็นโครงเปล่า (ไม่กะพริบ) และถ้าโหลดไม่สำเร็จก็ไม่ทับข้อมูลเดิม', async () => {
+        const root = fakeRoot();
+        const writes = [];
+        let html = '';
+        Object.defineProperty(root.els.cpBody, 'innerHTML', { get: () => html, set: (v) => { html = v; writes.push(v); } });
+        let fail = false;
+        const api = { getSubject: async () => { if (fail) throw new StudyApiError('INTERNAL_ERROR', 500, 'พัง'); return DATA(); } };
+        await C.initCoursePage(root, { api, url: 'course.html?s=sci' });
+        assert.match(writes[0], /cp-sk/, 'โหลดครั้งแรกแสดงโครงเปล่า');
+        assert.match(writes[1], /class="cp-path"/);
+        writes.length = 0;
+        calls.winListeners.pageshow[0]({ persisted: true });
+        await settle();
+        assert.equal(writes.length, 1, 'เขียนหน้าเพียงครั้งเดียว');
+        assert.match(writes[0], /class="cp-path"/, 'ข้ามโครงเปล่า ไปที่ข้อมูลจริงเลย');
+        fail = true;
+        writes.length = 0;
+        calls.winListeners.pageshow[0]({ persisted: true });
+        await settle();
+        assert.equal(writes.length, 0, 'ล้มเหลวเงียบ ๆ ข้อมูลเดิมยังอยู่');
     });
 
     test('สีวิชาที่แปลกไม่ถูกใส่เป็นคลาส (ใช้ emerald แทน)', async () => {

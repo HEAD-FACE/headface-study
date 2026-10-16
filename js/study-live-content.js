@@ -4,6 +4,9 @@
  * เนื้อหาเรื่องเดียวกันถูกแบ่งเป็นหน้า ๆ ให้อ่านทีละหน้า (ไม่จำกัดจำนวนบล็อกต่อหน้า) มีแถบความคืบหน้าแบบแบ่งช่อง
  * ปุ่มก่อนหน้า/ถัดไป (ปัดซ้าย-ขวาหรือกดลูกศรได้) หน้าสุดท้ายกด "จบเนื้อหา" เพื่อบันทึกว่าเรียนชุดนี้จบแล้ว
  * ที่ค้างอยู่ถูกจำไว้ที่ Backend: เปิดใหม่จะกลับไปหน้าที่อ่านถึง
+ *
+ * ข้อความน้อยที่สุด: บนหน้ามีแค่แถบหน้า ตัวนับ (2/3) และเนื้อหา ส่วนการเปลี่ยนหน้าแก้เฉพาะจุดที่เปลี่ยน (ดู study-dom.js):
+ * แถบความคืบหน้าและปุ่มอยู่ที่เดิม เฉพาะบล็อกเนื้อหาของหน้าเท่านั้นที่เลื่อนเข้ามาใหม่
  */
 import { esc, ICON, abar } from './study-ui.js';
 import { blocksHtml } from './study-blocks.js';
@@ -72,30 +75,33 @@ export function createContent({ subject, lessonNo, node, api, render, applyProgr
     };
 
     function readHtml() {
-        if (pages.length === 0) return '<p class="empty-p fade-in">ชุดเนื้อหานี้ยังไม่มีหน้า</p>';
+        if (pages.length === 0) return '<p class="empty-p fade-in" data-key="empty">ชุดเนื้อหานี้ยังไม่มีหน้า</p>';
         const page = pages[s.page];
         const isLast = s.page === last;
         const action = isLast
-            ? `<button type="button" class="btn btn-lg" data-act="cn-finish"${s.busy ? ' disabled' : ''}><span>${s.busy ? 'กำลังบันทึก...' : wasDone ? 'จบ ✓' : 'จบเนื้อหา ✓'}</span></button>`
+            ? `<button type="button" class="btn btn-lg" data-act="cn-finish"${s.busy ? ' disabled' : ''}><span>${s.busy ? 'กำลังบันทึก...' : wasDone ? 'จบ' : 'จบเนื้อหา'}</span>${s.busy ? '' : ICON.check(18, 3.2)}</button>`
             : `<button type="button" class="btn btn-lg" data-act="cn-next"><span>ถัดไป</span>${ICON.next(14)}</button>`;
         return `<div class="cn">
-          ${dots()}
-          <p class="cn-meta">${pages.length > 1 ? `หน้า ${s.page + 1}/${pages.length}` : 'เนื้อหา'}${page.title ? ` • ${esc(page.title)}` : ''}</p>
-          <div class="read cn-page" id="cn-page" data-dir="${s.dir}">${blocksHtml(page.blocks) || '<p class="empty-p">หน้านี้ยังไม่มีเนื้อหา</p>'}</div>
+          <div class="cn-top">${dots()}${pages.length > 1 ? `<span class="cn-count">${s.page + 1}/${pages.length}</span>` : ''}</div>
+          <div class="cn-view" data-key="p${s.page}" data-dir="${s.dir}">
+            ${page.title ? `<p class="cn-kicker">${esc(page.title)}</p>` : ''}
+            <div class="read cn-page">${blocksHtml(page.blocks) || '<p class="empty-p">หน้านี้ยังไม่มีเนื้อหา</p>'}</div>
+          </div>
           ${s.error ? `<p class="errbox" role="alert">${esc(s.error)}</p>` : ''}
         </div>
-        ${abar(`<button type="button" class="btn btn-lg btn-line" data-act="cn-prev"${s.page === 0 ? ' disabled' : ''} style="flex:.8">ก่อนหน้า</button>${action}`)}`;
+        ${abar(`<button type="button" class="btn-ico" data-act="cn-prev" aria-label="หน้าก่อนหน้า"${s.page === 0 ? ' disabled' : ''}>${ICON.prev(18)}</button>${action}`)}`;
     }
 
     function doneHtml() {
-        return `<section class="rblock result cn-done fade-in">
+        return `<section class="rblock result cn-done" data-key="done">
           <div class="cn-medal" aria-hidden="true">🎉</div>
-          <h2>เรียนจบ “${esc(node.title)}” แล้ว</h2>
-          <p>อ่านครบ ${pages.length} หน้า เก่งมาก! ไปทำกิจกรรมถัดไปต่อเลย</p>
+          <h2>เรียนจบแล้ว!</h2>
+          <p class="cn-done-t">“${esc(node.title)}”</p>
+          <div class="pills"><span class="pill ok">${ICON.check(14, 3.4)} อ่านครบ ${pages.length} หน้า</span></div>
           <div class="res-actions">
             ${nextHref ? `<a class="btn btn-lg btn-block" href="${esc(nextHref)}" style="margin-top:0"><span>ไปกิจกรรมถัดไป</span>${ICON.next(14)}</a>` : ''}
             <a class="btn btn-lg btn-block${nextHref ? ' btn-line' : ''}" href="${esc(courseHref)}" style="margin-top:0">กลับไปเส้นทางเรียน</a>
-            <button type="button" class="btn btn-lg btn-block btn-line" data-act="cn-again" style="margin-top:0">อ่านอีกครั้ง</button>
+            <button type="button" class="linkbtn" data-act="cn-again">อ่านอีกครั้ง</button>
           </div>
         </section>`;
     }
@@ -105,18 +111,12 @@ export function createContent({ subject, lessonNo, node, api, render, applyProgr
         html: () => (s.phase === 'done' ? doneHtml() : readHtml()),
         afterRender(root) {
             const fx = s.fx;
-            const dir = s.dir;
             s.fx = null;
             s.dir = 0;
             if (!root || typeof root.querySelector !== 'function') return;
             if (fx === 'finish') {
-                confetti({ count: 90 });
-                pop(root.querySelector('.cn-medal'), { scale: 1.3, ms: 600 });
-            } else if (dir) {
-                const el = root.querySelector('#cn-page');
-                if (el && typeof el.animate === 'function') {
-                    el.animate([{ opacity: 0, transform: `translateX(${dir > 0 ? 28 : -28}px)` }, { opacity: 1, transform: 'none' }], { duration: 240, easing: 'cubic-bezier(.2,.8,.2,1)' });
-                }
+                confetti({ count: 100 });
+                pop(root.querySelector('.cn-medal'), { scale: 1.35, ms: 650 });
             }
         },
         handleClick(e) {

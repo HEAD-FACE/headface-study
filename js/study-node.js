@@ -12,6 +12,7 @@ import { createContent } from './study-live-content.js';
 import { createQuiz } from './study-live-quiz.js';
 import { createPractice } from './study-live-practice.js';
 import { installImageZoom } from './study-media.js';
+import { patchHtml } from './study-dom.js';
 
 const TYPE_LABEL = { content: 'เนื้อหา', quiz: 'Quiz', practice: 'Practice' };
 export const nodeTypeLabel = (type) => TYPE_LABEL[type] || '';
@@ -74,11 +75,12 @@ export async function initNode({ api = studyApi } = {}) {
             applyProgress: (done) => { if (done.node && done.node.progress) node.progress = done.node.progress; },
         });
     } else {
-        controller = createPractice({ subject, lessonNo: lesson.no, node, api, render, applySummary: () => {} });
+        controller = createPractice({ subject, lessonNo: lesson.no, node, api, render, applySummary: () => {}, nextHref, courseHref });
     }
 
+    /** วาดหน้าโดยแก้เฉพาะจุดที่เปลี่ยน (ไม่สร้างทั้งหน้าใหม่ → ไม่กะพริบ ภาพ/วิดีโอไม่โหลดซ้ำ แอนิเมชันเข้าฉากเล่นเฉพาะของใหม่) */
     function draw({ focus = false } = {}) {
-        content.innerHTML = controller.html();
+        patchHtml(content, controller.html());
         if (view) view.classList.toggle('has-abar', !!(controller.hasAbar && controller.hasAbar()));
         if (controller.afterRender) controller.afterRender(content);
         if (focus) focusView();

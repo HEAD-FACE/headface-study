@@ -141,6 +141,7 @@
     <!-- Barba Container: course (เส้นทางเรียนของวิชา) — ส่วนหัวของหน้านี้ซ้อนทับแถบหัวร่วม (ซ่อนอยู่) และใช้พื้นที่สีเขียวถาวรเดียวกัน -->
     <main id="cpRoot" class="barba-container cp flex-1 pb-28 w-full" data-barba="container" data-barba-namespace="course">
       <header id="cpHead" class="cp-head">
+        <span class="cp-bubbles" aria-hidden="true"><i></i><i></i><i></i></span>
         <a id="cpBack" class="cp-back" href="subject.html" aria-label="กลับไปหน้ารายวิชา"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6l6 6"/></svg></a>
         <div class="cp-ht">
           <p id="cpEyebrow" class="cp-eyebrow"></p>
@@ -149,7 +150,10 @@
         </div>
         <span id="cpEmoji" class="cp-emoji" aria-hidden="true"></span>
       </header>
-      <div id="cpBody"><div class="cp-in"><div class="cp-state cp-loading" role="status" aria-live="polite"><span class="cp-spin" aria-hidden="true"></span>กำลังโหลดเส้นทางเรียน...</div></div></div>
+      <div id="cpBody"><div class="cp-in cp-sk" role="status" aria-live="polite" aria-busy="true"><span class="cp-sr">กำลังโหลดเส้นทางเรียน</span>
+        <div class="cp-sum"><div class="cp-sum-row"><i class="cp-sk-c"></i><div class="cp-sk-t"><i class="cp-sk-l"></i><i class="cp-sk-l s"></i></div></div><i class="cp-sk-b"></i></div>
+        <div class="cp-sk-path"><i class="cp-sk-ban"></i><i class="cp-sk-n" style="--dx:0px"></i><i class="cp-sk-n" style="--dx:34px"></i><i class="cp-sk-n" style="--dx:56px"></i></div>
+      </div></div>
     </main>
 
 

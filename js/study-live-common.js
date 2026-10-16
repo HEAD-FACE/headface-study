@@ -13,7 +13,9 @@ export const lessonUrl = (id, no = 'current', tab = 'content') => `lesson.html?s
 export const nodeUrl = (id, no, nodeId) => `lesson.html?s=${encodeURIComponent(id)}&l=${encodeURIComponent(no)}&n=${encodeURIComponent(nodeId)}`;
 export const mockUrl = (id) => (id ? `mock-exam.html?s=${encodeURIComponent(id)}` : 'mock-exam.html');
 
-export const loading = () => { content.innerHTML = '<div class="loading" role="status" aria-live="polite">กำลังโหลด...</div>'; };
+/** โครงเปล่าระหว่างรอข้อมูล (แทนข้อความ "กำลังโหลด..." ที่กะพริบ): ใกล้เคียงหน้าจริง ข้อความอยู่เฉพาะสำหรับเครื่องอ่านหน้าจอ */
+export const skeletonHtml = () => '<div class="sk-wrap" role="status" aria-live="polite" aria-busy="true"><span class="sr-only">กำลังโหลด...</span><i class="sk sk-line"></i><i class="sk sk-card"></i><i class="sk sk-card s"></i></div>';
+export const loading = () => { content.innerHTML = skeletonHtml(); };
 
 export const messageOf = (err) => (err instanceof StudyApiError ? err.message : 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
 

@@ -5,26 +5,30 @@
  * บทเรียนในหน่วยแยกกันด้วยสีและเส้นคั่น (สีประจำบท) แตะวงกลมเพื่อดูรายละเอียดแล้วกด "เริ่ม"
  * วงกลมที่ "ถัดไป" เด้งและมีป้ายเริ่ม ทุกวงเปิดได้เสมอ (ไม่ล็อก) ปลายเส้นทางคือ Mock Exam ประจำวิชา
  *
+ * ข้อความบนหน้าให้น้อยที่สุด: วงกลมไม่มีข้อความกำกับ (บอกชนิดด้วยไอคอนและสี) ชื่อกับรายละเอียดอยู่ในการ์ดที่เด้งเมื่อแตะ
+ * วงกลมเป็น SVG ชิ้นเดียว (วงแหวนความคืบหน้า + ตัววงกลมที่มีเงา 3 มิติ + ไอคอน) จึงอยู่กึ่งกลางเดียวกันเสมอ
+ *
  * หน้านี้เปลี่ยนหน้าด้วย Barba ร่วมกับหน้าหลัก: พื้นที่สีเขียวด้านบน (#mainBlueBg) ต่อเนื่องจากหน้าก่อน
- * ฟังก์ชันที่สร้าง HTML ไม่แตะ DOM จึงทดสอบใน Node ได้ ส่วนเชื่อมกับหน้าอยู่ใน initCoursePage
+ * ฟังก์ชันที่สร้าง HTML ไม่แตะ DOM จึงทดสอบใน Node ได้ ส่วนเชื่อมกับหน้า (เอฟเฟกต์ เส้นทางประ ปุ่มลัด) อยู่ใน initCoursePage
  */
 import { studyApi, StudyApiError } from './study-api.js';
 import { esc } from './study-ui.js';
 import { lessonHue } from './study-format.js';
 import { SUBJECT_ID_RE, courseUrl, mockUrl, nodeUrl } from './study-live-common.js';
-import { reducedMotion } from './study-fx.js';
+import { reducedMotion, countUp, pop } from './study-fx.js';
 
 // ───────────── ไอคอน ─────────────
 const svg = (inner, size = 30, w = 2.4) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${inner}</svg>`;
 const GLYPH = {
     content: '<path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0"/><path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0"/><path d="M3 6l0 13"/><path d="M12 6l0 13"/><path d="M21 6l0 13"/>',
-    quiz: '<path d="M3.5 5.5l1.5 1.5l2.5 -2.5"/><path d="M3.5 11.5l1.5 1.5l2.5 -2.5"/><path d="M3.5 17.5l1.5 1.5l2.5 -2.5"/><path d="M11 6l9 0"/><path d="M11 12l9 0"/><path d="M11 18l9 0"/>',
+    quiz: '<path d="M13 3l0 7l6 0l-8 11l0 -7l-6 0l8 -11" fill="currentColor"/>',
     practice: '<path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4"/><path d="M13.5 6.5l4 4"/>',
     mock: '<path d="M8 21l8 0"/><path d="M12 17l0 4"/><path d="M7 4l10 0"/><path d="M17 4v8a5 5 0 0 1 -10 0v-8"/><path d="M5 9m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/><path d="M19 9m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/>',
     check: '<path d="M5 12l5 5l10 -10"/>',
     back: '<path d="M15 6l-6 6l6 6"/>',
-    info: '<path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"/><path d="M12 9h.01"/><path d="M11 12h1v4h1"/>',
     down: '<path d="M6 9l6 6l6 -6"/>',
+    up: '<path d="M6 15l6 -6l6 6"/>',
+    next: '<path d="M9 6l6 6l-6 6"/>',
 };
 export const glyph = (name, size, w) => svg(GLYPH[name] || '', size, w);
 
@@ -49,7 +53,7 @@ export function ringPercent(node) {
 
 export const nodeStatusText = (status) => (status === 'done' ? 'เสร็จแล้ว' : status === 'now' ? 'ถัดไป' : 'ยังไม่เริ่ม');
 
-/** เนื้อหาของการ์ดที่เด้งขึ้นใต้วงกลมเมื่อแตะ */
+/** เนื้อหาของการ์ดที่เด้งขึ้นใต้วงกลมเมื่อแตะ: ป้ายชนิด + ชื่อ + (ถ้ามี) สถานะบรรทัดเดียว + ปุ่ม */
 export function nodeInfo(node, subjectId, lessonNo) {
     const p = node.progress || {};
     const href = nodeUrl(subjectId, lessonNo, node.id);
@@ -57,89 +61,109 @@ export function nodeInfo(node, subjectId, lessonNo) {
         const started = p.pageReached > 0;
         return {
             chip: `เนื้อหา • ${node.pageCount || p.pageCount || 1} หน้า`,
-            line: node.status === 'done' ? 'เรียนจบแล้ว ✓' : started ? `อ่านถึงหน้า ${p.pageReached + 1}/${p.pageCount || node.pageCount}` : 'อ่านทีละหน้า แล้วกด "จบเนื้อหา"',
+            line: node.status === 'done' ? 'เรียนจบแล้ว ✓' : started ? `อ่านถึงหน้า ${p.pageReached + 1}/${p.pageCount || node.pageCount}` : '',
             label: node.status === 'done' ? 'ทบทวน' : started ? 'อ่านต่อ' : 'เริ่ม', href,
         };
     }
     if (node.type === 'quiz') {
-        const need = p.passPct === null || p.passPct === undefined ? 'ทำครบแล้วส่ง 1 ครั้งถือว่าผ่าน' : `ผ่านเมื่อตอบถูก ≥ ${p.passPct}%`;
-        const best = p.best ? ` • ดีที่สุด ${p.best.correct}/${p.best.total}` : '';
+        const best = p.best ? `ดีที่สุด ${p.best.correct}/${p.best.total}` : '';
         return {
             chip: `Quiz • ${node.questionCount} ข้อ`,
-            line: p.passed ? `ผ่านแล้ว ✓${best}` : `${need}${best}`,
+            line: p.passed ? `ผ่านแล้ว ✓${best ? ` • ${best}` : ''}` : best,
             label: p.passed ? 'ทำอีกครั้ง' : p.attempts ? 'ลองอีกครั้ง' : 'เริ่ม', href,
         };
     }
     return {
         chip: 'Practice • ไม่บังคับ',
-        line: p.total ? `ทำแล้ว ${p.done}/${p.total} ข้อ • ฝึกเองแล้วกดทำถูก/ทำผิด` : 'ยังไม่มีโจทย์ฝึก',
+        line: p.total ? `ทำแล้ว ${p.done}/${p.total} ข้อ` : 'ยังไม่มีโจทย์ฝึก',
         label: node.status === 'done' ? 'ทบทวน' : p.done ? 'ทำต่อ' : 'เริ่ม', href,
     };
 }
 
-// ───────────── วงกลมและการ์ด ─────────────
+// ───────────── วงกลม (SVG ชิ้นเดียว) ─────────────
+/**
+ * วงกลมหนึ่งวง: ระบบพิกัด 100×100 วงแหวนความคืบหน้ากึ่งกลาง (50,50) ตัววงกลม (47) กับเงา 3 มิติ (54) อยู่เหนือ/ใต้จุดกึ่งกลางเท่ากัน
+ * จึงดูสมมาตรกับวงแหวน กดแล้วตัววงกลมจมลงทับเงา (ดู css/course.css .cp-fg) ไอคอนเป็น <svg> ซ้อนที่ย้ายไปพร้อมตัววงกลม
+ */
+export function nodeSvg({ type, status, ring }) {
+    const icon = status === 'done' ? 'check' : type;
+    const stroke = status === 'done' ? 3.4 : 2.4;
+    const showRing = ring > 0 && status !== 'done';
+    const arc = showRing
+        ? '<circle class="cp-track" cx="50" cy="50" r="46"/><circle class="cp-arc" cx="50" cy="50" r="46" pathLength="100" transform="rotate(-90 50 50)"/>'
+        : '';
+    const spark = status === 'done'
+        ? '<g transform="translate(86 18)"><path class="cp-spark s1" d="M0 -7L2 -2L7 0L2 2L0 7L-2 2L-7 0L-2 -2Z"/></g><g transform="translate(12 74)"><path class="cp-spark s2" d="M0 -5L1.5 -1.5L5 0L1.5 1.5L0 5L-1.5 1.5L-5 0L-1.5 -1.5Z"/></g>'
+        : '';
+    return `<svg class="cp-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false">${arc}<circle class="cp-depth" cx="50" cy="54" r="35"/><g class="cp-fg"><circle class="cp-disc" cx="50" cy="47" r="35"/><path class="cp-gloss" d="M25.5 35.6A27 27 0 0 1 40.8 21.6"/><g class="cp-ico"><svg x="32" y="29" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${stroke}" stroke-linecap="round" stroke-linejoin="round">${GLYPH[icon] || ''}</svg></g></g>${spark}</svg>`;
+}
+
 export function nodeHtml(node, { subjectId, lessonNo, index, seq }) {
     const info = nodeInfo(node, subjectId, lessonNo);
     const status = node.status || 'todo';
     const optional = node.type === 'practice';
     const ring = ringPercent(node);
-    const icon = status === 'done' ? glyph('check', 32, 3.4) : glyph(node.type, optional ? 24 : 30);
-    return `<li class="cp-n is-${status}${optional ? ' is-optional' : ''}" data-kind="${esc(node.type)}" style="--dx:${nodeOffset(index)}px;--i:${seq}">
-      <button type="button" class="cp-node" data-node="${esc(node.id)}" aria-expanded="false" aria-label="${esc(`${TYPE_LABEL[node.type] || ''} ${node.title} — ${nodeStatusText(status)}`)}">
-        ${ring > 0 && status !== 'done' ? `<span class="cp-ring" style="--p:${ring}" aria-hidden="true"></span>` : ''}
-        <span class="cp-face" aria-hidden="true">${icon}</span>
-      </button>
-      ${status === 'now' ? '<span class="cp-start" aria-hidden="true">เริ่ม</span>' : ''}
-      <span class="cp-nl"><small>${esc(TYPE_LABEL[node.type] || '')}${optional ? ' • ไม่บังคับ' : ''}</small>${esc(node.title)}</span>
-      <template class="cp-tpl"><div class="cp-pop" role="dialog" aria-label="${esc(node.title)}" style="--dx:${nodeOffset(index)}px">
+    const dx = nodeOffset(index);
+    const p = node.progress || {};
+    const resumed = (node.type === 'content' && p.pageReached > 0) || (optional && p.done > 0);
+    const off = ring > 0 && status !== 'done' ? `;--off:${100 - ring}` : '';
+    return `<li class="cp-n is-${status}${optional ? ' is-optional' : ''}" data-kind="${esc(node.type)}" data-dx="${dx}" style="--dx:${dx}px;--i:${seq}${off}">
+      <button type="button" class="cp-node" data-node="${esc(node.id)}" aria-expanded="false" aria-label="${esc(`${TYPE_LABEL[node.type] || ''} ${node.title} — ${nodeStatusText(status)}`)}">${nodeSvg({ type: node.type, status, ring })}</button>
+      ${status === 'now' ? `<span class="cp-start" aria-hidden="true">${resumed ? 'ต่อ' : 'เริ่ม'}</span>` : ''}
+      <template class="cp-tpl"><div class="cp-pop" role="dialog" aria-label="${esc(node.title)}" style="--dx:${dx}px">
         <span class="cp-pop-chip">${esc(info.chip)}</span>
         <h3>${esc(node.title)}</h3>
-        <p>${esc(info.line)}</p>
-        <a class="cp-go" href="${esc(info.href)}"><span>${esc(info.label)}</span></a>
+        ${info.line ? `<p>${esc(info.line)}</p>` : ''}
+        <a class="cp-go" href="${esc(info.href)}"><span>${esc(info.label)}</span>${glyph('next', 18, 3.2)}</a>
       </div></template>
     </li>`;
 }
 
+const trailSvg = '<svg class="cp-trail" aria-hidden="true" focusable="false"><path class="cp-trail-all"/><path class="cp-trail-done"/></svg>';
+
 export function lessonHtml(lesson, { subjectId, hue, seqStart, indexStart }) {
     const nodes = lesson.nodes || [];
     const done = lesson.status === 'done';
+    const doneNodes = nodes.filter((n) => n.status === 'done').length;
     let seq = seqStart;
     const items = nodes.map((n, k) => nodeHtml(n, { subjectId, lessonNo: lesson.no, index: indexStart + k, seq: seq++ })).join('');
+    const label = `บทที่ ${lesson.no} ${lesson.title}${nodes.length ? ` เสร็จ ${doneNodes} จาก ${nodes.length} กิจกรรม` : ''}`;
     return `<div class="cp-lesson hue-${hue}${done ? ' is-done' : ''}" id="lesson-${lesson.no}" data-lesson="${lesson.no}">
-      <div class="cp-lh" role="heading" aria-level="3"><span class="cp-lline"></span><span class="cp-lchip">${done ? glyph('check', 14, 3.4) : ''}<b>บทที่ ${lesson.no}</b><span>${esc(lesson.title)}</span></span><span class="cp-lline"></span></div>
-      <ol class="cp-nodes">${nodes.length ? items : '<li class="cp-empty">บทนี้ยังไม่มีกิจกรรม</li>'}</ol>
+      <div class="cp-lh" role="heading" aria-level="3" aria-label="${esc(label)}"><span class="cp-lline"></span><span class="cp-lchip"><i class="cp-lnum">${done ? glyph('check', 14, 3.6) : lesson.no}</i><span class="cp-lt">${esc(lesson.title)}</span>${nodes.length ? `<em class="cp-lc">${doneNodes}/${nodes.length}</em>` : ''}</span><span class="cp-lline"></span></div>
+      ${nodes.length ? `<div class="cp-seq">${trailSvg}<ol class="cp-nodes">${items}</ol></div>` : '<p class="cp-empty">บทนี้ยังไม่มีกิจกรรม</p>'}
     </div>`;
 }
 
 export function unitHtml(unit) {
+    const all = unit.doneCount === unit.lessonCount && unit.lessonCount > 0;
     return `<section class="cp-unit" id="unit-${unit.no}" aria-label="หน่วยที่ ${unit.no} ${esc(unit.title)}">
-      <div class="cp-banner"><div><p class="cp-banner-k">หน่วยที่ ${unit.no} • เสร็จ ${unit.doneCount}/${unit.lessonCount} บท</p><h2>${esc(unit.title)}</h2></div><span class="cp-banner-i" aria-hidden="true">${unit.doneCount === unit.lessonCount && unit.lessonCount > 0 ? glyph('check', 22, 3.2) : glyph('content', 22, 2.2)}</span></div>
+      <div class="cp-banner${all ? ' is-done' : ''}" style="--u:${pct(unit.doneCount, unit.lessonCount)}"><div><p class="cp-banner-k">หน่วยที่ ${unit.no} • ${unit.doneCount}/${unit.lessonCount} บท</p><h2>${esc(unit.title)}</h2></div><span class="cp-banner-i" aria-hidden="true">${all ? glyph('check', 22, 3.2) : glyph('content', 22, 2.2)}</span></div>
       ${unit.lessonsHtml}
     </section>`;
 }
 
 /** วงกลมใหญ่ท้ายเส้นทาง: Mock Exam ประจำวิชา */
 export function mockHtml(mock, subjectId) {
-    const caption = !mock.available ? 'ยังไม่เปิดให้สอบ' : mock.attempts ? `ทำแล้ว ${mock.attempts} ครั้ง • ล่าสุด ${mock.lastPercent}%` : 'ยังไม่เคยทำ • จับเวลา ตรวจเฉลยและได้ดาว';
+    const caption = !mock.available ? 'ยังไม่เปิดให้สอบ' : mock.attempts ? `ทำแล้ว ${mock.attempts} ครั้ง • ล่าสุด ${mock.lastPercent}%` : 'จับเวลา • ตรวจเฉลย • ได้ดาว';
     const href = mockUrl(subjectId);
+    const status = mock.available ? (mock.attempts ? 'done' : 'now') : 'todo';
     return `<section class="cp-unit cp-final" id="mock" aria-label="Mock Exam ประจำวิชา">
       <div class="cp-banner cp-banner-mock"><div><p class="cp-banner-k">ปลายทาง</p><h2>Mock Exam ประจำวิชา</h2></div><span class="cp-banner-i" aria-hidden="true">${glyph('mock', 22, 2.2)}</span></div>
-      <ol class="cp-nodes"><li class="cp-n cp-trophy is-${mock.available ? (mock.attempts ? 'done' : 'now') : 'todo'}" data-kind="mock" style="--dx:0px;--i:0">
-        <button type="button" class="cp-node" data-node="__mock" aria-expanded="false" aria-label="Mock Exam ประจำวิชา — ${esc(caption)}"><span class="cp-face" aria-hidden="true">${glyph('mock', 38, 2.2)}</span></button>
-        <span class="cp-nl"><small>Mock Exam</small>${esc(caption)}</span>
+      <div class="cp-seq"><ol class="cp-nodes"><li class="cp-n cp-trophy is-${status}" data-kind="mock" data-dx="0" style="--dx:0px;--i:0">
+        <button type="button" class="cp-node" data-node="__mock" aria-expanded="false" aria-label="Mock Exam ประจำวิชา — ${esc(caption)}">${nodeSvg({ type: 'mock', status, ring: 0 })}</button>
         <template class="cp-tpl"><div class="cp-pop cp-pop-mock" role="dialog" aria-label="Mock Exam" style="--dx:0px">
           <span class="cp-pop-chip">Mock Exam • ทั้งวิชา</span><h3>Mock Exam ประจำวิชา</h3><p>${esc(caption)}</p>
-          ${mock.available ? `<a class="cp-go" href="${esc(href)}"><span>${mock.attempts ? 'สอบอีกครั้ง' : 'เข้าสอบ'}</span></a>` : '<span class="cp-go is-off">เร็ว ๆ นี้</span>'}
+          ${mock.available ? `<a class="cp-go" href="${esc(href)}"><span>${mock.attempts ? 'สอบอีกครั้ง' : 'เข้าสอบ'}</span>${glyph('next', 18, 3.2)}</a>` : '<span class="cp-go is-off">เร็ว ๆ นี้</span>'}
         </div></template>
-      </li></ol>
+      </li></ol></div>
     </section>`;
 }
 
-/** ส่วนหัว (ข้อความในแถบสีเขียว) จากข้อมูลวิชา */
+/** ส่วนหัว (ข้อความในแถบสีเขียว) จากข้อมูลวิชา: ตัวบนสุดเป็นลำดับวิชาสั้น ๆ ไม่ซ้ำกับชื่อ */
 export function headerView(data) {
     const { subject, progress } = data;
     return {
-        eyebrow: subject.eyebrow || '',
+        eyebrow: subject.no ? `วิชาที่ ${subject.no}` : '',
         title: subject.title,
         meta: subject.metaText || (progress.lessonsTotal ? `${progress.lessonsTotal} บทเรียน` : ''),
         emoji: subject.emoji || '📘',
@@ -181,21 +205,55 @@ export function courseBodyHtml(data) {
 
     return `<div class="cp-in">
       <section class="cp-sum" aria-label="ความคืบหน้าของวิชา">
-        <div class="cp-sum-top"><p class="cp-sum-pct"><span class="num">${progress.pct}%</span><span class="cap">ความคืบหน้า</span></p><p class="cap">เรียนแล้ว ${progress.lessonsDone} จาก ${progress.lessonsTotal} บทเรียน</p></div>
-        <div class="bar cp-bar" aria-hidden="true"><i style="width:${progress.pct}%"></i></div>
-        ${cta ? `<a class="btn btn-lg btn-block cp-cta" href="${esc(cta.href)}"><span>${esc(cta.label)}</span></a>${cta.sub ? `<p class="cap cp-sum-cap">${esc(cta.sub)}</p>` : ''}` : ''}
+        <div class="cp-sum-row">
+          <div class="cp-pring" role="img" aria-label="ความคืบหน้า ${progress.pct}%" style="--off:${100 - progress.pct}"><svg viewBox="0 0 36 36" aria-hidden="true"><circle class="t" cx="18" cy="18" r="15.5"/><circle class="v" cx="18" cy="18" r="15.5" pathLength="100"/></svg><span class="num" data-count="${progress.pct}">${progress.pct}%</span></div>
+          <div class="cp-sum-t"><p class="cp-sum-h">เรียนแล้ว ${progress.lessonsDone}/${progress.lessonsTotal} บท</p>${cta && cta.sub ? `<p class="cap cp-sum-cap">${esc(cta.sub)}</p>` : ''}</div>
+        </div>
+        ${cta ? `<a class="btn btn-lg btn-block cp-cta" href="${esc(cta.href)}"><span>${esc(cta.label)}</span>${glyph('next', 20, 3.2)}</a>` : ''}
       </section>
-      ${aboutRows.length ? `<details class="cp-about"><summary>${glyph('info', 18)}<span>เกี่ยวกับวิชานี้</span><span class="cp-chev">${glyph('down', 20)}</span></summary><dl>${aboutRows.map(([t, dd]) => `<div><dt>${t}</dt>${dd}</div>`).join('')}</dl></details>` : ''}
+      ${aboutRows.length ? `<details class="cp-about"><summary><span>เกี่ยวกับวิชานี้</span><span class="cp-chev">${glyph('down', 18, 2.8)}</span></summary><dl>${aboutRows.map(([t, dd]) => `<div><dt>${t}</dt>${dd}</div>`).join('')}</dl></details>` : ''}
       <div class="cp-path">${unitHtmls || '<p class="cp-empty">วิชานี้ยังไม่มีบทเรียน</p>'}${mockHtml(mock, subject.id)}</div>
     </div>`;
 }
 
+/** โครงเปล่าระหว่างรอข้อมูล: ใกล้เคียงหน้าจริง จึงไม่กระโดดตอนข้อมูลมา */
+export const skeletonHtml = () => `<div class="cp-in cp-sk" role="status" aria-live="polite" aria-busy="true"><span class="cp-sr">กำลังโหลดเส้นทางเรียน</span>
+  <div class="cp-sum"><div class="cp-sum-row"><i class="cp-sk-c"></i><div class="cp-sk-t"><i class="cp-sk-l"></i><i class="cp-sk-l s"></i></div></div><i class="cp-sk-b"></i></div>
+  <div class="cp-sk-path"><i class="cp-sk-ban"></i><i class="cp-sk-n" style="--dx:0px"></i><i class="cp-sk-n" style="--dx:34px"></i><i class="cp-sk-n" style="--dx:56px"></i></div>
+</div>`;
+
 const failureHtml = (err) => `<div class="cp-in"><section class="cp-state" role="alert"><h2>โหลดข้อมูลไม่สำเร็จ</h2><p>${esc(err instanceof StudyApiError ? err.message : 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง')}</p><div class="cp-state-act"><button type="button" class="btn" data-act="retry">ลองใหม่</button><a class="btn btn-line" href="subject.html">กลับไปหน้ารายวิชา</a></div></section></div>`;
 const missingHtml = (message) => `<div class="cp-in"><section class="cp-state" role="alert"><h2>${esc(message)}</h2><p>ลิงก์อาจไม่ถูกต้อง หรือยังไม่มีข้อมูลของวิชานี้</p><div class="cp-state-act"><a class="btn" href="subject.html">กลับไปหน้ารายวิชา</a></div></section></div>`;
-const loadingHtml = () => '<div class="cp-in"><div class="cp-state cp-loading" role="status" aria-live="polite"><span class="cp-spin" aria-hidden="true"></span>กำลังโหลดเส้นทางเรียน...</div></div>';
+
+// ───────────── เส้นประเชื่อมวงกลม (คำนวณตำแหน่งจริงหลังจัดหน้า) ─────────────
+const r1 = (n) => Math.round(n * 10) / 10;
+
+/** เส้นโค้งตัว S ผ่านทุกจุด: จากจุดหนึ่งลงไปอีกจุดหนึ่งโดยเส้นสัมผัสแนวตั้งทั้งสองปลาย */
+export function trailPath(points) {
+    if (!Array.isArray(points) || points.length < 2) return '';
+    let d = `M${r1(points[0].x)} ${r1(points[0].y)}`;
+    for (let i = 1; i < points.length; i++) {
+        const a = points[i - 1];
+        const b = points[i];
+        const my = (a.y + b.y) / 2;
+        d += `C${r1(a.x)} ${r1(my)} ${r1(b.x)} ${r1(my)} ${r1(b.x)} ${r1(b.y)}`;
+    }
+    return d;
+}
+
+/** ส่วนของเส้นที่ "ออกจากวงที่เรียนจบแล้ว" วาดเป็นสีเข้ม (ความคืบหน้า) ส่วนที่เหลือเป็นจุดจาง */
+export function trailDonePath(points) {
+    if (!Array.isArray(points)) return '';
+    const parts = [];
+    for (let i = 0; i < points.length - 1; i++) {
+        if (points[i].done) parts.push(trailPath([points[i], points[i + 1]]));
+    }
+    return parts.join('');
+}
 
 // ───────────── เชื่อมกับหน้า (DOM + Barba) ─────────────
 const shell = () => (typeof window !== 'undefined' ? window.StudyShell : null);
+const canObserve = () => typeof IntersectionObserver === 'function';
 
 /** สูงพอดีกับส่วนหัวของหน้านี้ + ขอบโค้ง: ให้พื้นที่สีเขียวถาวรขยับตาม */
 function fitGreenArea(root) {
@@ -206,18 +264,27 @@ function fitGreenArea(root) {
     s.setHeaderHeight(Math.round(rect.bottom + window.scrollY + 34));
 }
 
+/** การ์ดรายละเอียดใต้วงกลม: เปิด = ขยายนุ่ม ๆ ดันวงกลมข้างล่างลง ปิด = หดกลับแล้วถอดออก */
 function closePopovers(root, except = null) {
     root.querySelectorAll('.cp-pop-wrap').forEach((wrap) => {
         if (wrap === except) return;
         const owner = wrap.previousElementSibling;
         owner?.querySelector('.cp-node')?.setAttribute('aria-expanded', 'false');
-        wrap.remove();
+        wrap.classList.add('is-closing');
+        if (!reducedMotion() && typeof wrap.animate === 'function') {
+            wrap.style.overflow = 'hidden';
+            const h = wrap.getBoundingClientRect().height;
+            const a = wrap.animate([{ height: `${h}px`, opacity: 1, marginTop: '8px', marginBottom: '6px' }, { height: '0px', opacity: 0, marginTop: '0px', marginBottom: '0px' }], { duration: 200, easing: 'cubic-bezier(.4,0,.2,1)', fill: 'forwards' });
+            a.onfinish = () => wrap.remove();
+        } else {
+            wrap.remove();
+        }
     });
 }
 
 function togglePopover(root, li) {
     const next = li.nextElementSibling;
-    if (next && next.classList.contains('cp-pop-wrap')) { closePopovers(root); return; }
+    if (next && next.classList.contains('cp-pop-wrap') && !next.classList.contains('is-closing')) { closePopovers(root); return; }
     closePopovers(root);
     const tpl = li.querySelector('template.cp-tpl');
     if (!tpl) return;
@@ -226,10 +293,91 @@ function togglePopover(root, li) {
     wrap.appendChild(tpl.content.cloneNode(true));
     li.after(wrap);
     li.querySelector('.cp-node').setAttribute('aria-expanded', 'true');
+    pop(li.querySelector('.cp-svg'), { scale: 1.1, ms: 300 });
     if (!reducedMotion() && typeof wrap.animate === 'function') {
-        wrap.animate([{ opacity: 0, transform: 'translateY(-8px) scale(.97)' }, { opacity: 1, transform: 'none' }], { duration: 220, easing: 'cubic-bezier(.2,.8,.2,1)' });
+        const h = wrap.getBoundingClientRect().height;
+        wrap.style.overflow = 'hidden';
+        const a = wrap.animate([{ height: '0px', opacity: 0, marginTop: '0px', marginBottom: '0px' }, { height: `${h}px`, opacity: 1, marginTop: '8px', marginBottom: '6px' }], { duration: 300, easing: 'cubic-bezier(.34,1.3,.64,1)' });
+        a.onfinish = () => { wrap.style.overflow = ''; };
+        wrap.querySelectorAll('.cp-pop > *').forEach((el, i) => {
+            if (typeof el.animate === 'function') el.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { duration: 280, delay: 90 + i * 55, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'backwards' });
+        });
     }
-    if (typeof wrap.scrollIntoView === 'function') wrap.scrollIntoView({ block: 'nearest', behavior: reducedMotion() ? 'auto' : 'smooth' });
+    if (typeof wrap.scrollIntoView === 'function') setTimeout(() => wrap.scrollIntoView({ block: 'nearest', behavior: reducedMotion() ? 'auto' : 'smooth' }), 60);
+}
+
+/** วงกลม/ป้าย/แบนเนอร์ค่อย ๆ เด้งเข้ามาเมื่อเลื่อนมาถึง (ไม่มี IntersectionObserver หรือผู้ใช้ปิดแอนิเมชัน = แสดงทันที) */
+function revealOnScroll(scope) {
+    const items = Array.from(scope.querySelectorAll('.cp-sum, .cp-banner, .cp-lh, .cp-n'));
+    if (!items.length) return () => {};
+    const sum = scope.querySelector('.cp-pring .num');
+    if (reducedMotion() || !canObserve()) {
+        items.forEach((el) => el.classList.add('is-in'));
+        return () => {};
+    }
+    scope.classList.add('cp-anim');
+    const io = new IntersectionObserver((entries) => {
+        let k = 0;
+        for (const e of entries) {
+            if (!e.isIntersecting) continue;
+            const el = e.target;
+            el.style.setProperty('--d', `${Math.min(k++, 7) * 70}ms`);
+            el.classList.add('is-in');
+            io.unobserve(el);
+            if (sum && el.classList.contains('cp-sum')) countUp(sum, Number(sum.dataset.count), { ms: 1100, format: (n) => `${n}%` });
+        }
+    }, { threshold: 0.15, rootMargin: '0px 0px -5% 0px' });
+    items.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+}
+
+/** เส้นประเชื่อมวงกลมของแต่ละบท: วัดตำแหน่งจริง (offset ไม่ถูกแอนิเมชัน scale กระทบ) และวาดใหม่เมื่อความสูงเปลี่ยน (การ์ดเด้ง/หน้าจอหมุน) */
+function drawTrails(scope) {
+    scope.querySelectorAll('.cp-seq').forEach((seq) => {
+        const svgEl = seq.querySelector('.cp-trail');
+        const lis = Array.from(seq.querySelectorAll('.cp-n'));
+        if (!svgEl || lis.length < 2) return;
+        const half = seq.clientWidth / 2;
+        const points = lis.map((li) => {
+            const btn = li.querySelector('.cp-node');
+            return { x: half + (Number(li.dataset.dx) || 0), y: li.offsetTop + btn.offsetTop + btn.offsetHeight * 0.5, done: li.classList.contains('is-done') };
+        });
+        svgEl.querySelector('.cp-trail-all').setAttribute('d', trailPath(points));
+        svgEl.querySelector('.cp-trail-done').setAttribute('d', trailDonePath(points));
+    });
+}
+
+function watchTrails(scope) {
+    let queued = false;
+    const draw = () => {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(() => { queued = false; drawTrails(scope); });
+    };
+    draw();
+    if (typeof ResizeObserver !== 'function') return () => {};
+    const ro = new ResizeObserver(draw);
+    scope.querySelectorAll('.cp-seq').forEach((seq) => ro.observe(seq));
+    return () => ro.disconnect();
+}
+
+/** ปุ่มลอย "ไปวงถัดไป" เมื่อวงที่ต้องทำอยู่นอกจอ (ชี้ขึ้น/ลงตามทิศ) */
+function watchJump(nowEl, hueClass) {
+    if (!nowEl || !canObserve() || typeof document === 'undefined' || !document.body) return () => {};
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = `cp-jump ${hueClass}`;
+    btn.hidden = true;
+    btn.innerHTML = `<span>วงถัดไป</span><i>${glyph('down', 18, 3.2)}</i>`;
+    document.body.appendChild(btn);
+    const io = new IntersectionObserver(([entry]) => {
+        const visible = entry.isIntersecting;
+        btn.hidden = visible;
+        btn.dataset.dir = entry.boundingClientRect.top < 0 ? 'up' : 'down';
+    }, { threshold: 0.6 });
+    io.observe(nowEl);
+    btn.addEventListener('click', () => nowEl.scrollIntoView({ block: 'center', behavior: reducedMotion() ? 'auto' : 'smooth' }));
+    return () => { io.disconnect(); btn.remove(); };
 }
 
 /**
@@ -242,6 +390,7 @@ export async function initCoursePage(root, { api = studyApi, url = typeof locati
     const body = root.querySelector('#cpBody');
     const set = (sel, text) => { const el = root.querySelector(sel); if (el) el.textContent = text; };
     let disposed = false;
+    let stopFx = () => {};
     const cleanups = [];
 
     let key = null;
@@ -253,26 +402,42 @@ export async function initCoursePage(root, { api = studyApi, url = typeof locati
         return { dispose() {} };
     }
 
-    async function load() {
-        body.innerHTML = loadingHtml();
+    /** เติมเอฟเฟกต์หลังวาดหน้า (เฉพาะเบราว์เซอร์จริง: องค์ประกอบ DOM ต้องมี querySelectorAll) */
+    function enhance(data, animate) {
+        const scope = body.firstElementChild;
+        if (!scope || typeof scope.querySelectorAll !== 'function') return;
+        const stops = [];
+        if (animate) stops.push(revealOnScroll(scope));
+        else scope.querySelectorAll('.cp-sum, .cp-banner, .cp-lh, .cp-n').forEach((el) => el.classList.add('is-in'));
+        stops.push(watchTrails(scope));
+        const hue = /^[a-z]{3,12}$/.test(data.subject.hue || '') ? data.subject.hue : 'emerald';
+        stops.push(watchJump(scope.querySelector('.cp-n.is-now'), `hue-${hue}`));
+        stopFx = () => { stops.forEach((fn) => fn()); stopFx = () => {}; };
+    }
+
+    /** quiet = โหลดซ้ำเงียบ ๆ (กลับมาจากแคชของเบราว์เซอร์): ไม่ล้างหน้าเป็นโครงเปล่า ไม่เล่นแอนิเมชันเข้าฉากซ้ำ */
+    async function load({ quiet = false } = {}) {
+        if (!quiet) body.innerHTML = skeletonHtml();
         let data;
         try {
             data = await api.getSubject(key);
         } catch (err) {
             if (disposed) return;
+            if (quiet) return; // ข้อมูลเดิมยังใช้ได้ ไม่ทับด้วยหน้าข้อผิดพลาด
             if (err instanceof StudyApiError && err.status === 404) {
                 set('#cpTitle', 'ไม่พบวิชานี้');
                 body.innerHTML = missingHtml('ไม่พบรายวิชานี้');
             } else {
                 set('#cpTitle', 'โหลดข้อมูลไม่สำเร็จ');
                 body.innerHTML = failureHtml(err);
-                body.querySelector('[data-act="retry"]')?.addEventListener('click', load);
+                body.querySelector('[data-act="retry"]')?.addEventListener('click', () => load());
             }
             fitGreenArea(root);
             return;
         }
         if (disposed) return;
 
+        stopFx();
         const h = headerView(data);
         root.classList.add(`hue-${/^[a-z]{3,12}$/.test(data.subject.hue || '') ? data.subject.hue : 'emerald'}`);
         set('#cpEyebrow', h.eyebrow);
@@ -282,11 +447,12 @@ export async function initCoursePage(root, { api = studyApi, url = typeof locati
         document.title = `HEADFACE Study - ${h.title}`;
         body.innerHTML = courseBodyHtml(data);
         fitGreenArea(root);
+        enhance(data, !quiet);
 
         // วงกลมที่ "ถัดไป": เลื่อนให้มาอยู่กลางจอ (เฉพาะคนที่เริ่มเรียนแล้ว)
         const started = data.progress.lessonsDone > 0 || !!data.progress.lastActivityAt;
         const now = body.querySelector('.cp-n.is-now');
-        if (started && now && typeof now.scrollIntoView === 'function') {
+        if (!quiet && started && now && typeof now.scrollIntoView === 'function') {
             setTimeout(() => { if (!disposed) now.scrollIntoView({ block: 'center', behavior: reducedMotion() ? 'auto' : 'smooth' }); }, 450);
         }
     }
@@ -298,8 +464,8 @@ export async function initCoursePage(root, { api = studyApi, url = typeof locati
     };
     const onKey = (e) => { if (e.key === 'Escape') closePopovers(root); };
     const onResize = () => fitGreenArea(root);
-    // กดย้อนกลับจากหน้ากิจกรรมแล้วเบราว์เซอร์คืนหน้านี้จากแคช (bfcache): โหลดความคืบหน้าใหม่ ไม่ให้ค้างค่าเก่า
-    const onShow = (e) => { if (e && e.persisted && !disposed) load(); };
+    // กดย้อนกลับจากหน้ากิจกรรมแล้วเบราว์เซอร์คืนหน้านี้จากแคช (bfcache): โหลดความคืบหน้าใหม่แบบเงียบ ๆ ไม่ให้ค้างค่าเก่า
+    const onShow = (e) => { if (e && e.persisted && !disposed) load({ quiet: true }); };
     root.addEventListener('click', onClick);
     document.addEventListener('keydown', onKey);
     window.addEventListener('resize', onResize);
@@ -308,7 +474,7 @@ export async function initCoursePage(root, { api = studyApi, url = typeof locati
 
     fitGreenArea(root);
     await load();
-    return { dispose() { disposed = true; cleanups.forEach((fn) => fn()); } };
+    return { dispose() { disposed = true; stopFx(); cleanups.forEach((fn) => fn()); } };
 }
 
 export { courseUrl };
