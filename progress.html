@@ -54,6 +54,7 @@
   
   <!-- Custom Stylesheet -->
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/ranking.css">
   <link rel="stylesheet" href="css/course.css">
   <link rel="stylesheet" href="css/fx.css">
   
@@ -180,13 +181,15 @@
         <div id="my-progress-body"></div>
       </section>
 
-      <section class="pad" style="margin-top:26px" aria-labelledby="h-lb">
+      <section id="lb-section" class="pad" style="margin-top:26px" aria-labelledby="h-lb">
         <div class="lb-h">
           <span class="tile tile-amber" style="width:40px;height:40px;font-size:22px" aria-hidden="true">👑</span>
           <h2 id="h-lb">ตารางอันดับดาว (Leaderboard)</h2>
           <span class="live"><span>อัปเดตแบบเรียลไทม์</span><svg width="14" height="14" viewBox="0 0 24 24" fill="#D97706" aria-hidden="true"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg></span>
         </div>
 
+        <!-- ตารางอันดับ: โหมดข้อมูลจริงให้ js/study-ranking.js แทนที่ทั้ง #lb-body ด้วยข้อมูลจริง; ข้อมูลข้างในนี้เป็นของตัวอย่างสำหรับโหมดเดโมเท่านั้น -->
+        <div id="lb-body">
         <!-- TOP 3 PODIUM -->
         <div class="pod">
           <div class="pod-col">
@@ -263,6 +266,8 @@
             <span class="starchip"><svg width="12" height="12" viewBox="0 0 24 24" fill="#D97706" aria-hidden="true"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg><span>62</span></span>
           </div>
         </div>
+
+        </div><!-- /#lb-body -->
 
         <!-- Action Button -->
         <a href="mock-exam.html" class="exam-btn"><span>เข้าสอบ Mock Exam ล่าดาวเพิ่ม</span><svg width="18" height="18" viewBox="0 0 24 24" fill="#ffffff" aria-hidden="true"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg></a>

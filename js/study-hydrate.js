@@ -6,11 +6,12 @@
  * main.js ส่งเหตุการณ์ study:page ทุกครั้งที่หน้าถูกแสดง (ทั้งโหลดครั้งแรกและตอน Barba สลับหน้า)
  *
  * ถ้า API ใช้ไม่ได้ จะปล่อยการ์ดตามเดิม (ไม่ลบอะไร) และแจ้งใน console เท่านั้น
- * EXP / ดาว / เลเวล ในหน้าแรกและ Progress เป็นของจริง (applyRewards) ส่วนอันดับ (Leaderboard) และ Streak ยังเป็นข้อมูลตัวอย่าง ไฟล์นี้ไม่แตะ
+ * EXP / ดาว / เลเวล ในหน้าแรกและ Progress เป็นของจริง (applyRewards) และตารางอันดับดาวเป็นของจริง (study-ranking.js) ส่วน Streak ยังเป็นข้อมูลตัวอย่าง ไฟล์นี้ไม่แตะ
  */
 import { isDemo } from './study-source.js';
 import { studyApi } from './study-api.js';
 import { formatThaiDate } from './study-format.js';
+import { hydrateRanking } from './study-ranking.js';
 
 const KEY_RE = /[?&]s=([a-z][a-z0-9-]{1,23})(?:&|$)/;
 const CHEVRON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 6l-.112 .006a1 1 0 0 0 -.669 1.619l3.501 4.375l-3.5 4.375a1 1 0 0 0 .78 1.625h6a1 1 0 0 0 .78 -.375l4 -5a1 1 0 0 0 0 -1.25l-4 -5a1 1 0 0 0 -.78 -.375h-6z"/></svg>';
@@ -194,7 +195,7 @@ const clearPending = () => html().removeAttribute('data-study-pending');
 
 export async function hydrate(root) {
     const scope = root && root.querySelectorAll ? root : document;
-    const hasCards = scope.querySelector('a.subject-card-item') || scope.querySelector('#continued-scroll-track') || scope.querySelector('#my-progress');
+    const hasCards = scope.querySelector('a.subject-card-item') || scope.querySelector('#continued-scroll-track') || scope.querySelector('#my-progress') || scope.querySelector('#lb-body');
     if (!hasCards || isDemo()) return clearPending();
 
     html().setAttribute('data-study-pending', '');
@@ -208,6 +209,8 @@ export async function hydrate(root) {
     } finally {
         clearPending();
     }
+    // ตารางอันดับแยกจากข้อมูลรายวิชา: โหลดไม่ได้ก็ไม่ทำให้ส่วนอื่นเสีย (และไม่แสดงอันดับตัวอย่างปลอมในโหมดข้อมูลจริง)
+    await hydrateRanking(scope, studyApi);
 }
 
 if (typeof document !== 'undefined') {

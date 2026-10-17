@@ -15,6 +15,7 @@ import { burst, confetti } from './study-fx.js';
 import { patchHtml } from './study-dom.js';
 import { expRangeChipsHtml } from './study-reward.js';
 import { countAll, createResultFlow, reviewStepHtml, rewardSteps, scoreStepHtml, starsStepHtml } from './study-result.js';
+import { hasRankMove, playRankUp, rankStepHtml } from './study-ranking.js';
 
 const SAVE_RETRY_MS = 5000;
 const AUTO_SUBMIT_RETRY_MS = 5000;
@@ -366,6 +367,10 @@ export async function initMockExam({ api = studyApi, saveDebounceMs = 1000, tick
             label: 'ต่อไป',
             fx(root) { countAll(root); if (r.starsEarned > 0) burst(root.querySelector('.rs-star'), { count: 14, radius: 90, colors: ['#FBBF24', '#F59E0B', '#FDE68A', '#FCD34D'] }); },
         });
+        // ดาวที่ได้ทำให้อันดับขยับ (หรือเพิ่งติดอันดับครั้งแรก) → หน้าเลื่อนอันดับ ก่อนหน้า EXP
+        if (hasRankMove(r.ranking)) {
+            steps.push({ key: 'rank', html: () => rankStepHtml(r.ranking), label: 'ต่อไป', fx(root) { playRankUp(root, r.ranking); } });
+        }
         steps.push(...rewardSteps(r.reward, { title: 'EXP ที่ได้รับ' }));
         return createResultFlow({
             steps, render,

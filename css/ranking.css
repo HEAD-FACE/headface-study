@@ -1,0 +1,52 @@
+/* HEADFACE STUDY - ตารางอันดับดาว (หน้า Progress) และหน้า "เลื่อนอันดับ" หลังจบ Mock Exam  (js/study-ranking.js)
+   ใช้ต่อจาก css/style.css (.pod .me .lb-row .starchip ฯลฯ ของ Leaderboard เดิม) */
+
+/* ───────── ตารางอันดับ ───────── */
+#lb-body[aria-busy="true"] { min-height: 220px; opacity: .55; transition: opacity .3s; }
+.pod-ph { display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; border: 3px dashed #CBD5E1; background: #F8FAFC; color: #94A3B8; font-size: 22px; font-weight: 800; }
+.pod-col.is-empty { opacity: .8; }
+.pod-name { max-width: 100%; overflow-wrap: anywhere; }
+.pod-col.is-me .pod-name { color: #047857; }
+.lb-me { margin-left: 2px; min-height: 18px; padding: 0 6px; font-size: 11px; line-height: 16px; background: #D1FAE5; color: #065F46; vertical-align: middle; }
+.lb-row.is-me { background: #ECFDF5; box-shadow: inset 4px 0 0 #10B981; }
+.lb-t h3 { overflow-wrap: anywhere; }
+.pod, .lb-list, .me { animation: lbIn .5s cubic-bezier(.2, .8, .2, 1) both; }
+.lb-list { animation-delay: .1s; }
+@keyframes lbIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.lb-anon { display: block; width: 100%; min-height: 44px; margin-top: 8px; padding: 6px 12px; border-radius: 14px; background: transparent; border: 1.5px dashed #CBD5E1; color: #475569; font-size: 13px; line-height: 20px; font-weight: 600; text-align: center; cursor: pointer; transition: background-color .2s, border-color .2s; }
+.lb-anon:hover:not(:disabled) { background: #F1F5F9; border-color: #94A3B8; }
+.lb-anon[aria-pressed="true"] { background: #FFFBEB; border-color: #FCD34D; color: #78350F; }
+.lb-anon:disabled { opacity: .6; cursor: default; }
+.lb-total { margin: 10px 0 0; text-align: center; font-size: 12px; line-height: 18px; font-weight: 600; color: #64748B; }
+.me-name > span:first-child { min-width: 0; overflow-wrap: anywhere; }
+.lb-empty { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 12px; padding: 24px 16px; text-align: center; background: #fff; border: 2px dashed #CBD5E1; border-radius: 22px; color: #475569; font-size: 14px; line-height: 22px; }
+.lb-empty-i { font-size: 36px; line-height: 1; }
+.lb-empty p { margin: 0; }
+
+/* ───────── หน้า "เลื่อนอันดับ" ใน Mock Exam ───────── */
+.rs-rank { gap: 8px; }
+.rk-num { display: flex; align-items: baseline; justify-content: center; }
+.rk-pill { animation: pillIn .6s cubic-bezier(.34, 1.56, .64, 1) 1.5s both; }
+.rk-pill b { font-size: 11px; }
+/* บันไดอันดับ: แถวละ 60px วางซ้อนกันแล้วเลื่อนจากตำแหน่งก่อน (--y) ไปตำแหน่งใหม่ (--y2) เมื่อได้คลาส go */
+.rk-ladder { position: relative; width: 100%; max-width: 320px; height: calc(var(--rows) * 60px + 4px); margin: 14px auto 6px; }
+.rk-row { position: absolute; left: 0; right: 0; top: 0; display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 12px; border-radius: 16px; background: #fff; border: 2px solid #E2E8F0; box-shadow: 0 3px 0 #CBD5E1; text-align: left; transform: translateY(calc(var(--y) * 60px)); transition: transform .95s cubic-bezier(.3, 1.25, .5, 1), opacity .5s, background-color .5s; }
+.rk-ladder.go .rk-row { transform: translateY(calc(var(--y2) * 60px)); }
+.rk-row.is-me { z-index: 2; background: linear-gradient(90deg, #FEF3C7, #FDE68A); border-color: #F59E0B; box-shadow: 0 4px 0 #D97706, 0 0 0 0 rgba(245, 158, 11, .5); }
+.rk-ladder.go .rk-row.is-me { animation: rkGlow 1.1s ease-out .5s 1 both; }
+@keyframes rkGlow { 0% { box-shadow: 0 4px 0 #D97706, 0 0 0 0 rgba(245, 158, 11, .6); } 100% { box-shadow: 0 4px 0 #D97706, 0 0 0 16px rgba(245, 158, 11, 0); } }
+.rk-row.is-new { opacity: 0; }
+.rk-ladder.go .rk-row.is-new { opacity: 1; }
+.rk-row.is-other { z-index: 1; }
+.rk-ladder.go .rk-row.is-other { opacity: .78; }
+.rk-av { width: 36px; height: 36px; flex: none; border-radius: 50%; object-fit: cover; background: #fff; border: 2px solid #fff; box-shadow: 0 0 0 1.5px #CBD5E1; }
+.rk-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 15px; line-height: 22px; font-weight: 700; color: #0F172A; }
+.rk-st { display: inline-flex; align-items: center; gap: 3px; font-size: 13px; font-weight: 800; color: #78350F; font-variant-numeric: tabular-nums; }
+.rk-down { flex: none; font-style: normal; font-size: 11px; color: #BE123C; opacity: 0; transition: opacity .4s .5s; }
+.rk-ladder.go .rk-down { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pod, .lb-list, .me, .rk-pill { animation: none; }
+  .rk-row, .rk-down, #lb-body[aria-busy="true"] { transition: none; }
+  .rk-ladder.go .rk-row.is-me { animation: none; }
+}
