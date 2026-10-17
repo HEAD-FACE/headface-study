@@ -1,27 +1,73 @@
 /* HEADFACE STUDY - ตารางอันดับดาว (หน้า Progress) และหน้า "เลื่อนอันดับ" หลังจบ Mock Exam  (js/study-ranking.js)
    ใช้ต่อจาก css/style.css (.pod .me .lb-row .starchip ฯลฯ ของ Leaderboard เดิม) */
 
-/* ───────── ตารางอันดับ ───────── */
 #lb-body[aria-busy="true"] { min-height: 220px; opacity: .55; transition: opacity .3s; }
+
+/* ───────── โพเดียม SVG ───────── */
+.pod { display: grid; grid-template-columns: 1fr 1.18fr 1fr; gap: 2px; align-items: end; margin-top: 12px; padding: 18px 8px 0; background: radial-gradient(120% 80% at 50% 0%, #FEF9C3 0%, #E0F2FE 46%, #ECFDF5 100%); border: 1.5px solid #E2E8F0; border-radius: 26px; overflow: hidden; position: relative; animation: lbIn .5s cubic-bezier(.2, .8, .2, 1) both; }
+.pod::before { content: ""; position: absolute; left: 50%; top: -30px; width: 240px; height: 240px; transform: translateX(-50%); background: conic-gradient(from 0deg, rgba(251, 191, 36, 0), rgba(251, 191, 36, .22), rgba(251, 191, 36, 0) 25%, rgba(251, 191, 36, .22) 50%, rgba(251, 191, 36, 0) 75%, rgba(251, 191, 36, .22), rgba(251, 191, 36, 0)); border-radius: 50%; animation: podRays 18s linear infinite; pointer-events: none; }
+@keyframes podRays { to { transform: translateX(-50%) rotate(360deg); } }
+.pod-col { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; text-align: center; min-width: 0; }
+.pod-info { display: flex; flex-direction: column; align-items: center; width: 100%; padding: 0 2px; animation: podDrop .7s cubic-bezier(.34, 1.56, .64, 1) both; animation-delay: calc(.35s + (2 - var(--i)) * .22s); }
+@keyframes podDrop { from { opacity: 0; transform: translateY(-40px) scale(.8); } to { opacity: 1; transform: none; } }
+.crown { height: 40px; margin-bottom: -6px; animation: crownBob 2.4s ease-in-out infinite; transform-origin: 50% 100%; filter: drop-shadow(0 3px 4px rgba(180, 83, 9, .35)); }
+@keyframes crownBob { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-5px) rotate(3deg); } }
+.pd-crown-glint { animation: crownGlint 3.2s ease-in-out infinite; }
+@keyframes crownGlint { 0%, 55%, 100% { opacity: 0; transform: translateX(-4px); } 70% { opacity: 1; transform: translateX(14px); } }
+.pod-av { position: relative; display: block; }
+.pod-av img { display: block; border-radius: 50%; object-fit: cover; background: #fff; border: 3.5px solid var(--ring); box-shadow: 0 4px 10px rgba(15, 23, 42, .18), 0 0 0 4px color-mix(in srgb, var(--glow, #CBD5E1) 35%, transparent); }
+.pod-p0 .pod-av img { animation: avGlow 2.6s ease-in-out infinite; }
+@keyframes avGlow { 0%, 100% { box-shadow: 0 4px 10px rgba(15, 23, 42, .18), 0 0 0 4px rgba(251, 191, 36, .35); } 50% { box-shadow: 0 4px 10px rgba(15, 23, 42, .18), 0 0 0 9px rgba(251, 191, 36, .18); } }
 .pod-ph { display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; border: 3px dashed #CBD5E1; background: #F8FAFC; color: #94A3B8; font-size: 22px; font-weight: 800; }
-.pod-col.is-empty { opacity: .8; }
-.pod-name { max-width: 100%; overflow-wrap: anywhere; }
-.pod-col.is-me .pod-name { color: #047857; }
-.lb-me { margin-left: 2px; min-height: 18px; padding: 0 6px; font-size: 11px; line-height: 16px; background: #D1FAE5; color: #065F46; vertical-align: middle; }
-.lb-row.is-me { background: #ECFDF5; box-shadow: inset 4px 0 0 #10B981; }
+.pod-name { margin: 8px 0 0; max-width: 100%; overflow-wrap: anywhere; font-size: 13px; line-height: 18px; font-weight: 700; color: #0F172A; }
+.pod-info .starchip { margin-top: 4px; }
+.pod-step { width: 100%; margin-top: 4px; }
+.pd-svg { display: block; width: 100%; height: auto; overflow: visible; transform-origin: 50% 100%; animation: pdRise .95s cubic-bezier(.2, 1.15, .3, 1) both; animation-delay: calc((2 - var(--i, 0)) * .22s); filter: drop-shadow(0 6px 8px rgba(15, 23, 42, .18)); }
+.pod-col { --i: 0; }
+@keyframes pdRise { from { transform: scaleY(.02); opacity: 0; } 55% { opacity: 1; } to { transform: scaleY(1); opacity: 1; } }
+.pd-svg.is-empty { opacity: .4; filter: grayscale(.8) drop-shadow(0 4px 6px rgba(15, 23, 42, .12)); }
+.pd-shine { animation: pdShine 3.8s ease-in-out infinite; }
+.pod-p0 .pd-shine { animation-delay: 1.6s; }
+.pod-p1 .pd-shine { animation-delay: 2.4s; }
+.pod-p2 .pd-shine { animation-delay: 3.1s; }
+@keyframes pdShine { 0% { transform: translateX(0) skewX(-18deg); } 45%, 100% { transform: translateX(190px) skewX(-18deg); } }
+.pd-spark { transform-box: fill-box; transform-origin: center; animation: pdSpark 2.2s ease-in-out infinite; animation-delay: calc(var(--s) * .7s + 1s); opacity: 0; }
+@keyframes pdSpark { 0%, 100% { opacity: 0; transform: scale(.2) rotate(0); } 40% { opacity: 1; transform: scale(1.15) rotate(45deg); } 70% { opacity: 0; transform: scale(.4) rotate(90deg); } }
+.pd-num { letter-spacing: -1px; }
+.pd-laurel { animation: pdLaurel 3s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes pdLaurel { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+
+/* ตัวเรา: โดดเด่นกว่าคนอื่นเล็กน้อยทุกที่ที่อยู่ในตาราง */
+.pod-col.is-me .pod-av img { box-shadow: 0 0 0 4px #fff, 0 0 0 8px #10B981, 0 6px 14px rgba(16, 185, 129, .45); animation: meRing 1.8s ease-in-out infinite; }
+@keyframes meRing { 0%, 100% { box-shadow: 0 0 0 4px #fff, 0 0 0 8px #10B981, 0 6px 14px rgba(16, 185, 129, .45); } 50% { box-shadow: 0 0 0 4px #fff, 0 0 0 11px rgba(16, 185, 129, .55), 0 6px 18px rgba(16, 185, 129, .55); } }
+.pod-col.is-me .pod-name { font-size: 15px; font-weight: 800; color: #047857; }
+.lb-me { margin-left: 2px; min-height: 18px; padding: 0 7px; font-size: 11px; line-height: 16px; background: #10B981; color: #fff; vertical-align: middle; }
+.lb-row.is-me { position: relative; z-index: 1; min-height: 72px; background: linear-gradient(90deg, #D1FAE5, #ECFDF5 70%); box-shadow: inset 6px 0 0 #10B981; animation: meRow 2.4s ease-in-out infinite; }
+@keyframes meRow { 0%, 100% { background-color: #ECFDF5; } 50% { background-color: #D1FAE5; } }
+.lb-row.is-me .lb-t h3 { font-size: 16px; font-weight: 800; color: #064E3B; }
+.lb-row.is-me .lb-rank { color: #047857; font-size: 16px; }
+.lb-row.is-me .lb-av { box-shadow: 0 0 0 3px #10B981; }
 .lb-t h3 { overflow-wrap: anywhere; }
-.pod, .lb-list, .me { animation: lbIn .5s cubic-bezier(.2, .8, .2, 1) both; }
+.lb-list, .me { animation: lbIn .5s cubic-bezier(.2, .8, .2, 1) both; }
 .lb-list { animation-delay: .1s; }
 @keyframes lbIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-.lb-anon { display: block; width: 100%; min-height: 44px; margin-top: 8px; padding: 6px 12px; border-radius: 14px; background: transparent; border: 1.5px dashed #CBD5E1; color: #475569; font-size: 13px; line-height: 20px; font-weight: 600; text-align: center; cursor: pointer; transition: background-color .2s, border-color .2s; }
-.lb-anon:hover:not(:disabled) { background: #F1F5F9; border-color: #94A3B8; }
-.lb-anon[aria-pressed="true"] { background: #FFFBEB; border-color: #FCD34D; color: #78350F; }
-.lb-anon:disabled { opacity: .6; cursor: default; }
-.lb-total { margin: 10px 0 0; text-align: center; font-size: 12px; line-height: 18px; font-weight: 600; color: #64748B; }
 .me-name > span:first-child { min-width: 0; overflow-wrap: anywhere; }
+.lb-total { margin: 10px 0 0; text-align: center; font-size: 12px; line-height: 18px; font-weight: 600; color: #64748B; }
 .lb-empty { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 12px; padding: 24px 16px; text-align: center; background: #fff; border: 2px dashed #CBD5E1; border-radius: 22px; color: #475569; font-size: 14px; line-height: 22px; }
 .lb-empty-i { font-size: 36px; line-height: 1; }
 .lb-empty p { margin: 0; }
+
+/* ───────── แถบชื่อของฉัน: ลอยเหนือ navbar ตลอด (ไม่มีปุ่มปิด/ซ่อน) ───────── */
+.lb-float { position: fixed; left: 50%; bottom: calc(var(--nav-h, 76px) + 8px); z-index: 49; display: flex; align-items: center; gap: 10px; width: calc(100% - 24px); max-width: 40rem; min-height: 60px; padding: 8px 14px 8px 8px; transform: translateX(-50%); border-radius: 20px; color: #fff; background: linear-gradient(95deg, #064E3B, #047857 55%, #059669); border: 2px solid #34D399; box-shadow: 0 8px 22px rgba(4, 120, 87, .45), 0 3px 0 #064E3B; animation: lfIn .6s cubic-bezier(.34, 1.4, .64, 1) both; }
+@keyframes lfIn { from { opacity: 0; transform: translate(-50%, 30px); } to { opacity: 1; transform: translate(-50%, 0); } }
+.lf-rank { flex: none; min-width: 48px; height: 44px; padding: 0 8px; display: inline-flex; align-items: center; justify-content: center; border-radius: 14px; background: rgba(2, 44, 34, .45); font-size: 18px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.lf-rank.is-none { font-weight: 600; opacity: .8; }
+.lf-av { flex: none; width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: #fff; border: 2px solid #fff; }
+.lf-t { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.lf-name { font-size: 15px; line-height: 20px; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lf-sub { font-size: 12px; line-height: 16px; font-weight: 500; color: #D1FAE5; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lf-st { flex: none; display: inline-flex; align-items: center; gap: 4px; font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.lb-float-gap { height: 84px; }
 
 /* ───────── หน้า "เลื่อนอันดับ" ใน Mock Exam ───────── */
 .rs-rank { gap: 8px; }
@@ -41,12 +87,15 @@
 .rk-ladder.go .rk-row.is-other { opacity: .78; }
 .rk-av { width: 36px; height: 36px; flex: none; border-radius: 50%; object-fit: cover; background: #fff; border: 2px solid #fff; box-shadow: 0 0 0 1.5px #CBD5E1; }
 .rk-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 15px; line-height: 22px; font-weight: 700; color: #0F172A; }
+.rk-row.is-me .rk-name { font-weight: 800; }
 .rk-st { display: inline-flex; align-items: center; gap: 3px; font-size: 13px; font-weight: 800; color: #78350F; font-variant-numeric: tabular-nums; }
 .rk-down { flex: none; font-style: normal; font-size: 11px; color: #BE123C; opacity: 0; transition: opacity .4s .5s; }
 .rk-ladder.go .rk-down { opacity: 1; }
 
 @media (prefers-reduced-motion: reduce) {
-  .pod, .lb-list, .me, .rk-pill { animation: none; }
+  .pod, .pod::before, .pod-info, .crown, .pd-crown-glint, .pod-p0 .pod-av img, .pd-svg, .pd-shine, .pd-spark, .pd-laurel, .pod-col.is-me .pod-av img, .lb-row.is-me, .lb-list, .me, .lb-float, .rk-pill { animation: none; }
+  .pd-spark { opacity: .8; transform: none; }
+  .pd-shine { display: none; }
   .rk-row, .rk-down, #lb-body[aria-busy="true"] { transition: none; }
   .rk-ladder.go .rk-row.is-me { animation: none; }
 }

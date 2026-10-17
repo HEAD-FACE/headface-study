@@ -57,7 +57,6 @@ export function createStudyApi(send) {
         submitQuiz: (attemptId) => request(`/quiz-attempts/${seg(attemptId)}/submit`, { method: 'POST', body: {} }),
         getProgress: () => request('/progress'),
         getRanking: () => request('/ranking'),
-        setRankingAnonymous: (anonymous) => request('/ranking/me', { method: 'PUT', body: { anonymous } }),
         getSubjectProgress: (subjectId) => request(`/progress/subjects/${seg(subjectId)}`),
         getPractice: (subjectId, no, nodeId) => request(`${lessonPath(subjectId, no, nodeId)}/practice`),
         getSolution: (subjectId, no, questionId, nodeId) => request(`${lessonPath(subjectId, no, nodeId)}/practice/${seg(questionId)}/solution`),

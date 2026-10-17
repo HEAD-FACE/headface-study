@@ -1,7 +1,8 @@
 /**
  * js/study-ranking.js — ตารางอันดับดาว (Leaderboard) และแอนิเมชันเลื่อนอันดับ (สัญญา: docs/study-api-contract.md ข้อ 2.13)
  *
- *   • หน้า Progress: Top 10 (โพเดียม 3 อันดับแรก + รายการ 4–10), การ์ดอันดับของฉัน (ขาดอีกกี่ดาวถึงจะขยับ) และสวิตช์ "ซ่อนชื่อฉัน"
+ *   • หน้า Progress: โพเดียม SVG 3 อันดับแรก (ขั้นบันไดทอง/เงิน/ทองแดง มีแอนิเมชัน), รายการอันดับ 4–10, การ์ดอันดับของฉัน
+ *     และ "แถบชื่อของฉัน" ที่ลอยเหนือ navbar ตลอดเวลา — ชื่อของตัวเองแสดงเต็มเสมอ ไม่มีทางซ่อน (ตั้งใจ ไม่มีสวิตช์ซ่อนชื่อ)
  *   • หน้าสรุปผล Mock: ถ้าดาวที่ได้ทำให้อันดับขยับ (หรือเพิ่งติดอันดับครั้งแรก) มีหน้า "เลื่อนอันดับ" ที่คนที่แซงไปเลื่อนลง
  *     ตัวเราเลื่อนขึ้น ตัวเลขอันดับนับลง และมีเอฟเฟกต์ฉลอง
  *
@@ -12,11 +13,14 @@ import { esc } from './study-ui.js';
 import { burst, confetti, pop, reducedMotion } from './study-fx.js';
 import { patchHtml } from './study-dom.js';
 
-const STAR = '<svg width="12" height="12" viewBox="0 0 24 24" fill="#D97706" aria-hidden="true"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg>';
-const STAR_BIG = STAR.replace('width="12" height="12"', 'width="18" height="18"').replace('#D97706', '#FCD34D');
+const STAR_PATH = 'M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z';
+const star = (size, fill) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${fill}" aria-hidden="true"><path d="${STAR_PATH}"/></svg>`;
+const STAR = star(12, '#D97706');
+const STAR_BIG = star(18, '#FCD34D');
 const starChip = (n) => `<span class="starchip">${STAR}<span>${Number(n) || 0}</span></span>`;
 const safeUrl = (url) => (typeof url === 'string' && /^https?:\/\/[^\s"'<>]+$|^assets\/[\w./-]+$/i.test(url) ? url : 'assets/avatar.png');
 const img = (url, size, cls, alt = '') => `<img class="${cls}" src="${esc(safeUrl(url))}" alt="${esc(alt)}" width="${size}" height="${size}" loading="lazy" decoding="async">`;
+const MY_BADGE = '<span class="me-chip lb-me">ฉัน</span>';
 
 /** ข้อความใต้ชื่อของฉัน: ขาดอีกกี่ดาวถึงจะขยับอันดับ */
 export function nextHint(me) {
@@ -26,28 +30,94 @@ export function nextHint(me) {
     return 'ทำ Mock Exam เพื่อสะสมดาวเพิ่ม';
 }
 
-const PODIUM = [
-    { ring: '#D97706', rk: '#B45309', medal: '🥇', height: 72, block: 'background:linear-gradient(180deg,#FCD34D,#FBBF24);border-color:#D97706', size: 72 },
-    { ring: '#94A3B8', rk: '#475569', medal: '🥈', height: 48, block: 'background:#E2E8F0;border-color:#94A3B8', size: 56 },
-    { ring: '#C2410C', rk: '#9A3412', medal: '🥉', height: 36, block: 'background:#FED7AA;border-color:#FB923C', size: 56 },
+// ───────────── โพเดียม SVG ─────────────
+/** สีของแต่ละขั้น: [ด้านบน, หน้าตัวหลัก (บน→กลาง→ล่าง), ด้านข้าง, ขอบ/ตัวเลข] */
+const METAL = [
+    { name: 'gold', top: ['#FEF3C7', '#FCD34D'], front: ['#FDE68A', '#F59E0B', '#B45309'], side: '#92400E', edge: '#78350F', ring: '#D97706', glow: '#FBBF24' },
+    { name: 'silver', top: ['#F8FAFC', '#CBD5E1'], front: ['#F1F5F9', '#A9B8CB', '#64748B'], side: '#475569', edge: '#334155', ring: '#94A3B8', glow: '#CBD5E1' },
+    { name: 'bronze', top: ['#FFEDD5', '#FDBA74'], front: ['#FED7AA', '#EA7B2C', '#9A3412'], side: '#7C2D12', edge: '#7C2D12', ring: '#C2410C', glow: '#FB923C' },
 ];
+const STEP_H = [150, 112, 84]; // ความสูงของหน้าตัวหลัก (หน่วย viewBox) อันดับ 1 สูงสุด
+const SPARK = 'M0 -7 Q1 -1 7 0 Q1 1 0 7 Q-1 1 -7 0 Q-1 -1 0 -7Z';
 
-function podiumColumn(entry, i) {
-    const p = PODIUM[i];
-    if (!entry) return `<div class="pod-col is-empty"><div class="pod-av" style="--ring:#CBD5E1;--rk:#94A3B8"><span class="pod-ph" style="width:${p.size}px;height:${p.size}px" aria-hidden="true">?</span></div><p class="pod-name">ว่าง</p><div class="pod-block" style="height:${p.height}px;${p.block};opacity:.45"><span aria-hidden="true">${p.medal}</span></div></div>`;
-    return `<div class="pod-col${entry.isMe ? ' is-me' : ''}" data-rank-row>
-      ${i === 0 ? '<div class="crown" aria-hidden="true">👑</div>' : ''}
-      <div class="pod-av" style="--ring:${p.ring};--rk:${p.rk}">${img(entry.avatar, p.size, '', `อันดับ ${entry.rank}`)}<span class="rank">${entry.rank}</span></div>
-      <p class="pod-name">${esc(entry.name)}${entry.isMe ? ' <span class="me-chip lb-me">ฉัน</span>' : ''}</p>
-      ${starChip(entry.stars)}
-      <div class="pod-block" style="height:${p.height}px;${p.block}"><span aria-hidden="true">${p.medal}</span></div>
+/** ใบลอเรล 1 ใบ (วงรีเอียง) */
+const leaf = (x, y, rot, fill) => `<ellipse cx="${x}" cy="${y}" rx="3.2" ry="7" transform="rotate(${rot} ${x} ${y})" fill="${fill}" opacity=".9"/>`;
+
+/**
+ * ขั้นโพเดียมหนึ่งขั้นเป็น SVG ชิ้นเดียว: ผิวโลหะไล่สี มีด้านบน/ด้านข้างให้เป็นทรง 3 มิติ ประกายเลื่อนผ่านทุก ๆ ไม่กี่วินาที
+ * ตัวเลขอันดับแกะนูนกลางขั้น อันดับ 1 มีพวงลอเรลและดาว ทุกขั้นมีประกายระยิบ — แอนิเมชันอยู่ใน css/ranking.css (ปิดเมื่อผู้ใช้ตั้งลดการเคลื่อนไหว)
+ * @param {number} place   0 = ที่หนึ่ง (กลาง), 1 = ที่สอง (ซ้าย), 2 = ที่สาม (ขวา)
+ * @param {string|number} label  ตัวเลขที่แสดง (อันดับจริง ดาวเท่ากันอาจเป็น 2 สองคน)
+ */
+export function podiumStepSvg(place, label, { empty = false } = {}) {
+    const m = METAL[place] || METAL[2];
+    const h = STEP_H[place] || STEP_H[2];
+    const H = h + 24;
+    const id = `pd-${m.name}`;
+    const numY = 24 + h * 0.62;
+    const laurel = place === 0
+        ? `<g class="pd-laurel">${[0, 1, 2, 3].map((i) => leaf(24 - i * 1.5, numY - 14 + i * 9, -35 - i * 6, '#FEF3C7')).join('')}${[0, 1, 2, 3].map((i) => leaf(80 + i * 1.5, numY - 14 + i * 9, 35 + i * 6, '#FEF3C7')).join('')}</g>`
+        : '';
+    const rivets = place === 0 ? '' : `<circle cx="20" cy="${H - 12}" r="2" fill="${m.edge}" opacity=".35"/><circle cx="84" cy="${H - 12}" r="2" fill="${m.edge}" opacity=".35"/>`;
+    return `<svg class="pd-svg${empty ? ' is-empty' : ''}" viewBox="0 0 120 ${H}" role="img" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="${id}-f" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${m.front[0]}"/><stop offset=".45" stop-color="${m.front[1]}"/><stop offset="1" stop-color="${m.front[2]}"/></linearGradient>
+        <linearGradient id="${id}-t" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${m.top[0]}"/><stop offset="1" stop-color="${m.top[1]}"/></linearGradient>
+        <linearGradient id="${id}-s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${m.side}" stop-opacity=".85"/><stop offset="1" stop-color="${m.edge}"/></linearGradient>
+        <linearGradient id="${id}-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".55" stop-color="#fff" stop-opacity="0"/></linearGradient>
+        <linearGradient id="${id}-h" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+        <clipPath id="${id}-c"><rect x="8" y="24" width="88" height="${h}" rx="3"/></clipPath>
+      </defs>
+      <ellipse cx="60" cy="${H - 1}" rx="54" ry="3.5" fill="#0F172A" opacity=".18"/>
+      <polygon points="96,24 112,11 112,${H - 13} 96,${H}" fill="url(#${id}-s)"/>
+      <rect x="8" y="24" width="88" height="${h}" rx="3" fill="url(#${id}-f)" stroke="${m.edge}" stroke-opacity=".5" stroke-width="1"/>
+      <polygon points="8,24 96,24 112,11 24,11" fill="url(#${id}-t)" stroke="${m.edge}" stroke-opacity=".4" stroke-width="1" stroke-linejoin="round"/>
+      <rect x="8" y="24" width="88" height="${h * 0.5}" fill="url(#${id}-g)" clip-path="url(#${id}-c)"/>
+      <line x1="8" y1="${H - 30}" x2="96" y2="${H - 30}" stroke="${m.edge}" stroke-opacity=".22" stroke-width="1.4"/>
+      <line x1="8" y1="${H - 26}" x2="96" y2="${H - 26}" stroke="#fff" stroke-opacity=".28" stroke-width="1"/>
+      ${laurel}
+      <text x="52" y="${numY + 20}" text-anchor="middle" class="pd-num" font-size="${place === 0 ? 62 : 52}" font-weight="900" fill="${m.front[0]}" stroke="${m.edge}" stroke-width="3.2" stroke-linejoin="round" paint-order="stroke">${esc(label)}</text>
+      <text x="52" y="${numY + 20}" text-anchor="middle" font-size="${place === 0 ? 62 : 52}" font-weight="900" fill="url(#${id}-g)" aria-hidden="true">${esc(label)}</text>
+      ${rivets}
+      <g clip-path="url(#${id}-c)"><rect class="pd-shine" x="-40" y="22" width="26" height="${h + 4}" fill="url(#${id}-h)" transform="skewX(-18)"/></g>
+      <g class="pd-spark" style="--s:0"><path d="${SPARK}" transform="translate(104 ${place === 0 ? 40 : 52}) scale(.9)" fill="#fff"/></g>
+      <g class="pd-spark" style="--s:1"><path d="${SPARK}" transform="translate(18 ${H - 40}) scale(.7)" fill="#fff"/></g>
+      <g class="pd-spark" style="--s:2"><path d="${SPARK}" transform="translate(70 18) scale(.6)" fill="${m.top[0]}"/></g>
+    </svg>`;
+}
+
+/** มงกุฎของที่หนึ่ง: ทองเหลือบแสง ลอยขึ้นลงเบา ๆ มีประกายวิ่งผ่าน */
+const CROWN = `<svg class="pd-crown-svg" viewBox="0 0 64 46" width="54" height="40" aria-hidden="true" focusable="false">
+  <defs><linearGradient id="pd-crown-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FEF3C7"/><stop offset=".5" stop-color="#FBBF24"/><stop offset="1" stop-color="#B45309"/></linearGradient></defs>
+  <path d="M6 38 L2 12 L19 24 L32 4 L45 24 L62 12 L58 38 Z" fill="url(#pd-crown-g)" stroke="#92400E" stroke-width="2" stroke-linejoin="round"/>
+  <rect x="6" y="38" width="52" height="6" rx="2.5" fill="#F59E0B" stroke="#92400E" stroke-width="2"/>
+  <circle cx="32" cy="4" r="3.4" fill="#FEF3C7" stroke="#92400E" stroke-width="1.6"/><circle cx="2" cy="12" r="3" fill="#FEF3C7" stroke="#92400E" stroke-width="1.6"/><circle cx="62" cy="12" r="3" fill="#FEF3C7" stroke="#92400E" stroke-width="1.6"/>
+  <circle cx="32" cy="30" r="3.6" fill="#EF4444" stroke="#7F1D1D" stroke-width="1.2"/><circle cx="17" cy="33" r="2.6" fill="#38BDF8" stroke="#075985" stroke-width="1.1"/><circle cx="47" cy="33" r="2.6" fill="#34D399" stroke="#065F46" stroke-width="1.1"/>
+  <path class="pd-crown-glint" d="M14 36 L22 18" stroke="#fff" stroke-opacity=".7" stroke-width="3" stroke-linecap="round"/>
+</svg>`;
+
+const AVATAR_SIZE = [84, 66, 66];
+
+function podiumColumn(entry, place) {
+    const m = METAL[place];
+    if (!entry) {
+        return `<div class="pod-col is-empty" style="--ring:#CBD5E1;--i:${place}"><div class="pod-info"><span class="pod-ph" style="width:${AVATAR_SIZE[place]}px;height:${AVATAR_SIZE[place]}px" aria-hidden="true">?</span><p class="pod-name">ว่าง</p></div><div class="pod-step">${podiumStepSvg(place, '–', { empty: true })}</div></div>`;
+    }
+    return `<div class="pod-col pod-p${place}${entry.isMe ? ' is-me' : ''}" style="--ring:${m.ring};--glow:${m.glow};--i:${place}" data-rank-row>
+      <div class="pod-info">
+        ${place === 0 ? `<div class="crown" aria-hidden="true">${CROWN}</div>` : ''}
+        <div class="pod-av">${img(entry.avatar, AVATAR_SIZE[place], '', `อันดับ ${entry.rank}`)}</div>
+        <p class="pod-name">${esc(entry.name)}${entry.isMe ? ` ${MY_BADGE}` : ''}</p>
+        ${starChip(entry.stars)}
+      </div>
+      <div class="pod-step">${podiumStepSvg(place, entry.rank)}</div>
     </div>`;
 }
 
 function listRow(entry) {
     return `<div class="lb-row${entry.isMe ? ' is-me' : ''}" data-rank-row>
-      <span class="lb-rank">${entry.rank}</span>${img(entry.avatar, 40, 'lb-av')}
-      <div class="lb-t"><h3>${esc(entry.name)}${entry.isMe ? ' <span class="me-chip lb-me">ฉัน</span>' : ''}</h3></div>${starChip(entry.stars)}
+      <span class="lb-rank">${entry.rank}</span>${img(entry.avatar, entry.isMe ? 46 : 40, 'lb-av')}
+      <div class="lb-t"><h3>${esc(entry.name)}${entry.isMe ? ` ${MY_BADGE}` : ''}</h3></div>${starChip(entry.stars)}
     </div>`;
 }
 
@@ -55,13 +125,12 @@ function meCard(me) {
     return `<div class="me" data-rank-row>
       <span class="me-rank">${me.rank === null ? '—' : `#${me.rank}`}</span>
       ${img(me.avatar, 44, 'me-av', 'ภาพของฉัน')}
-      <div class="me-t"><p class="me-name"><span>${esc(me.name)}</span><span class="me-chip">ฉัน</span></p><p class="me-sub">${esc(nextHint(me))}</p></div>
+      <div class="me-t"><p class="me-name"><span>${esc(me.name)}</span>${MY_BADGE.replace(' lb-me', '')}</p><p class="me-sub">${esc(nextHint(me))}</p></div>
       <div class="me-r"><p class="me-star">${STAR_BIG}<span>${me.stars}</span></p><p class="me-cap">ดาวสะสม</p></div>
-    </div>
-    <button type="button" class="lb-anon" data-act="rank-anon" aria-pressed="${me.anonymous}">${me.anonymous
-        ? 'คนอื่นเห็นคุณเป็น “ผู้เรียนนิรนาม” • แตะเพื่อแสดงชื่อของฉัน'
-        : 'ซ่อนชื่อของฉันจากคนอื่น (ยังติดอันดับเหมือนเดิม)'}</button>`;
+    </div>`;
 }
+
+const DEFAULT_ME = { rank: null, stars: 0, name: 'ฉัน', avatar: null, toNext: null };
 
 /** เนื้อหาของส่วนอันดับ (ใต้หัวข้อ) จากคำตอบของ GET /ranking */
 export function rankingBodyHtml(data) {
@@ -69,51 +138,82 @@ export function rankingBodyHtml(data) {
         return '<p class="lb-empty" role="status">ตารางอันดับยังไม่เปิดใช้งาน เมื่อพร้อมจะแสดงที่นี่</p>';
     }
     const top = Array.isArray(data.top) ? data.top : [];
-    const me = data.me || { rank: null, stars: 0, name: 'ฉัน', avatar: null, anonymous: false, toNext: null };
+    const me = data.me || DEFAULT_ME;
     if (top.length === 0) {
         return `<div class="lb-empty" role="status"><span class="lb-empty-i" aria-hidden="true">⭐</span><p><b>ยังไม่มีใครติดอันดับ</b><br>ทำ Mock Exam เพื่อรับดาวแรก แล้วคุณจะเป็นคนแรกบนตาราง!</p></div>${meCard(me)}`;
     }
     const pod = `<div class="pod" data-key="pod">${podiumColumn(top[1], 1)}${podiumColumn(top[0], 0)}${podiumColumn(top[2], 2)}</div>`;
     const rest = top.slice(3);
-    // ถ้าฉันไม่ได้อยู่ใน 10 อันดับแรก การ์ดอันดับของฉันอยู่ใต้โพเดียม (อยู่ในรายการอยู่แล้วก็ยังแสดงเพื่อบอกว่าขาดอีกกี่ดาว)
     return `${pod}${meCard(me)}${rest.length ? `<div class="lb-list" data-key="list">${rest.map(listRow).join('')}</div>` : ''}${Number(data.total) > 0 ? `<p class="lb-total">ติดอันดับแล้ว ${Number(data.total)} คน</p>` : ''}`;
 }
 
-// ───────────── หน้า Progress ─────────────
-let loading = false;
+// ───────────── แถบชื่อของฉัน: ลอยเหนือ navbar ตลอด ─────────────
+/** แถบลอย: อันดับ ภาพ ชื่อเต็ม และดาวของฉัน (ไม่มีปุ่มปิด/ซ่อน) */
+export function floatBarHtml(me) {
+    const m = me || DEFAULT_ME;
+    return `<span class="lf-rank${m.rank === null ? ' is-none' : ''}" aria-label="${m.rank === null ? 'ยังไม่มีอันดับ' : `อันดับ ${m.rank}`}">${m.rank === null ? '—' : `#${m.rank}`}</span>
+      ${img(m.avatar, 40, 'lf-av', 'ภาพของฉัน')}
+      <span class="lf-t"><b class="lf-name">${esc(m.name)}</b><span class="lf-sub">${esc(nextHint(m))}</span></span>
+      <span class="lf-st" aria-label="${Number(m.stars) || 0} ดาว">${STAR_BIG}<b>${Number(m.stars) || 0}</b></span>`;
+}
 
-async function load(api, host) {
+/** วางหรืออัปเดตแถบลอย (อยู่ใต้ <body> เพื่อไม่ถูก transform ของ Barba รบกวน) */
+export function showFloatBar(me, doc = typeof document !== 'undefined' ? document : null) {
+    if (!doc || typeof doc.createElement !== 'function' || !doc.body) return null;
+    let bar = doc.getElementById('lb-float');
+    if (!bar) {
+        bar = doc.createElement('div');
+        bar.id = 'lb-float';
+        bar.className = 'lb-float';
+        bar.setAttribute('role', 'status');
+        bar.setAttribute('aria-label', 'อันดับของฉัน');
+        doc.body.appendChild(bar);
+    }
+    const nav = doc.getElementById('bottom-navbar');
+    if (nav && bar.style) bar.style.setProperty('--nav-h', `${nav.offsetHeight || 76}px`);
+    bar.innerHTML = floatBarHtml(me);
+    return bar;
+}
+
+export function hideFloatBar(doc = typeof document !== 'undefined' ? document : null) {
+    const bar = doc && typeof doc.getElementById === 'function' ? doc.getElementById('lb-float') : null;
+    if (bar && typeof bar.remove === 'function') bar.remove();
+}
+
+// ───────────── หน้า Progress ─────────────
+async function load(api, host, doc) {
     try {
-        patchHtml(host, rankingBodyHtml(await api.getRanking()));
+        const data = await api.getRanking();
+        patchHtml(host, rankingBodyHtml(data));
+        if (data && data.available !== false && data.me) {
+            showFloatBar(data.me, doc);
+            // เว้นที่ท้ายหน้าไม่ให้แถบลอยบังเนื้อหา
+            const section = host.closest ? host.closest('#lb-section') : null;
+            if (section && !section.querySelector('.lb-float-gap') && typeof section.insertAdjacentHTML === 'function') section.insertAdjacentHTML('beforeend', '<div class="lb-float-gap" aria-hidden="true"></div>');
+        } else hideFloatBar(doc);
     } catch (err) {
         patchHtml(host, '<p class="lb-empty" role="alert">โหลดตารางอันดับไม่สำเร็จ ลองรีเฟรชหน้าอีกครั้ง</p>');
+        hideFloatBar(doc);
         console.warn('[Study] โหลดอันดับไม่ได้:', err && err.message);
     }
 }
 
 /** เติมตารางอันดับจริงลง #lb-body ของหน้า Progress (โหมดตัวอย่างไม่เรียกฟังก์ชันนี้) */
-export async function hydrateRanking(scope, api) {
+export async function hydrateRanking(scope, api, doc = typeof document !== 'undefined' ? document : null) {
     const host = scope.querySelector && scope.querySelector('#lb-body');
     if (!host || host.dataset.live === '1') return;
     host.dataset.live = '1';
     host.setAttribute('aria-busy', 'true');
-    await load(api, host);
+    await load(api, host, doc);
     host.removeAttribute('aria-busy');
-    host.onclick = async (e) => {
-        const btn = e.target.closest && e.target.closest('[data-act="rank-anon"]');
-        if (!btn || loading) return;
-        loading = true;
-        btn.disabled = true;
-        try {
-            await api.setRankingAnonymous(btn.getAttribute('aria-pressed') !== 'true');
-            await load(api, host);
-        } catch (err) {
-            btn.disabled = false;
-            btn.textContent = 'บันทึกไม่สำเร็จ ลองอีกครั้ง';
-        } finally {
-            loading = false;
-        }
-    };
+}
+
+// ออกจากหน้า Progress (Barba สลับหน้า) → เอาแถบลอยออก
+if (typeof document !== 'undefined' && typeof document.addEventListener === 'function') {
+    document.addEventListener('study:page', (event) => {
+        const container = event.detail && event.detail.container;
+        if (container && typeof container.querySelector === 'function' && !container.querySelector('#lb-body')) hideFloatBar();
+    });
 }
 
 // ───────────── แอนิเมชันเลื่อนอันดับ (หน้าสรุปผล Mock) ─────────────
@@ -122,13 +222,14 @@ export const hasRankMove = (ranking) => !!ranking && !!ranking.after && (ranking
 
 /**
  * หน้า "เลื่อนอันดับ": ลำดับก่อนหน้าอยู่ในสถานะเริ่มต้น (--y) แล้วเลื่อนไปลำดับใหม่ (--y2) เมื่อใส่คลาส go
- * ก่อน: คนที่เราแซง (อยู่เหนือเรา) → เรา   หลัง: เรา → คนที่ถูกแซงเลื่อนลงหนึ่งช่อง
+ * ก่อน: คนที่เราแซง (อยู่เหนือเรา) → เรา   หลัง: เรา → คนที่ถูกแซงเลื่อนลงหนึ่งช่อง (ชื่อของฉันแสดงเต็มเสมอ)
  */
 export function rankStepHtml(ranking) {
     const passed = (ranking.passed || []).slice(0, 3);
     const k = passed.length;
     const others = passed.map((p, i) => `<div class="rk-row is-other" style="--y:${i};--y2:${i + 1}">${img(p.avatar, 36, 'rk-av')}<span class="rk-name">${esc(p.name)}</span><span class="rk-st">${STAR}${Number(p.stars) || 0}</span><i class="rk-down" aria-hidden="true">▼</i></div>`).join('');
-    const me = `<div class="rk-row is-me${ranking.entered ? ' is-new' : ''}" style="--y:${k};--y2:0">${img(ranking.me && ranking.me.avatar, 36, 'rk-av', 'ฉัน')}<span class="rk-name">คุณ</span><span class="rk-st">${STAR}${Number(ranking.after.stars) || 0}</span></div>`;
+    const myName = ranking.me && ranking.me.name ? ranking.me.name : 'คุณ';
+    const me = `<div class="rk-row is-me${ranking.entered ? ' is-new' : ''}" style="--y:${k};--y2:0">${img(ranking.me && ranking.me.avatar, 36, 'rk-av', 'ฉัน')}<span class="rk-name">${esc(myName)}</span><span class="rk-st">${STAR}${Number(ranking.after.stars) || 0}</span></div>`;
     const title = ranking.entered ? 'ติดอันดับแล้ว!' : 'เลื่อนอันดับ!';
     const gain = ranking.entered
         ? '<span class="pill gold rk-pill">เข้าสู่ตารางอันดับดาว</span>'
