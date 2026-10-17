@@ -7,9 +7,10 @@
  */
 import { studyApi, StudyApiError } from './study-api.js';
 import { $, esc, params, content, view, ICON, notFound, setTheme, focusView, abar } from './study-ui.js';
-import { choiceLabel, formatClock, formatThaiDate } from './study-format.js';
+import { formatClock, formatThaiDate } from './study-format.js';
 import { SUBJECT_ID_RE, courseUrl, failure, loading, mockUrl, messageOf } from './study-live-common.js';
-import { questionMediaHtml, choiceImageHtml } from './study-media.js';
+import { questionMediaHtml } from './study-media.js';
+import { answerHtml, applyAction, emptyPick, hasAnswer, parseNumber, sanitizePick, stemHtml, toAnswer, formatOf } from './study-qformats.js';
 import { burst, confetti } from './study-fx.js';
 import { patchHtml } from './study-dom.js';
 import { expRangeChipsHtml } from './study-reward.js';
@@ -85,7 +86,8 @@ export async function initMockExam({ api = studyApi, saveDebounceMs = 1000, tick
     let stage = 'intro';
     let attempt = null;      // ข้อสอบที่กำลังทำ (จาก API)
     let resumed = false;
-    let picks = {};          // questionId → choiceId
+    let picks = {};          // questionId → คำตอบของข้อ (id ตัวเลือก / รายการ / ออบเจ็กต์ / ข้อความตัวเลข ตามรูปแบบโจทย์)
+    let ui = {};             // questionId → สถานะชั่วคราวของข้อ (กำลังเลือกอะไรอยู่) ไม่ส่งไป Backend
     let flags = new Set();   // questionId ที่ติดธง
     let i = 0;
     let clockOffset = 0;     // เวลา server − เวลาเครื่อง
@@ -103,8 +105,14 @@ export async function initMockExam({ api = studyApi, saveDebounceMs = 1000, tick
     const guard = (e) => { e.preventDefault(); e.returnValue = ''; };
     const serverNow = () => Date.now() + clockOffset;
     const remainingSec = () => Math.max(0, Math.ceil((attempt.deadlineAt - serverNow()) / 1000));
-    const snapshot = () => ({ answers: { ...picks }, flags: [...flags] });
-    const answeredCount = () => Object.keys(picks).length;
+    /** คำตอบของข้อที่ส่งไปบันทึก: ที่ยังไม่มีอะไร (หรือพิมพ์ตัวเลขยังไม่เป็นตัวเลข) ส่ง null = ล้าง */
+    const savable = (q, pick) => {
+        if (!hasAnswer(q, pick)) return null;
+        if (formatOf(q) === 'numeric' && parseNumber(pick) === null) return null;
+        return toAnswer(q, pick);
+    };
+    const snapshot = () => ({ answers: Object.fromEntries(attempt.questions.filter((q) => picks[q.id] !== undefined).map((q) => [q.id, savable(q, picks[q.id])])), flags: [...flags] });
+    const answeredCount = () => (attempt ? attempt.questions.filter((q) => savable(q, picks[q.id]) !== null).length : 0);
 
     // ───── เงื่อนไขก่อนสอบ ─────
     function introView() {
@@ -169,6 +177,7 @@ export async function initMockExam({ api = studyApi, saveDebounceMs = 1000, tick
         const total = attempt.questions.length;
         const isLast = i === total - 1;
         const pick = picks[q.id];
+        const qui = ui[q.id] || {};
         // หน้าแก้เฉพาะจุด (study-dom.js): ข้อใหม่ (data-key) เลื่อนเข้ามา แถบความคืบหน้า/แถบปุ่มล่างอยู่ที่เดิมและเปลี่ยนด้วย transition
         return `<div data-key="run">
           <div class="xhead"><div class="qhead" style="flex:1"><div class="qbar" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${answered}" aria-label="ทำแล้ว ${answered} จาก ${total} ข้อ"><i style="width:${(answered / total) * 100}%"></i></div><span class="qcount">ข้อ ${i + 1}/${total}</span></div></div>
@@ -178,9 +187,9 @@ export async function initMockExam({ api = studyApi, saveDebounceMs = 1000, tick
           <div class="qview" data-key="q-${esc(q.id)}" data-dir="${qdir}">
             <section class="qcard" aria-labelledby="q-t">
               <p class="qtopic">${esc(q.topic)}${q.special ? ' <span class="chip chip-amber" style="margin-left:6px">ข้อพิเศษ</span>' : ''}</p>
-              <h2 class="qtext" id="q-t" style="white-space:pre-line">${esc(q.text)}</h2>
+              <h2 class="qtext" id="q-t" style="white-space:pre-line">${stemHtml(q, pick, qui, { locked: busy })}</h2>
               ${questionMediaHtml(q.media)}
-              <div class="choices" role="radiogroup" aria-label="ตัวเลือกคำตอบ">${q.choices.map((c, idx) => `<button type="button" class="choice${c.id === pick ? ' is-sel' : ''}" role="radio" aria-checked="${c.id === pick}" data-choice="${esc(c.id)}"${busy ? ' disabled' : ''}><span class="choice-l">${choiceLabel(idx)}</span><span class="choice-t">${choiceImageHtml(c)}<span>${esc(c.text)}</span></span><span class="choice-m"></span></button>`).join('')}</div>
+              ${answerHtml(q, pick, qui, { locked: busy, swipe: false })}
             </section>
           </div>
           ${abar(`<button type="button" class="btn-ico" data-act="prev" aria-label="ข้อก่อนหน้า"${i === 0 ? ' disabled' : ''}>${ICON.prev(18)}</button>${isLast
@@ -210,7 +219,7 @@ export async function initMockExam({ api = studyApi, saveDebounceMs = 1000, tick
         overlay(`<div class="sheet-h"><h3>ข้อทั้งหมด</h3><button type="button" class="sheet-x" data-act="close-ov" aria-label="ปิด">✕</button></div>
           <p class="sheet-p">ตอบแล้ว <b>${answeredCount()}</b> จาก ${total} ข้อ • ติดธง <b>${flags.size}</b> ข้อ</p>
           <div class="grid5">${attempt.questions.map((q, idx) => {
-            const a = picks[q.id] !== undefined;
+            const a = hasAnswer(q, picks[q.id]);
             return `<button type="button" class="qn${a ? ' ans' : ''}${idx === i ? ' cur' : ''}" data-goto="${idx}" aria-label="ข้อ ${idx + 1} ${a ? 'ตอบแล้ว' : 'ยังไม่ตอบ'}${flags.has(q.id) ? ' ติดธง' : ''}"${idx === i ? ' aria-current="true"' : ''}>${idx + 1}${flags.has(q.id) ? `<span class="fl">${ICON.flag(12)}</span>` : ''}</button>`;
           }).join('')}</div>
           <div class="legend"><span><i class="a"></i>ตอบแล้ว</span><span><i></i>ยังไม่ตอบ</span><span><i class="f"></i>ติดธง</span></div>
@@ -262,9 +271,10 @@ export async function initMockExam({ api = studyApi, saveDebounceMs = 1000, tick
         attempt = data.attempt;
         resumed = !!data.resumed;
         clockOffset = data.serverNow - Date.now();
-        picks = { ...attempt.answers };
+        picks = Object.fromEntries(attempt.questions.map((q) => [q.id, sanitizePick(q, attempt.answers[q.id])]).filter(([, v]) => v !== undefined));
+        ui = {};
         flags = new Set(attempt.flags);
-        const firstOpen = attempt.questions.findIndex((q) => picks[q.id] === undefined);
+        const firstOpen = attempt.questions.findIndex((q) => !hasAnswer(q, picks[q.id]));
         i = resumed && firstOpen > 0 ? firstOpen : 0;
         dirty = false;
         saveWarn = false;
@@ -410,7 +420,27 @@ export async function initMockExam({ api = studyApi, saveDebounceMs = 1000, tick
             dirty = true;
             scheduleSave();
             render();
+            return;
         }
+        // รูปแบบอื่น (เลือกหลายข้อ จับคู่ เรียงลำดับ จัดกลุ่ม เติมคำ): แตะแล้วเปลี่ยนคำตอบ/สถานะของข้อ
+        const tap = e.target.closest('[data-fx]');
+        if (tap && !busy && tap.dataset.fx !== 'n-input') {
+            const next = applyAction(q, picks[q.id] === undefined ? emptyPick(q) : picks[q.id], ui[q.id], { fx: tap.dataset.fx, id: tap.dataset.id, i: tap.dataset.i });
+            picks[q.id] = next.pick;
+            ui[q.id] = next.ui;
+            dirty = true;
+            scheduleSave();
+            render();
+        }
+    };
+    // ช่องกรอกตัวเลข: พิมพ์แล้วเก็บคำตอบทันที (บันทึกอัตโนมัติเหมือนข้ออื่น)
+    content.oninput = (e) => {
+        const input = e.target && typeof e.target.closest === 'function' ? e.target.closest('[data-fx="n-input"]') : null;
+        if (!input || stage !== 'run' || !attempt || busy) return;
+        picks[attempt.questions[i].id] = input.value;
+        dirty = true;
+        scheduleSave();
+        render();
     };
 
     // ปุ่มในชั้นซ้อนอยู่นอก #content จึงฟังที่ document

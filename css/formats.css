@@ -1,0 +1,143 @@
+/* HEADFACE STUDY - รูปแบบโจทย์ใหม่ของ Quiz / Mock Exam
+   เลือกหลายข้อ · จริง/เท็จ · จับคู่ · เรียงลำดับ · จัดกลุ่ม · เติมคำ · กรอกตัวเลข  (js/study-qformats.js)
+   ใช้ต่อจาก css/flow.css (ตัวแปร --strong --bg --edge --bar ของโทนสีประจำบท) ทุกชิ้นแตะง่าย (สูง ≥ 40–48px)
+   และบอกผลหลังตรวจด้วย "สี + ไอคอน" ไม่พึ่งสีอย่างเดียว */
+
+.qhint { margin: 10px 0 0; font-size: 13px; line-height: 20px; font-weight: 600; color: #64748B; }
+.qcard .choices + .qhint, .qcard .tf + .qhint { margin-top: 10px; text-align: center; }
+:root { --pc0: #6366F1; --pc1: #F97316; --pc2: #0EA5E9; --pc3: #D946EF; --pc4: #14B8A6; --pc5: #EAB308; }
+[data-pc="0"] { --pc: var(--pc0); }
+[data-pc="1"] { --pc: var(--pc1); }
+[data-pc="2"] { --pc: var(--pc2); }
+[data-pc="3"] { --pc: var(--pc3); }
+[data-pc="4"] { --pc: var(--pc4); }
+[data-pc="5"] { --pc: var(--pc5); }
+
+/* ───────── เลือกหลายข้อ: ช่องติ๊กสี่เหลี่ยมแทนตัวอักษรกลม ───────── */
+.choice-l.ck { border-radius: 9px; background: #fff; color: #fff; }
+.choice.is-sel .choice-l.ck { background: var(--strong); border-color: var(--strong); }
+.choice.is-ok .choice-l.ck, .choice.is-bad .choice-l.ck { color: #fff; }
+.choice.is-miss { background: #fff; border: 2px dashed #10B981; box-shadow: none; }
+.choice.is-miss .choice-l.ck { background: #A7F3D0; border-color: #10B981; color: #047857; }
+.choice.is-miss .choice-m { display: block; color: #047857; }
+
+/* ───────── จริง / เท็จ: การ์ดใหญ่ 2 ใบ (แตะ หรือปัด) ───────── */
+.tf { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+.tf-card { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 148px; padding: 14px 8px; border-radius: 22px; border: 2px solid #CBD5E1; background: #fff; box-shadow: 0 4px 0 #CBD5E1; font-size: 22px; font-weight: 800; touch-action: pan-y; transition: transform .22s cubic-bezier(.34, 1.56, .64, 1), background-color .2s, border-color .2s, box-shadow .2s, opacity .25s; }
+.tf-card:active:not(:disabled) { transform: translateY(2px) scale(.98); box-shadow: 0 1px 0 #CBD5E1; }
+.tf-ic { width: 56px; height: 56px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; color: #fff; }
+.tf-t .tf-ic { background: #22C55E; box-shadow: 0 4px 0 #15803D; }
+.tf-f .tf-ic { background: #FB7185; box-shadow: 0 4px 0 #BE123C; }
+.tf-t.is-sel { background: #ECFDF5; border-color: #10B981; box-shadow: 0 4px 0 #A7F3D0; transform: rotate(2.5deg) scale(1.04); }
+.tf-f.is-sel { background: #FFF1F2; border-color: #F43F5E; box-shadow: 0 4px 0 #FECDD3; transform: rotate(-2.5deg) scale(1.04); }
+.tf-card.is-off { opacity: .55; transform: scale(.97); }
+.tf-card.is-ok { background: #ECFDF5; border-color: #10B981; box-shadow: 0 4px 0 #A7F3D0; }
+.tf-card.is-bad { background: #FFF1F2; border-color: #F43F5E; box-shadow: 0 4px 0 #FECDD3; }
+.tf-card.is-dim { opacity: .45; }
+.tf-card:disabled { cursor: default; }
+
+/* ───────── จับคู่: แตะซ้าย แล้วแตะขวา คู่ที่จับแล้วได้สีเดียวกัน ───────── */
+.mt { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+.mt-col { display: flex; flex-direction: column; gap: 10px; }
+.mt-i { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 6px; flex-wrap: wrap; min-height: 56px; padding: 8px 12px; text-align: left; background: #fff; border: 2px solid #CBD5E1; border-radius: 16px; box-shadow: 0 3px 0 #CBD5E1; font-size: 15px; line-height: 22px; font-weight: 600; overflow-wrap: anywhere; transition: transform .15s cubic-bezier(.34, 1.56, .64, 1), background-color .2s, border-color .2s, box-shadow .2s; }
+.mt-i > span { flex: 1; min-width: 0; }
+.mt-i:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 #CBD5E1; }
+.mt-i.armed { border-color: var(--strong); background: var(--bg); box-shadow: 0 0 0 4px var(--edge); transform: scale(1.03); }
+.mt-i.paired { border-color: var(--pc); background: color-mix(in srgb, var(--pc) 10%, #fff); box-shadow: 0 3px 0 color-mix(in srgb, var(--pc) 45%, #fff); }
+.mt-dot { flex: none; width: 14px; height: 14px; border-radius: 50%; background: var(--pc); animation: dotIn .35s cubic-bezier(.34, 1.56, .64, 1) both; }
+@keyframes dotIn { from { transform: scale(0); } to { transform: scale(1); } }
+.mt-m { flex: none; display: inline-flex; font-style: normal; }
+.mt-i.is-ok, .ct-chip.is-ok { background: #ECFDF5; border-color: #10B981; box-shadow: 0 3px 0 #A7F3D0; color: #064E3B; }
+.mt-i.is-bad, .ct-chip.is-bad { background: #FFF1F2; border-color: #F43F5E; box-shadow: 0 3px 0 #FECDD3; color: #881337; }
+.mt-i.is-ok .mt-m, .ct-chip.is-ok .mt-m { color: #047857; }
+.mt-i.is-bad .mt-m, .ct-chip.is-bad .mt-m { color: #BE123C; }
+.mt-ans { flex-basis: 100%; font-size: 12px; line-height: 18px; font-weight: 700; color: #047857; }
+.mt-i:disabled, .ct-chip:disabled { cursor: default; }
+
+/* ───────── เรียงลำดับ: ช่องลำดับ 1..n แล้วแตะขั้นตอนจากคลังไปใส่ ───────── */
+.od-slots { display: grid; gap: 8px; margin: 12px 0 0; }
+.od-slot { display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 4px 10px 4px 6px; border: 2px dashed #CBD5E1; border-radius: 16px; background: #F8FAFC; transition: background-color .2s, border-color .2s; }
+.od-slot.filled { border-style: solid; border-color: var(--strong); background: var(--bg); }
+.od-n { flex: none; width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: #E2E8F0; color: #475569; font-size: 14px; font-weight: 800; }
+.od-slot.filled .od-n { background: var(--strong); color: #fff; }
+.od-it { flex: 1; min-height: 44px; text-align: left; font-size: 15px; line-height: 22px; font-weight: 700; animation: chipIn .3s cubic-bezier(.34, 1.56, .64, 1) both; }
+.od-empty { flex: 1; }
+.od-m { flex: none; display: inline-flex; font-style: normal; }
+.od-slot.is-ok { border-style: solid; border-color: #10B981; background: #ECFDF5; color: #064E3B; }
+.od-slot.is-ok .od-n { background: #16A34A; color: #fff; }
+.od-slot.is-ok .od-m { color: #047857; }
+.od-slot.is-bad { border-style: solid; border-color: #F43F5E; background: #FFF1F2; color: #881337; }
+.od-slot.is-bad .od-n { background: #E11D48; color: #fff; }
+.od-slot.is-bad .od-m { color: #BE123C; }
+.od-bank, .fl-bank, .ct-pool { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.od-chip { min-height: 46px; padding: 8px 14px; background: #fff; border: 2px solid #CBD5E1; border-radius: 14px; box-shadow: 0 3px 0 #CBD5E1; font-size: 15px; line-height: 22px; font-weight: 700; text-align: left; animation: chipIn .3s cubic-bezier(.34, 1.56, .64, 1) both; transition: transform .12s, opacity .2s; }
+.od-chip:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 #CBD5E1; }
+.od-chip.used, .od-chip:disabled { opacity: .35; box-shadow: none; cursor: default; }
+@keyframes chipIn { from { opacity: 0; transform: translateY(8px) scale(.94); } to { opacity: 1; transform: none; } }
+.od-key { margin-top: 12px; padding: 10px 14px; border-radius: 14px; background: #ECFDF5; border: 2px solid #86EFAC; color: #064E3B; font-size: 14px; line-height: 22px; }
+.od-key ol { margin: 4px 0 0; padding-left: 22px; list-style: decimal; font-weight: 600; }
+
+/* ───────── จัดกลุ่ม: การ์ดใบบนสุดรอจัด แล้วแตะกลุ่มที่ใช่ ───────── */
+.ct-cur { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: 14px; }
+.ct-card { width: 100%; max-width: 320px; min-height: 76px; display: flex; align-items: center; justify-content: center; padding: 14px 16px; text-align: center; background: #fff; border: 2px solid var(--strong); border-radius: 20px; box-shadow: 0 5px 0 var(--edge); font-size: 20px; line-height: 28px; font-weight: 800; animation: cardIn .4s cubic-bezier(.34, 1.56, .64, 1) both; }
+@keyframes cardIn { from { opacity: 0; transform: translateY(-14px) scale(.9) rotate(-3deg); } to { opacity: 1; transform: none; } }
+.ct-left { font-size: 12px; font-weight: 700; color: #64748B; }
+.ct-cur.done { min-height: 40px; justify-content: center; }
+.ct-ok { font-size: 15px; font-weight: 800; color: #047857; }
+.ct-groups { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 14px; }
+.ct-groups[data-n="3"] { grid-template-columns: repeat(3, 1fr); }
+.ct-g { display: flex; flex-direction: column; border: 2px solid var(--pc); border-radius: 18px; background: color-mix(in srgb, var(--pc) 7%, #fff); overflow: hidden; }
+.ct-gb { min-height: 52px; padding: 8px 10px; background: var(--pc); color: #fff; font-size: 16px; line-height: 22px; font-weight: 800; text-align: center; transition: transform .12s, filter .2s; }
+.ct-gb:active:not(:disabled) { transform: scale(.97); }
+.ct-gb:disabled { filter: saturate(.55); cursor: default; }
+.ct-in { display: flex; flex-direction: column; gap: 6px; min-height: 64px; padding: 8px; }
+.ct-chip { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 4px; min-height: 40px; padding: 6px 10px; background: #fff; border: 2px solid #CBD5E1; border-radius: 12px; box-shadow: 0 2px 0 #CBD5E1; font-size: 14px; line-height: 20px; font-weight: 700; text-align: left; overflow-wrap: anywhere; animation: chipIn .3s cubic-bezier(.34, 1.56, .64, 1) both; }
+.ct-miss { display: grid; gap: 6px; margin-top: 10px; }
+
+/* ───────── เติมคำ: ช่องว่างแทรกในประโยค + คลังคำ ───────── */
+.fl-blank { display: inline-flex; align-items: center; justify-content: center; min-width: 78px; min-height: 40px; margin: 2px 3px; padding: 2px 12px; vertical-align: middle; border: 2px dashed var(--strong); border-radius: 12px; background: var(--bg); color: #0F172A; font-size: 17px; line-height: 24px; font-weight: 800; transition: transform .15s cubic-bezier(.34, 1.56, .64, 1), background-color .2s, border-color .2s; }
+.fl-blank.filled { border-style: solid; background: #fff; animation: chipIn .3s cubic-bezier(.34, 1.56, .64, 1) both; }
+.fl-blank.armed { box-shadow: 0 0 0 4px var(--edge); transform: scale(1.05); }
+.fl-blank.is-ok { border-style: solid; border-color: #10B981; background: #ECFDF5; color: #064E3B; }
+.fl-blank.is-bad { border-style: solid; border-color: #F43F5E; background: #FFF1F2; color: #881337; }
+.fl-blank:disabled { cursor: default; }
+.fl-key { margin: 12px 0 0; padding: 10px 14px; border-radius: 14px; background: #ECFDF5; border: 2px solid #86EFAC; color: #064E3B; font-size: 15px; line-height: 24px; font-weight: 600; }
+.fl-fill { padding: 0 8px; border-radius: 8px; background: #D1FAE5; color: #064E3B; }
+
+/* ───────── กรอกตัวเลข ───────── */
+.nm { position: relative; display: flex; align-items: center; gap: 10px; margin-top: 14px; }
+.nm-in { flex: 1; min-width: 0; height: 60px; padding: 0 16px; background: #fff; border: 2px solid #CBD5E1; border-radius: 16px; box-shadow: 0 3px 0 #CBD5E1; font: inherit; font-size: 24px; font-weight: 800; color: #0F172A; font-variant-numeric: tabular-nums; transition: border-color .2s, box-shadow .2s, background-color .2s; }
+.nm-in:focus { outline: none; border-color: var(--strong); box-shadow: 0 0 0 4px var(--edge); }
+.nm-in::placeholder { color: #94A3B8; font-weight: 600; }
+.nm-in:disabled { opacity: 1; -webkit-text-fill-color: currentColor; }
+.nm-u { flex: none; font-size: 16px; font-weight: 700; color: #475569; }
+.nm-m { flex: none; display: inline-flex; font-style: normal; }
+.nm.is-ok .nm-in { background: #ECFDF5; border-color: #10B981; box-shadow: 0 3px 0 #A7F3D0; }
+.nm.is-ok .nm-m { color: #047857; }
+.nm.is-bad .nm-in { background: #FFF1F2; border-color: #F43F5E; box-shadow: 0 3px 0 #FECDD3; }
+.nm.is-bad .nm-m { color: #BE123C; }
+.nm-key { margin: 10px 0 0; padding: 10px 14px; border-radius: 14px; background: #ECFDF5; border: 2px solid #86EFAC; color: #064E3B; font-size: 15px; line-height: 24px; }
+
+/* ───────── ได้บางส่วน (ถูกบางส่วนของข้อ) ───────── */
+.fb.part { background: linear-gradient(135deg, #FFFBEB, #FEF3C7); border-color: #F59E0B; color: #78350F; }
+.fb.part .fb-i { background: #D97706; }
+.abar .abar-fb.fb.part { background: transparent; }
+.abar.is-part { background: rgba(255, 251, 235, .98); border-top-color: #FCD34D; }
+body.flow .btn.btn-part:not([disabled]) { background: linear-gradient(180deg, #FBBF24, #D97706); box-shadow: 0 5px 0 #92400E; }
+body.flow .btn.btn-part:not([disabled]):active { box-shadow: 0 1px 0 #92400E; }
+
+/* ───────── หน้าทบทวนรูปแบบใหม่: ทีละบรรทัด ✓ / ✗ ───────── */
+.rv { display: grid; gap: 8px; margin: 4px 0 0; }
+.rv-row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; padding: 8px 12px; border-radius: 14px; border: 2px solid #E2E8F0; background: #fff; font-size: 15px; line-height: 22px; }
+.rv-row.ok { background: #ECFDF5; border-color: #86EFAC; color: #064E3B; }
+.rv-row.bad { background: #FFF1F2; border-color: #FDA4AF; color: #881337; }
+.rv-row.miss { background: #FFFBEB; border-color: #FCD34D; color: #78350F; }
+.rv-l { flex: 1 1 40%; min-width: 0; font-weight: 800; overflow-wrap: anywhere; }
+.rv-y { flex: none; font-weight: 600; color: #BE123C; }
+.rv-y s { text-decoration: line-through; text-decoration-thickness: 2px; }
+.rv-r { display: inline-flex; align-items: center; gap: 4px; flex: none; font-weight: 800; color: #047857; }
+
+@media (prefers-reduced-motion: reduce) {
+  .mt-dot, .od-it, .od-chip, .ct-card, .ct-chip, .fl-blank.filled { animation: none; }
+  .tf-card, .mt-i, .fl-blank, .nm-in { transition: none; }
+}

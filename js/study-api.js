@@ -51,7 +51,9 @@ export function createStudyApi(send) {
         setNodeProgress: (subjectId, no, nodeId, progress) => request(`${lessonPath(subjectId, no, nodeId)}/progress`, { method: 'PUT', body: progress }),
         setRead: (subjectId, no, read) => request(`/subjects/${seg(subjectId)}/lessons/${seg(no)}/read`, { method: 'PUT', body: { read } }),
         startQuiz: (subjectId, no, nodeId) => request(`${lessonPath(subjectId, no, nodeId)}/quiz-attempts`, { method: 'POST', body: {} }),
-        answerQuiz: (attemptId, questionId, choiceId) => request(`/quiz-attempts/${seg(attemptId)}/answer`, { method: 'POST', body: { questionId, choiceId } }),
+        // answer = คำตอบของโจทย์รูปแบบใดก็ได้ (id ตัวเลือก / รายการ / ออบเจ็กต์ / ตัวเลข) ดู study-qformats.js
+        // ข้อความ (id ตัวเลือก) ส่ง choiceId ไปด้วย เพื่อให้ Backend รุ่นก่อนข้อ 2.12 ยังรับโจทย์เลือก 1 ข้อได้
+        answerQuiz: (attemptId, questionId, answer) => request(`/quiz-attempts/${seg(attemptId)}/answer`, { method: 'POST', body: { questionId, answer, ...(typeof answer === 'string' ? { choiceId: answer } : {}) } }),
         submitQuiz: (attemptId) => request(`/quiz-attempts/${seg(attemptId)}/submit`, { method: 'POST', body: {} }),
         getProgress: () => request('/progress'),
         getSubjectProgress: (subjectId) => request(`/progress/subjects/${seg(subjectId)}`),

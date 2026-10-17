@@ -90,9 +90,13 @@ export async function initNode({ api = studyApi } = {}) {
     }
 
     content.onclick = (e) => controller.handleClick(e);
+    // ช่องกรอกตัวเลขของ Quiz: พิมพ์ = เก็บคำตอบ, Enter = ตรวจคำตอบ
+    if (controller.handleInput) content.oninput = (e) => controller.handleInput(e);
+    if (controller.handleKey) content.onkeydown = (e) => controller.handleKey(e);
 
-    // ปัดซ้าย/ขวา หรือกดลูกศร เพื่อเปลี่ยนหน้าของชุดเนื้อหา
-    if (controller.step && typeof content.addEventListener === 'function') {
+    // ปัดซ้าย/ขวา: ชุดเนื้อหาเปลี่ยนหน้า, ข้อจริง/เท็จของ Quiz เลือกคำตอบ (ปัดขวา = จริง ปัดซ้าย = เท็จ)
+    const onSwipe = controller.step ? (dx) => controller.step(dx < 0 ? 1 : -1) : controller.swipe ? (dx) => controller.swipe(dx > 0 ? 'right' : 'left') : null;
+    if (onSwipe && typeof content.addEventListener === 'function') {
         let x0 = null;
         let y0 = null;
         content.addEventListener('touchstart', (e) => { const t = e.touches && e.touches[0]; x0 = t ? t.clientX : null; y0 = t ? t.clientY : null; }, { passive: true });
@@ -102,13 +106,15 @@ export async function initNode({ api = studyApi } = {}) {
             const dx = t.clientX - x0;
             const dy = t.clientY - y0;
             x0 = null;
-            if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.6) controller.step(dx < 0 ? 1 : -1);
+            if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.6) onSwipe(dx);
         }, { passive: true });
-        document.addEventListener('keydown', (e) => {
-            if (e.target && /^(input|textarea|select)$/i.test(e.target.tagName || '')) return;
-            if (e.key === 'ArrowRight') controller.step(1);
-            else if (e.key === 'ArrowLeft') controller.step(-1);
-        });
+        if (controller.step) {
+            document.addEventListener('keydown', (e) => {
+                if (e.target && /^(input|textarea|select)$/i.test(e.target.tagName || '')) return;
+                if (e.key === 'ArrowRight') controller.step(1);
+                else if (e.key === 'ArrowLeft') controller.step(-1);
+            });
+        }
     }
 
     draw();

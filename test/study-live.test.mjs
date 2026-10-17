@@ -26,6 +26,19 @@ describe('study-api: ตัวเรียก API', () => {
         assert.deepEqual(calls[0], ['/api/study/subjects', { method: 'GET' }]);
     });
 
+    test('ตอบรายข้อ: คำตอบอยู่ใน answer ทุกรูปแบบ; ข้อความ (id ตัวเลือก / ตัวเลขที่พิมพ์) ส่ง choiceId ด้วยเพื่อให้ Backend รุ่นเก่ารับโจทย์เลือก 1 ข้อได้', async () => {
+        const bodies = [];
+        const api = createStudyApi(async (p, o) => { bodies.push([p, JSON.parse(o.body)]); return reply(200, { success: true }); });
+        await api.answerQuiz('qa_abcdefghij', 'q1', 'b');
+        await api.answerQuiz('qa_abcdefghij', 'q2', { l1: 'r2' });
+        await api.answerQuiz('qa_abcdefghij', 'q3', ['a', 'c']);
+        assert.deepEqual(bodies, [
+            ['/api/study/quiz-attempts/qa_abcdefghij/answer', { questionId: 'q1', answer: 'b', choiceId: 'b' }],
+            ['/api/study/quiz-attempts/qa_abcdefghij/answer', { questionId: 'q2', answer: { l1: 'r2' } }],
+            ['/api/study/quiz-attempts/qa_abcdefghij/answer', { questionId: 'q3', answer: ['a', 'c'] }],
+        ]);
+    });
+
     test('รหัสวิชาและเลขบทถูก encode ใน path', async () => {
         const calls = [];
         const api = createStudyApi(async (p) => { calls.push(p); return reply(200, { success: true }); });

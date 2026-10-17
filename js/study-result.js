@@ -10,6 +10,7 @@
 import { esc, ICON, abar } from './study-ui.js';
 import { choiceLabel, scoreMessage } from './study-format.js';
 import { questionMediaHtml } from './study-media.js';
+import { formatOf, isChoiceLike, reviewAnswersHtml, reviewStemText } from './study-qformats.js';
 import { confetti, countUp, pop, burst } from './study-fx.js';
 
 const BOLT = (size = 44) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 3l0 7l6 0l-8 11l0 -7l-6 0l8 -11"/></svg>`;
@@ -46,15 +47,28 @@ export function scoreStepHtml({ correct, total, marks, passed, lessonDone = fals
 
 /** หน้าทบทวน 1 ข้อ: คำตอบที่ถูกกับเหตุผล (ข้อความสั้น) item = รายการ review ของ Backend */
 export function reviewStepHtml({ item, index, count }) {
+    const head = `<p class="rs-k">มาทบทวนกัน${count > 1 ? ` <em>${index + 1}/${count}</em>` : ''}</p>
+      <h3 class="rs-q" style="white-space:pre-line">ข้อ ${item.n} ${reviewStemText(item)}</h3>
+      ${questionMediaHtml(item.media)}`;
+    const why = item.explanation ? `<p class="rs-why">${esc(item.explanation)}</p>` : '';
+    if (!isChoiceLike(item)) { // จับคู่ เรียงลำดับ จัดกลุ่ม เติมคำ ตัวเลข เลือกหลายข้อ: แสดงทีละบรรทัด ✓ / ✗ พร้อมคำตอบที่ถูก
+        const rows = reviewAnswersHtml(item);
+        if (rows) return `<section class="rs-card rs-review">${head}${rows}${why}</section>`;
+    }
+    if (formatOf(item) === 'truefalse') {
+        const say = (id) => (id === 't' ? 'จริง' : id === 'f' ? 'เท็จ' : '');
+        return `<section class="rs-card rs-review">${head}
+      <p class="rs-yours">${item.yourChoiceId ? `คุณตอบ <s>${say(item.yourChoiceId)}</s>` : 'ยังไม่ได้ตอบข้อนี้'}</p>
+      <p class="rs-right">${ICON.check(18, 3.4)}<span>เฉลย <b>${say(item.correctChoiceId)}</b></span></p>
+      ${why}
+    </section>`;
+    }
     const ci = item.choices.findIndex((c) => c.id === item.correctChoiceId);
     const yi = item.choices.findIndex((c) => c.id === item.yourChoiceId);
-    return `<section class="rs-card rs-review">
-      <p class="rs-k">มาทบทวนกัน${count > 1 ? ` <em>${index + 1}/${count}</em>` : ''}</p>
-      <h3 class="rs-q" style="white-space:pre-line">ข้อ ${item.n} ${esc(item.text)}</h3>
-      ${questionMediaHtml(item.media)}
+    return `<section class="rs-card rs-review">${head}
       <p class="rs-yours">${yi >= 0 ? `คุณตอบ <s>${choiceLabel(yi)} ${esc(item.choices[yi].text)}</s>` : 'ยังไม่ได้ตอบข้อนี้'}</p>
       <p class="rs-right">${ICON.check(18, 3.4)}<span>เฉลย <b>${ci >= 0 ? `${choiceLabel(ci)} ${esc(item.choices[ci].text)}` : ''}</b></span></p>
-      ${item.explanation ? `<p class="rs-why">${esc(item.explanation)}</p>` : ''}
+      ${why}
     </section>`;
 }
 

@@ -70,8 +70,13 @@ export function installFakeDom(ids = ['content', 'view', 'backLink', 'eyebrow', 
             target: { closest: (sel) => {
                 if (sel === '[data-act]') return target.act ? { dataset: { act: target.act } } : null;
                 if (sel === '[data-choice]') return target.choice ? { dataset: { choice: target.choice } } : null;
+                if (sel === '[data-fx]') return target.fx ? { dataset: { fx: target.fx, id: target.id, i: target.i } } : null;
                 return null;
             } },
+        }),
+        /** พิมพ์ในช่องตัวเลข (data-fx="n-input") */
+        type: (value) => byId.content.oninput && byId.content.oninput({
+            target: { closest: (sel) => (sel === '[data-fx="n-input"]' ? { value, dataset: { fx: 'n-input' } } : null) },
         }),
         /** คลิกในชั้นซ้อน (ฟังที่ document) */
         clickOverlay: (target = {}) => (docListeners.click || []).forEach((fn) => fn({
