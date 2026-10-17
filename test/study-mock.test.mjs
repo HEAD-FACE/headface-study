@@ -17,6 +17,7 @@ const QUESTIONS = [
 const RESULT = {
     attemptId: 'ma_abcdefghij', status: 'submitted', autoSubmitted: false, correct: 2, total: 3, answered: 3, percent: 67, passed: null,
     secondsUsed: 125, durationSec: 1200, submittedAt: 1, starsEarned: 7, starsBase: 6, starsTimeBonus: 1, deltaVsPrevious: 10,
+    reward: { exp: 31, baseExp: 62, firstTime: false, halved: true, stars: 7, totals: { exp: 400, stars: 20, level: { level: 3, from: 200, to: 450, pct: 80, toNext: 50 } } },
     topics: [{ topic: 'หัวข้อ A', correct: 2, total: 2 }, { topic: 'หัวข้อ B', correct: 0, total: 1 }],
     review: [
         { n: 1, questionId: 'q1', text: 'โจทย์ <i>หนึ่ง</i>', topic: 'หัวข้อ A', choices: QUESTIONS[0].choices, yourChoiceId: 'a', correctChoiceId: 'a', isCorrect: true, explanation: 'เพราะ ก', flagged: false, special: false },
@@ -27,7 +28,7 @@ const RESULT = {
 
 const baseInfo = (extra = {}) => ({
     serverNow: Date.now(), subject: SUBJECT,
-    mock: { available: true, title: 'Mock วิทยาศาสตร์', questionCount: 3, durationMin: 20, passMarkPct: null, format: 'mcq', stars: { timeBonusPct: 25 }, advanced: { unlocked: false } },
+    mock: { available: true, title: 'Mock วิทยาศาสตร์', questionCount: 3, durationMin: 20, passMarkPct: null, format: 'mcq', stars: { timeBonusPct: 25, max: 10 }, exp: 30, advanced: { unlocked: false } },
     active: null, history: [], best: null, deltaVsPrevious: null, ...extra,
 });
 
@@ -98,6 +99,8 @@ describe('เงื่อนไขก่อนสอบและประวั�
         assert.match(h, /20 นาที/);
         assert.match(h, /ยังไม่กำหนด/);
         assert.match(h, /โบนัสเพิ่มสูงสุด 25%/);
+        assert.match(h, /ดาวคิดจากเปอร์เซ็นต์ที่ตอบถูก \(ตอบถูกหมดได้ 10 ดาว\)/);
+        assert.match(h, /อีก 30 EXP เมื่อทำข้อสอบเสร็จ \(แม้ไม่ถูกสักข้อ\) ทำซ้ำได้ แต่ได้ EXP ครึ่งเดียว/);
         assert.match(h, /แพลน HEADFACE\+ และ MAX มีโจทย์ข้อพิเศษ/);
         assert.match(h, /เริ่มทำข้อสอบ/);
         assert.doesNotMatch(h, /ทำต่อข้อสอบที่ค้างไว้/);
@@ -258,7 +261,9 @@ describe('ทำข้อสอบ', () => {
         assert.match(h, /<span class="pill">[\s\S]*02:05 \/ 20:00/);
         assert.match(h, /<details class="fold"><summary><span>ผลรายหัวข้อ/, 'ผลรายหัวข้อและเฉลยพับเก็บไว้');
         assert.match(h, /<details class="fold"><summary><span>เฉลยรายข้อ \(3\)/);
-        assert.match(h, /<span data-countup="7">7<\/span> ดาว[\s\S]*จากข้อถูก 6 \+ โบนัสเวลา 1/);
+        assert.match(h, /<span data-countup="7">7<\/span> ดาว[\s\S]*จากคะแนน 67% = 6 ดาว \+ โบนัสเวลา 1/, 'ดาวมาจากเปอร์เซ็นต์ที่ตอบถูก แล้วบวกโบนัสเวลา');
+        assert.match(h, /class="pill gold exp-pill"[\s\S]*\+<span data-exp-count="31">31<\/span> EXP/, 'EXP ที่ได้');
+        assert.match(h, /<span class="pill">ทำซ้ำ ได้ครึ่งเดียว<\/span>/, 'ทำซ้ำได้ครึ่งเดียว');
         assert.match(h, /▲ \+10%/);
         assert.match(h, /หัวข้อ A<\/span><span>2\/2/);
         assert.match(h, /ข้อ 2 โจทย์สอง — ผิด • ข้อพิเศษ/);

@@ -12,6 +12,7 @@ import { SUBJECT_ID_RE, courseUrl, failure, loading, mockUrl, messageOf } from '
 import { questionMediaHtml, choiceImageHtml } from './study-media.js';
 import { confetti, countUp, pop } from './study-fx.js';
 import { patchHtml } from './study-dom.js';
+import { animateReward, expPillHtml } from './study-reward.js';
 
 const SAVE_RETRY_MS = 5000;
 const AUTO_SUBMIT_RETRY_MS = 5000;
@@ -129,8 +130,9 @@ export async function initMockExam({ api = studyApi, saveDebounceMs = 1000, tick
               <li>${ICON.info(18)}<span>จับเวลาถอยหลังตามเวลาของระบบ เมื่อหมดเวลาระบบจะส่งคำตอบที่ทำไว้ให้อัตโนมัติ คำตอบถูกบันทึกระหว่างทำ ปิดหน้าแล้วกลับมาทำต่อได้ (เวลายังเดินอยู่)</span></li>
               <li>${ICON.info(18)}<span>ติดธงข้อที่ยังไม่แน่ใจ และกลับมาแก้คำตอบได้ก่อนส่ง</span></li>
               <li>${ICON.info(18)}<span>ทำซ้ำได้ ผลของทุกครั้งถูกเก็บในประวัติเพื่อเปรียบเทียบพัฒนาการ</span></li>
-              <li>${ICON.info(18)}<span>ดาวได้จากข้อที่ตอบถูก${m.stars.timeBonusPct > 0 ? ` และมีโบนัสเพิ่มสูงสุด ${m.stars.timeBonusPct}% ของดาวที่ได้ ถ้าส่งเร็วกว่าเวลาที่กำหนด` : ''} ตอบผิดไม่ได้ดาว</span></li>
-              ${m.advanced.unlocked ? `<li>${ICON.star(18)}<span>แพลนของคุณได้โจทย์ข้อพิเศษเพิ่ม ซึ่งให้ดาวมากกว่าข้อปกติเมื่อตอบถูก</span></li>` : `<li>${ICON.star(18)}<span>แพลน HEADFACE+ และ MAX มีโจทย์ข้อพิเศษเพิ่มและได้ดาวมากกว่าเมื่อตอบถูก</span></li>`}
+              <li>${ICON.info(18)}<span>ดาวคิดจากเปอร์เซ็นต์ที่ตอบถูก${m.stars.max ? ` (ตอบถูกหมดได้ ${m.stars.max} ดาว)` : ''}${m.stars.timeBonusPct > 0 ? ` และมีโบนัสเพิ่มสูงสุด ${m.stars.timeBonusPct}% ของดาวที่ได้ ถ้าส่งเร็วกว่าเวลาที่กำหนด` : ''} ตอบผิดหมดไม่ได้ดาว</span></li>
+              ${m.exp !== undefined ? `<li>${ICON.star(18)}<span>ได้ EXP จากข้อที่ตอบถูก และอีก ${m.exp} EXP เมื่อทำข้อสอบเสร็จ (แม้ไม่ถูกสักข้อ) ทำซ้ำได้ แต่ได้ EXP ครึ่งเดียว</span></li>` : ''}
+              ${m.advanced.unlocked ? `<li>${ICON.star(18)}<span>แพลนของคุณได้โจทย์ข้อพิเศษเพิ่มในชุดข้อสอบ</span></li>` : `<li>${ICON.star(18)}<span>แพลน HEADFACE+ และ MAX มีโจทย์ข้อพิเศษเพิ่มในชุดข้อสอบ</span></li>`}
             </ul>`)}` : '<p class="empty-p">ชุดข้อสอบของวิชานี้ยังไม่เปิดให้ทำ เมื่อพร้อมจะแจ้งที่นี่</p>'}
           ${info.history.length ? fold('history', `ประวัติการสอบ (${info.history.length})`, `<ul class="hist">${rows}</ul>${cmp}`) : ''}
           ${activeNote}
@@ -330,6 +332,7 @@ export async function initMockExam({ api = studyApi, saveDebounceMs = 1000, tick
             `<span class="pill">${ICON.clock(14)} ${formatClock(r.secondsUsed)} / ${formatClock(r.durationSec)}</span>`,
             deltaHtml(r.deltaVsPrevious),
             unanswered ? `<span class="pill warn">ไม่ได้ตอบ ${unanswered}</span>` : '',
+            expPillHtml(r.reward),
         ].filter(Boolean).join('');
         const fold = (title, inner) => `<details class="fold"><summary><span>${title}</span><i>${ICON.down(18)}</i></summary><div>${inner}</div></details>`;
         // ผลรายหัวข้อและเฉลยรายข้อยาว จึงพับเก็บไว้ในหัวข้อที่กดเปิดเมื่อต้องการ — หน้าสรุปมีแค่คะแนน ป้ายสถานะ และดาว
@@ -339,7 +342,7 @@ export async function initMockExam({ api = studyApi, saveDebounceMs = 1000, tick
             ${ringHtml(r.percent, `${r.correct}/${r.total} ข้อ`)}
             <h2>${esc(scoreMessage(r.percent))}</h2>
             <div class="pills" aria-label="สรุปผล">${pills}</div>
-            <div class="stars-big" role="status">${ICON.star(26, '#F59E0B')}<span><span data-countup="${r.starsEarned}">${r.starsEarned}</span> ดาว</span><small>จากข้อถูก ${r.starsBase}${r.starsTimeBonus ? ` + โบนัสเวลา ${r.starsTimeBonus}` : ''}</small></div>
+            <div class="stars-big" role="status">${ICON.star(26, '#F59E0B')}<span><span data-countup="${r.starsEarned}">${r.starsEarned}</span> ดาว</span><small>จากคะแนน ${r.percent}% = ${r.starsBase} ดาว${r.starsTimeBonus ? ` + โบนัสเวลา ${r.starsTimeBonus}` : ''}</small></div>
           </section>
           ${fold('ผลรายหัวข้อ', `<div class="rows" style="margin-top:0">${r.topics.map((t) => `<div class="topic-row"><div class="top"><span>${esc(t.topic)}</span><span>${t.correct}/${t.total}</span></div><div class="bar" aria-hidden="true"><i style="width:${t.total ? (t.correct / t.total) * 100 : 0}%"></i></div></div>`).join('')}</div>`)}
           ${fold(`เฉลยรายข้อ (${r.review.length})`, `<div class="review">${r.review.map((x) => {
@@ -373,6 +376,7 @@ export async function initMockExam({ api = studyApi, saveDebounceMs = 1000, tick
         celebrated = result;
         const el = typeof content.querySelector === 'function' ? content.querySelector('[data-countup]') : null;
         if (el) { countUp(el, Number(el.dataset.countup)); pop(el.closest('.stars-big'), { scale: 1.12, ms: 500 }); }
+        animateReward(content);
         if (result.passed === true || (result.passed === null && result.percent >= 70)) confetti();
     }
 

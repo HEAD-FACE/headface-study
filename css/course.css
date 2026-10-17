@@ -233,3 +233,7 @@
   .cp-start { transform: translateX(-50%); }
   .cp-arc, .cp-pring .v, .cp-fg, .cp-chev { transition: none; }
 }
+
+/* EXP ที่วงกลมนี้ให้ (Backend คำนวณ: ทำซ้ำได้ครึ่งเดียว) */
+.cp-pop-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.cp-pop-exp { display: inline-flex; align-items: center; padding: 2px 10px; border-radius: 999px; background: #FBBF24; color: #78350F; font-size: 12px; line-height: 20px; font-weight: 800; }

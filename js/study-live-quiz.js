@@ -13,6 +13,7 @@ import { $, esc, ICON, abar, ringHtml, animateRing } from './study-ui.js';
 import { choiceLabel, scoreMessage } from './study-format.js';
 import { questionMediaHtml, choiceImageHtml } from './study-media.js';
 import { burst, confetti, countUp, pop, shake } from './study-fx.js';
+import { animateReward, expPillHtml } from './study-reward.js';
 
 const messageOf = (err) => (err instanceof StudyApiError ? err.message : 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
 
@@ -29,7 +30,7 @@ const messageOf = (err) => (err instanceof StudyApiError ? err.message : 'เก
  * @param {string} [deps.reviewHref]      ลิงก์กลับไปทบทวนเนื้อหาของบทนี้
  */
 export function createQuiz({ subject, lessonNo, node, api, render, applyProgress, nextHref, courseHref, reviewHref }) {
-    const fresh = () => ({ phase: 'intro', attempt: null, i: 0, picks: {}, feedback: {}, busy: false, error: null, result: null, lessonStatus: null, fx: null, streak: 0, dir: 0 });
+    const fresh = () => ({ phase: 'intro', attempt: null, i: 0, picks: {}, feedback: {}, busy: false, error: null, result: null, lessonStatus: null, fx: null, streak: 0, dir: 0, reward: null });
     let s = fresh();
 
     const passPct = () => (node.quiz ? node.quiz.passPct : null);
@@ -120,6 +121,7 @@ export function createQuiz({ subject, lessonNo, node, api, render, applyProgress
             r.passed === true ? `<span class="pill ok">${ICON.check(14, 3.4)} ผ่านเกณฑ์</span>`
                 : r.passed === false ? `<span class="pill warn">ยังไม่ถึงเกณฑ์ ${passPct() === null || passPct() === undefined ? '' : `${passPct()}%`}</span>` : '',
             s.lessonStatus === 'done' ? '<span class="pill gold">บทนี้เสร็จสมบูรณ์ 🎉</span>' : '',
+            expPillHtml(s.reward),
         ].filter(Boolean).join('');
         const review = wrong.map((x) => {
             const ci = x.choices.findIndex((c) => c.id === x.correctChoiceId);
@@ -184,6 +186,7 @@ export function createQuiz({ subject, lessonNo, node, api, render, applyProgress
             const done = await api.submitQuiz(s.attempt.id);
             s.result = done.result;
             s.lessonStatus = done.lesson ? done.lesson.status : null;
+            s.reward = done.reward || null;
             s.phase = 'result';
             s.fx = done.result.passed === true || (done.result.passed === null && done.result.percent >= 50) ? 'pass' : 'done';
             applyProgress(done);
@@ -205,6 +208,7 @@ export function createQuiz({ subject, lessonNo, node, api, render, applyProgress
                 animateRing(root);
                 const pctEl = $('.ring-t b', root);
                 if (pctEl) countUp(pctEl, s.result.percent, { ms: 900, format: (n) => `${n}%` });
+                animateReward(root);
                 if (fx === 'pass') confetti();
             } else if (fx === 'ok') {
                 const el = $('.choice.is-ok', root);

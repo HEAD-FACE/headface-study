@@ -11,6 +11,7 @@ import { esc, ICON, abar } from './study-ui.js';
 import { messageOf } from './study-live-common.js';
 import { questionMediaHtml } from './study-media.js';
 import { burst, pop, shake } from './study-fx.js';
+import { animateReward, expPillHtml } from './study-reward.js';
 
 const LEVELS = { easy: 'ง่าย', medium: 'กลาง', hard: 'ยาก' };
 const MAX_DOTS = 14;
@@ -28,7 +29,7 @@ const MAX_DOTS = 14;
  * @param {number} [deps.advanceMs]      หน่วงก่อนไปข้อถัดไปหลังกดทำถูก/ทำผิด (<= 0 = ไม่ไปเอง)
  */
 export function createPractice({ subject, lessonNo, node, api, render, applySummary, nextHref = null, courseHref = '', advanceMs = 650 }) {
-    const s = { load: 'idle', items: [], summary: null, filter: 'all', idx: 0, dir: 0, shown: {}, solutions: {}, busy: new Set(), error: null, fx: null };
+    const s = { load: 'idle', items: [], summary: null, filter: 'all', idx: 0, dir: 0, shown: {}, solutions: {}, busy: new Set(), error: null, fx: null, reward: null, rewardShown: false };
     let advanceToken = 0;
 
     async function load() {
@@ -95,7 +96,7 @@ export function createPractice({ subject, lessonNo, node, api, render, applySumm
         return `<section class="rblock result pk-done" data-key="pk-done">
           <div class="cn-medal" aria-hidden="true">🏁</div>
           <h2>ครบ ${cards.length} ข้อแล้ว</h2>
-          <div class="pills"><span class="pill ok">${ICON.check(14, 3.4)} ถูก ${ok}</span>${wrong ? `<span class="pill warn">${ICON.x(14, 3.4)} ผิด ${wrong}</span>` : ''}${left ? `<span class="pill">ยังไม่ได้ทำ ${left}</span>` : ''}</div>
+          <div class="pills"><span class="pill ok">${ICON.check(14, 3.4)} ถูก ${ok}</span>${wrong ? `<span class="pill warn">${ICON.x(14, 3.4)} ผิด ${wrong}</span>` : ''}${left ? `<span class="pill">ยังไม่ได้ทำ ${left}</span>` : ''}${expPillHtml(s.reward)}</div>
           <div class="res-actions">
             ${wrong ? `<button type="button" class="btn btn-lg btn-block btn-bad" data-pf="wrong" style="margin-top:0"><span>ฝึกข้อที่ผิดอีกครั้ง (${wrong})</span></button>` : ''}
             ${nextHref ? `<a class="btn btn-lg btn-block" href="${esc(nextHref)}" style="margin-top:0"><span>ไปกิจกรรมถัดไป</span>${ICON.next(14)}</a>` : ''}
@@ -155,8 +156,9 @@ export function createPractice({ subject, lessonNo, node, api, render, applySumm
         render();
         let saved = false;
         try {
-            const { summary } = await api.setPracticeResult(subject.id, lessonNo, id, result, node.id);
+            const { summary, reward } = await api.setPracticeResult(subject.id, lessonNo, id, result, node.id);
             s.fx = { id, result };
+            if (reward) { s.reward = reward; s.rewardShown = false; }
             s.items = s.items.map((i) => (i.id === id ? { ...i, result } : i));
             s.summary = summary;
             saved = true;
@@ -185,6 +187,7 @@ export function createPractice({ subject, lessonNo, node, api, render, applySumm
             s.shown = {};
             s.idx = 0;
             s.dir = -1;
+            s.reward = null;
             applySummary(summary);
         } catch (err) {
             s.error = messageOf(err);
@@ -206,6 +209,8 @@ export function createPractice({ subject, lessonNo, node, api, render, applySumm
             const fx = s.fx;
             s.fx = null;
             s.dir = 0;
+            // ตัวเลข EXP นับขึ้นครั้งเดียวตอนหน้าสรุปโผล่ (ไม่นับซ้ำทุกครั้งที่วาดหน้า)
+            if (s.reward && !s.rewardShown && root && typeof root.querySelector === 'function' && root.querySelector('[data-exp-count]')) { s.rewardShown = true; animateReward(root); }
             if (!fx || !root || typeof root.querySelector !== 'function') return;
             if (fx.result === 'ok') {
                 const btn = root.querySelector('.btn-ok');

@@ -6,7 +6,7 @@
  * main.js ส่งเหตุการณ์ study:page ทุกครั้งที่หน้าถูกแสดง (ทั้งโหลดครั้งแรกและตอน Barba สลับหน้า)
  *
  * ถ้า API ใช้ไม่ได้ จะปล่อยการ์ดตามเดิม (ไม่ลบอะไร) และแจ้งใน console เท่านั้น
- * ส่วน EXP / ดาว / อันดับ ในหน้าแรกและ Progress ยังเป็นข้อมูลตัวอย่าง ไฟล์นี้ไม่แตะ
+ * EXP / ดาว / เลเวล ในหน้าแรกและ Progress เป็นของจริง (applyRewards) ส่วนอันดับ (Leaderboard) และ Streak ยังเป็นข้อมูลตัวอย่าง ไฟล์นี้ไม่แตะ
  */
 import { isDemo } from './study-source.js';
 import { studyApi } from './study-api.js';
@@ -91,6 +91,27 @@ export function progressSectionHtml(subjects, progress) {
         ${recent}`;
 }
 
+/** EXP / ดาว / เลเวลของผู้เรียนจาก GET /progress (rewards) เป็นข้อความที่จะแสดง */
+export function rewardsView(rewards) {
+    const exp = Math.max(0, Math.floor(Number(rewards && rewards.exp) || 0));
+    const stars = Math.max(0, Math.floor(Number(rewards && rewards.stars) || 0));
+    const lv = rewards && rewards.level ? rewards.level : { level: 1, pct: 0 };
+    const level = Math.max(1, Math.floor(Number(lv.level) || 1));
+    const pct = Math.max(0, Math.min(100, Math.floor(Number(lv.pct) || 0)));
+    return { exp: exp.toLocaleString('en-US'), stars: String(stars), level: `Lv. ${level}`, 'level-long': `เลเวล ${level}`, next: `สู่ Lv. ${level + 1} (${pct}%)`, pct };
+}
+
+/** ใส่ตัวเลขจริงลงองค์ประกอบที่มี data-study-reward="exp|stars|level|level-long|next|level-bar" และซ่อนส่วนตัวอย่าง (data-study-hide-real) */
+export function applyRewards(scope, rewards) {
+    const v = rewardsView(rewards);
+    for (const el of scope.querySelectorAll('[data-study-reward]')) {
+        const key = el.getAttribute('data-study-reward');
+        if (key === 'level-bar') el.style.width = `${v.pct}%`;
+        else if (key in v) el.textContent = v[key];
+    }
+    for (const el of scope.querySelectorAll('[data-study-hide-real]')) el.style.display = 'none';
+}
+
 let progressCache = null;
 async function loadProgress() {
     if (progressCache && Date.now() - progressCache.at < 15000) return progressCache.data;
@@ -101,11 +122,12 @@ async function loadProgress() {
 
 async function applyProgressPage(scope, subjects) {
     const section = scope.querySelector('#my-progress');
-    const hasStats = scope.querySelector('[data-study-stat]');
+    const hasStats = scope.querySelector('[data-study-stat]') || scope.querySelector('[data-study-reward]');
     if (!section && !hasStats) return;
     const progress = await loadProgress();
     const stats = answersStats(progress.answers);
     for (const el of scope.querySelectorAll('[data-study-stat]')) el.textContent = stats[el.getAttribute('data-study-stat')] ?? el.textContent;
+    if (progress.rewards) applyRewards(scope, progress.rewards);
     if (section) {
         const body = section.querySelector('#my-progress-body');
         if (body) body.innerHTML = progressSectionHtml(subjects, progress);

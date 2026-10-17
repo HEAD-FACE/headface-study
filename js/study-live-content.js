@@ -12,6 +12,7 @@ import { esc, ICON, abar } from './study-ui.js';
 import { blocksHtml } from './study-blocks.js';
 import { messageOf } from './study-live-common.js';
 import { confetti, pop } from './study-fx.js';
+import { animateReward, expPillHtml } from './study-reward.js';
 
 /**
  * @param {object} deps
@@ -30,7 +31,7 @@ export function createContent({ subject, lessonNo, node, api, render, applyProgr
     const reached = Number(node.progress && node.progress.pageReached) || 0;
     const wasDone = !!(node.progress && node.progress.completedAt);
 
-    const s = { phase: 'read', page: wasDone ? 0 : Math.min(reached, last), dir: 0, busy: false, error: null, saved: reached, fx: null };
+    const s = { phase: 'read', page: wasDone ? 0 : Math.min(reached, last), dir: 0, busy: false, error: null, saved: reached, fx: null, reward: null };
 
     /** บันทึกหน้าที่อ่านถึง (ไม่รอผล: ถ้าล้มเหลวก็แค่เปิดใหม่แล้วเริ่มหน้าก่อนหน้า) */
     function savePage() {
@@ -58,6 +59,7 @@ export function createContent({ subject, lessonNo, node, api, render, applyProgr
         try {
             const done = await api.setNodeProgress(subject.id, lessonNo, node.id, { page: last, completed: true });
             applyProgress(done);
+            s.reward = done.reward || null;
             s.phase = 'done';
             s.fx = 'finish';
             window.scrollTo(0, 0);
@@ -97,7 +99,7 @@ export function createContent({ subject, lessonNo, node, api, render, applyProgr
           <div class="cn-medal" aria-hidden="true">🎉</div>
           <h2>เรียนจบแล้ว!</h2>
           <p class="cn-done-t">“${esc(node.title)}”</p>
-          <div class="pills"><span class="pill ok">${ICON.check(14, 3.4)} อ่านครบ ${pages.length} หน้า</span></div>
+          <div class="pills"><span class="pill ok">${ICON.check(14, 3.4)} อ่านครบ ${pages.length} หน้า</span>${expPillHtml(s.reward)}</div>
           <div class="res-actions">
             ${nextHref ? `<a class="btn btn-lg btn-block" href="${esc(nextHref)}" style="margin-top:0"><span>ไปกิจกรรมถัดไป</span>${ICON.next(14)}</a>` : ''}
             <a class="btn btn-lg btn-block${nextHref ? ' btn-line' : ''}" href="${esc(courseHref)}" style="margin-top:0">กลับไปเส้นทางเรียน</a>
@@ -117,6 +119,7 @@ export function createContent({ subject, lessonNo, node, api, render, applyProgr
             if (fx === 'finish') {
                 confetti({ count: 100 });
                 pop(root.querySelector('.cn-medal'), { scale: 1.35, ms: 650 });
+                animateReward(root);
             }
         },
         handleClick(e) {
