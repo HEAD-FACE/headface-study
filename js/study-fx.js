@@ -121,6 +121,23 @@ function confettiUnsafe({ count = 110, ms = 2200, colors = PALETTE } = {}) {
     requestAnimationFrame(frame);
 }
 
+/** ข้อความลอยขึ้นจากองค์ประกอบแล้วจางหาย (เช่น "+5 EXP" เมื่อตอบถูก) */
+function floatTextUnsafe(el, text, { color = '#B45309', rise = 46, ms = 900 } = {}) {
+    if (!canAnimate(el) || !document.body) return;
+    const r = el.getBoundingClientRect();
+    const tag = document.createElement('span');
+    tag.textContent = text;
+    tag.setAttribute('aria-hidden', 'true');
+    tag.style.cssText = `position:fixed;left:${r.left + r.width / 2}px;top:${r.top}px;z-index:320;pointer-events:none;font-weight:800;font-size:18px;line-height:1;color:${color};text-shadow:0 2px 0 rgba(255,255,255,.85);white-space:nowrap`;
+    document.body.appendChild(tag);
+    const a = tag.animate([
+        { transform: 'translate(-50%, 0) scale(.6)', opacity: 0 },
+        { transform: 'translate(-50%, -14px) scale(1.15)', opacity: 1, offset: 0.25 },
+        { transform: `translate(-50%, -${rise}px) scale(1)`, opacity: 0 },
+    ], { duration: ms, easing: 'cubic-bezier(.2,.8,.3,1)' });
+    a.onfinish = () => tag.remove();
+}
+
 /** เอฟเฟกต์ไม่เคยทำให้หน้าพัง: ข้อผิดพลาดใด ๆ ในการเคลื่อนไหวถูกกลืนไว้ (หน้าทำงานต่อได้เหมือนไม่มีเอฟเฟกต์) */
 const safe = (fn) => (...args) => { try { return fn(...args); } catch (_) { return undefined; } };
 export const pop = safe(popUnsafe);
@@ -128,3 +145,4 @@ export const shake = safe(shakeUnsafe);
 export const staggerIn = safe(staggerInUnsafe);
 export const burst = safe(burstUnsafe);
 export const confetti = safe(confettiUnsafe);
+export const floatText = safe(floatTextUnsafe);

@@ -23,7 +23,7 @@ function fakeApi(overrides = {}) {
         startQuiz: async (s, no, nodeId) => { calls.push(['start', s, no, nodeId]); return { attempt: { id: 'qa_abcdefghij', questions: QUESTIONS } }; },
         answerQuiz: async (attempt, q, choice) => {
             calls.push(['answer', attempt, q, choice]);
-            return { alreadyAnswered: false, feedback: { questionId: q, isCorrect: choice === KEY[q], yourChoiceId: choice, correctChoiceId: KEY[q], explanation: `เพราะ ${KEY[q]}`, topic: 't' } };
+            return { alreadyAnswered: false, feedback: { questionId: q, isCorrect: choice === KEY[q], exp: choice === KEY[q] ? 6 : 0, yourChoiceId: choice, correctChoiceId: KEY[q], explanation: `เพราะ ${KEY[q]}`, topic: 't' } };
         },
         submitQuiz: async (attempt) => {
             calls.push(['submit', attempt]);
@@ -125,8 +125,10 @@ describe('ทำทีละข้อ', () => {
         click(quiz, { act: 'quiz-check' }); await settle();
         assert.deepEqual(api.calls[1], ['answer', 'qa_abcdefghij', 'q1', 'a']);
         const html = quiz.html();
-        assert.match(html, /class="fb bad"/);
+        assert.match(html, /class="abar-fb fb bad"/, 'เฉลยอยู่ในแถบล่างเหนือปุ่ม เห็นทันทีโดยไม่ต้องเลื่อนหา');
+        assert.match(html, /<p class="fb-ans">เฉลย <b>ข ข1<\/b><\/p>/, 'ผิด = บอกคำตอบที่ถูกก่อน');
         assert.match(html, /เพราะ b/);
+        assert.doesNotMatch(html, /xp-gain/, 'ตอบผิดไม่ได้ EXP ของข้อนั้น');
         assert.match(html, /choice is-bad/);
         assert.match(html, /choice is-ok/);
         assert.match(html, /disabled/);
@@ -153,19 +155,30 @@ describe('ทำทีละข้อ', () => {
         assert.deepEqual(api.calls.at(-1), ['submit', 'qa_abcdefghij']);
         assert.equal(patches.length, 1);
         assert.deepEqual(patches[0].node.progress.best, { correct: 1, total: 2 });
-        const html = quiz.html();
-        assert.match(html, /50%/);
-        assert.match(html, /1\/2 ข้อ/);
-        assert.match(html, /class="pill ok"[^>]*>[\s\S]*ผ่านเกณฑ์/);
-        assert.match(html, /<details class="fold"><summary><span>ข้อที่ควรทบทวน \(1\)<\/span>/, 'ข้อที่ผิดพับเก็บไว้ ไม่แสดงต่อหน้า');
-        assert.doesNotMatch(html, /ตอบถูก 1 จาก 2/);
-        assert.match(html, /เฉลย: ข ข1/);
-        assert.equal((html.match(/review-i/g) || []).length, 1, 'แสดงเฉพาะข้อที่ผิด');
+        let html = quiz.html();
+        assert.match(html, /data-key="rs"/);
+        assert.match(html, /data-key="score-0"/);
+        assert.match(html, /data-count="1">1<\/span><small>\/ 2 ข้อ/, 'ถูกกี่ข้อ เป็นตัวเลขใหญ่ ไม่ใช่กราฟ');
+        assert.match(html, /<i class="bad" style="--i:0">[\s\S]*<i class="ok" style="--i:1">/, 'ลูกบอลถูก/ผิดต่อข้อ');
+        assert.match(html, /ผ่านเกณฑ์!/);
+        assert.doesNotMatch(html, /ring|rs-review|rs-exp|fold/, 'ทีละหน้า: หน้าคะแนนมีแต่คะแนน');
+        assert.equal(quiz.hasAbar(), true);
+        assert.match(html, /data-act="rs-next"[^>]*><span>ต่อไป/);
+        assert.equal((html.match(/<(button|a) /g) || []).length, 1, 'ปุ่มเดียว');
+
+        click(quiz, { act: 'rs-next' });
+        html = quiz.html();
+        assert.match(html, /data-key="review-0"/);
+        assert.match(html, /ข้อ 1 โจทย์ &lt;b&gt;หนึ่ง&lt;\/b&gt;/);
+        assert.match(html, /คุณตอบ <s>ก ก1<\/s>/);
+        assert.match(html, /เฉลย <b>ข ข1<\/b>/);
+        assert.match(html, /เพราะ b/);
+        assert.equal((html.match(/rs-review/g) || []).length, 1, 'ทบทวนเฉพาะข้อที่ผิด ทีละข้อ');
+        // (ไม่มี reward ใน API จำลอง: หน้าทบทวนเป็นหน้าสุดท้าย)
         assert.match(html, /href="lesson\.html\?s=sci&amp;l=1&amp;n=sci-p1"[^>]*><span>ไปกิจกรรมถัดไป/);
-        assert.match(html, /href="lesson\.html\?s=sci&amp;l=1"[^>]*>ทบทวนเนื้อหา/);
+        assert.match(html, /data-act="quiz-start">ทำอีกครั้ง/);
         assert.match(html, /href="course\.html\?s=sci"[^>]*>เส้นทางเรียน/);
-        assert.match(html, /data-key="result"/);
-        assert.equal(quiz.hasAbar(), false);
+        assert.doesNotMatch(html, /data-act="rs-next"/);
     });
 
     test('ตอบถูกติดกัน 3 ข้อขึ้นไปมีป้ายเปลวไฟ และตอบผิดแล้วนับใหม่', async () => {
@@ -195,16 +208,17 @@ describe('ทำทีละข้อ', () => {
             return quiz.html();
         };
         assert.doesNotMatch(await run('now'), /บทนี้เสร็จสมบูรณ์/);
-        assert.match(await run('done'), /<span class="pill gold">บทนี้เสร็จสมบูรณ์/);
+        assert.match(await run('done'), /pill gold rs-badge">บทนี้เสร็จสมบูรณ์/);
     });
 
     test('ไม่มีกิจกรรมถัดไป → ปุ่มหลักพากลับเส้นทางเรียน', async () => {
         const quiz = make(fakeApi(), { nextHref: null });
         click(quiz, { act: 'quiz-start' }); await settle();
         for (let i = 0; i < 2; i++) { click(quiz, { choice: 'a' }); click(quiz, { act: 'quiz-check' }); await settle(); click(quiz, { act: 'quiz-next' }); await settle(); }
+        click(quiz, { act: 'rs-next' });
         const html = quiz.html();
         assert.doesNotMatch(html, /ไปกิจกรรมถัดไป/);
-        assert.match(html, /href="course\.html\?s=sci"[^>]*><span>กลับไปเส้นทางเรียน/);
+        assert.match(html, /class="btn btn-lg" href="course\.html\?s=sci"><span>กลับไปเส้นทางเรียน/);
     });
 
     test('ทำอีกครั้งจากหน้าผล เริ่มชุดใหม่ที่ข้อ 1', async () => {
@@ -263,7 +277,8 @@ describe('ภาพและวิดีโอในโจทย์', () => {
         const quiz = make(api);
         click(quiz, { act: 'quiz-start' }); await settle();
         for (let i = 0; i < 2; i++) { click(quiz, { choice: 'a' }); click(quiz, { act: 'quiz-check' }); await settle(); click(quiz, { act: 'quiz-next' }); await settle(); }
-        assert.match(quiz.html(), /assets\/study\/sci\/review\.svg/);
+        click(quiz, { act: 'rs-next' });
+        assert.match(quiz.html(), /assets\/study\/sci\/review\.svg/, 'ภาพของโจทย์ที่ตอบผิดอยู่ในหน้าทบทวน');
     });
 });
 
@@ -291,7 +306,7 @@ describe('ข้อผิดพลาดและการกดซ้ำ', () =
         click(quiz, { act: 'quiz-check' }); await settle();
         html = quiz.html();
         assert.doesNotMatch(html, /เชื่อมต่อเซิร์ฟเวอร์ไม่ได้/);
-        assert.match(html, /class="fb ok"/);
+        assert.match(html, /class="abar-fb fb ok"/);
     });
 
     test('ชุดที่ถูกปิดไปแล้ว (เริ่มใหม่ที่อื่น) → กลับไปหน้าแรกของ Quiz พร้อมข้อความ', async () => {

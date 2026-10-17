@@ -141,11 +141,13 @@ describe('จบเนื้อหา', () => {
         assert.deepEqual(api.calls, [['progress', 'sci', 2, 'sci-n1', { page: 2, completed: true }]]);
         assert.equal(applied.length, 1);
         const html = content.html();
-        assert.match(html, /เรียนจบแล้ว![\s\S]*“สสารและสถานะ”/);
-        assert.match(html, /อ่านครบ 3 หน้า/);
+        assert.match(html, /data-key="done-0"/);
+        assert.match(html, /เรียนจบแล้ว![\s\S]*“สสารและสถานะ”[\s\S]*อ่านครบ 3 หน้า/);
         assert.match(html, /href="lesson\.html\?s=sci&amp;l=2&amp;n=sci-z1"[^>]*><span>ไปกิจกรรมถัดไป/);
-        assert.match(html, /href="course\.html\?s=sci"[^>]*>กลับไปเส้นทางเรียน/);
-        assert.equal(content.hasAbar(), false);
+        assert.match(html, /data-act="cn-again">อ่านอีกครั้ง/);
+        assert.match(html, /href="course\.html\?s=sci"[^>]*>เส้นทางเรียน/);
+        assert.equal((html.match(/<(button|a) /g) || []).length, 3, 'ปุ่มหลัก 1 + ลิงก์เล็ก 2');
+        assert.equal(content.hasAbar(), true, 'หน้าสรุปมีแถบปุ่มของตัวเอง');
         assert.equal(content.step(1), false, 'หน้าสำเร็จเลื่อนหน้าไม่ได้');
         click(content, 'cn-again');
         assert.match(content.html(), /aria-valuenow="1"/, 'อ่านอีกครั้งเริ่มจากหน้าแรก');
@@ -158,7 +160,7 @@ describe('จบเนื้อหา', () => {
         await settle();
         const html = content.html();
         assert.doesNotMatch(html, /ไปกิจกรรมถัดไป/);
-        assert.match(html, /class="btn btn-lg btn-block" href="course\.html\?s=sci"/);
+        assert.match(html, /class="btn btn-lg" href="course\.html\?s=sci"><span>กลับไปเส้นทางเรียน/);
     });
 
     test('บันทึกไม่สำเร็จ → ยังอยู่หน้าสุดท้ายพร้อมข้อความ และกดจบใหม่ได้; กดซ้ำระหว่างรอส่งครั้งเดียว', async () => {

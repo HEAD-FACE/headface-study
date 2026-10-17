@@ -6,13 +6,14 @@
  * บันทึกคำตอบอัตโนมัติระหว่างสอบ ปิดแท็บแล้วกลับมาทำต่อได้ และเมื่อหมดเวลา Backend ส่งคำตอบที่ทำไว้ให้เอง
  */
 import { studyApi, StudyApiError } from './study-api.js';
-import { $, esc, params, content, view, ICON, notFound, setTheme, focusView, abar, ringHtml, animateRing } from './study-ui.js';
-import { choiceLabel, scoreMessage, formatClock, formatThaiDate } from './study-format.js';
+import { $, esc, params, content, view, ICON, notFound, setTheme, focusView, abar } from './study-ui.js';
+import { choiceLabel, formatClock, formatThaiDate } from './study-format.js';
 import { SUBJECT_ID_RE, courseUrl, failure, loading, mockUrl, messageOf } from './study-live-common.js';
 import { questionMediaHtml, choiceImageHtml } from './study-media.js';
-import { confetti, countUp, pop } from './study-fx.js';
+import { burst, confetti } from './study-fx.js';
 import { patchHtml } from './study-dom.js';
-import { animateReward, expPillHtml } from './study-reward.js';
+import { expRangeChipsHtml } from './study-reward.js';
+import { countAll, createResultFlow, reviewStepHtml, rewardSteps, scoreStepHtml, starsStepHtml } from './study-result.js';
 
 const SAVE_RETRY_MS = 5000;
 const AUTO_SUBMIT_RETRY_MS = 5000;
@@ -125,6 +126,7 @@ export async function initMockExam({ api = studyApi, saveDebounceMs = 1000, tick
             <div class="info"><span class="tile tile-teal">${ICON.list(20)}</span><div><b>เลือกตอบ</b><span class="l">รูปแบบคำถาม</span></div></div>
             <div class="info"><span class="tile tile-rose">${ICON.star(20)}</span><div><b>${m.passMarkPct === null ? 'ยังไม่กำหนด' : `${m.passMarkPct}%`}</b><span class="l">คะแนนผ่าน</span></div></div>
           </div>
+          <div class="facts" style="margin-top:12px">${expRangeChipsHtml(m.reward)}${m.stars && m.stars.max ? `<span class="chip chip-amber">${ICON.star(13)} ดาวสูงสุด ${m.stars.max}</span>` : ''}</div>
           ${fold('rules', 'เงื่อนไขก่อนเริ่มสอบ', `<ul class="rules">
               <li>${ICON.info(18)}<span>ระหว่างสอบจะไม่แสดงเฉลย ดูเฉลยและคำอธิบายได้หลังส่งข้อสอบ</span></li>
               <li>${ICON.info(18)}<span>จับเวลาถอยหลังตามเวลาของระบบ เมื่อหมดเวลาระบบจะส่งคำตอบที่ทำไว้ให้อัตโนมัติ คำตอบถูกบันทึกระหว่างทำ ปิดหน้าแล้วกลับมาทำต่อได้ (เวลายังเดินอยู่)</span></li>
@@ -296,6 +298,7 @@ export async function initMockExam({ api = studyApi, saveDebounceMs = 1000, tick
         stopTimers();
         closeOverlay();
         result = r;
+        flow = buildFlow();
         stage = 'result';
         busy = false;
         error = null;
@@ -323,61 +326,54 @@ export async function initMockExam({ api = studyApi, saveDebounceMs = 1000, tick
         }
     }
 
-    // ───── สรุปผล ─────
-    function resultView() {
+    // ───── สรุปผล: ทีละหน้า (คะแนน → ทบทวนข้อที่ผิดทีละข้อ → ดาว → EXP → เลื่อนเลเวล → ไปต่อ) ─────
+    let flow = null;
+    function buildFlow() {
         const r = result;
-        const unanswered = r.total - r.answered;
-        const pills = [
-            r.passed === null ? '' : r.passed ? `<span class="pill ok">${ICON.check(14, 3.4)} ผ่านเกณฑ์</span>` : '<span class="pill warn">ยังไม่ผ่านเกณฑ์</span>',
+        const wrong = r.review.filter((x) => !x.isCorrect);
+        const celebrate = r.passed === true || (r.passed === null && r.percent >= 70);
+        const extra = [
             `<span class="pill">${ICON.clock(14)} ${formatClock(r.secondsUsed)} / ${formatClock(r.durationSec)}</span>`,
-            deltaHtml(r.deltaVsPrevious),
-            unanswered ? `<span class="pill warn">ไม่ได้ตอบ ${unanswered}</span>` : '',
-            expPillHtml(r.reward),
-        ].filter(Boolean).join('');
-        const fold = (title, inner) => `<details class="fold"><summary><span>${title}</span><i>${ICON.down(18)}</i></summary><div>${inner}</div></details>`;
-        // ผลรายหัวข้อและเฉลยรายข้อยาว จึงพับเก็บไว้ในหัวข้อที่กดเปิดเมื่อต้องการ — หน้าสรุปมีแค่คะแนน ป้ายสถานะ และดาว
-        return `<div data-key="result">
-          ${r.autoSubmitted ? '<div class="demo-note" role="alert" style="border-color:#F43F5E;background:#FFF1F2;color:#881337"><span>หมดเวลา ระบบส่งคำตอบที่ทำไว้ให้อัตโนมัติ</span></div>' : ''}
-          <section class="rblock result" style="margin-top:14px">
-            ${ringHtml(r.percent, `${r.correct}/${r.total} ข้อ`)}
-            <h2>${esc(scoreMessage(r.percent))}</h2>
-            <div class="pills" aria-label="สรุปผล">${pills}</div>
-            <div class="stars-big" role="status">${ICON.star(26, '#F59E0B')}<span><span data-countup="${r.starsEarned}">${r.starsEarned}</span> ดาว</span><small>จากคะแนน ${r.percent}% = ${r.starsBase} ดาว${r.starsTimeBonus ? ` + โบนัสเวลา ${r.starsTimeBonus}` : ''}</small></div>
-          </section>
-          ${fold('ผลรายหัวข้อ', `<div class="rows" style="margin-top:0">${r.topics.map((t) => `<div class="topic-row"><div class="top"><span>${esc(t.topic)}</span><span>${t.correct}/${t.total}</span></div><div class="bar" aria-hidden="true"><i style="width:${t.total ? (t.correct / t.total) * 100 : 0}%"></i></div></div>`).join('')}</div>`)}
-          ${fold(`เฉลยรายข้อ (${r.review.length})`, `<div class="review">${r.review.map((x) => {
-                const state = !x.yourChoiceId ? 'skip' : x.isCorrect ? 'ok' : 'bad';
-                const ci = x.choices.findIndex((c) => c.id === x.correctChoiceId);
-                const yi = x.choices.findIndex((c) => c.id === x.yourChoiceId);
-                return `<div class="review-i ${state === 'ok' ? 'ok' : state === 'bad' ? 'bad' : ''}"><h3>${state === 'ok' ? ICON.check(16) : state === 'bad' ? ICON.x(16) : ICON.info(16)}<span>ข้อ ${x.n} ${esc(x.text)} — ${state === 'ok' ? 'ถูก' : state === 'bad' ? 'ผิด' : 'ไม่ได้ตอบ'}${x.special ? ' • ข้อพิเศษ' : ''}</span></h3>${questionMediaHtml(x.media)}<p>เฉลย: ${ci >= 0 ? `${choiceLabel(ci)} ${esc(x.choices[ci].text)}` : ''}${state === 'bad' && yi >= 0 ? ` • คุณตอบ ${choiceLabel(yi)}` : ''}</p>${x.explanation ? `<p>${esc(x.explanation)}</p>` : ''}</div>`;
-              }).join('')}</div>`)}
-          <div class="res-actions">
-            <button type="button" class="btn btn-lg btn-block btn-orange" data-act="retry" style="margin-top:0">ทำข้อสอบอีกครั้ง</button>
-            <a class="btn btn-lg btn-block btn-line" href="${courseUrl(subject.id)}" style="margin-top:0">กลับหน้ารายละเอียดวิชา</a>
-          </div>
-        </div>`;
+            r.deltaVsPrevious > 0 ? `<span class="pill ok">ดีขึ้น +${r.deltaVsPrevious}%</span>` : '',
+            r.autoSubmitted ? '<span class="pill warn">หมดเวลา ระบบส่งให้อัตโนมัติ</span>' : '',
+        ].join('');
+        const steps = [{
+            key: 'score',
+            html: () => scoreStepHtml({ correct: r.correct, total: r.total, marks: r.review.map((x) => x.isCorrect), passed: r.passed, extra }),
+            label: 'ต่อไป',
+            fx(root) { countAll(root); if (celebrate) confetti(); },
+        }];
+        if (wrong.length) {
+            steps.push({
+                key: 'review', count: wrong.length, skippable: true,
+                html: (sub) => reviewStepHtml({ item: wrong[sub], index: sub, count: wrong.length }),
+                label: (sub) => (sub + 1 < wrong.length ? 'ข้อถัดไป' : 'เข้าใจแล้ว'),
+            });
+        }
+        steps.push({
+            key: 'stars',
+            html: () => starsStepHtml({ stars: r.starsEarned, base: r.starsBase, bonus: r.starsTimeBonus, percent: r.percent }),
+            label: 'ต่อไป',
+            fx(root) { countAll(root); if (r.starsEarned > 0) burst(root.querySelector('.rs-star'), { count: 14, radius: 90, colors: ['#FBBF24', '#F59E0B', '#FDE68A', '#FCD34D'] }); },
+        });
+        steps.push(...rewardSteps(r.reward, { title: 'EXP ที่ได้รับ' }));
+        return createResultFlow({
+            steps, render,
+            finalCta: { href: courseUrl(subject.id), label: 'กลับหน้ารายละเอียดวิชา' },
+            linksHtml: '<button type="button" class="linkbtn" data-act="retry">ทำข้อสอบอีกครั้ง</button>',
+        });
     }
+    const resultView = () => flow.html();
 
     function render({ focus = false } = {}) {
         patchHtml(content, stage === 'intro' ? introView() : stage === 'run' ? runView() : resultView());
         qdir = 0;
-        view.classList.toggle('has-abar', (stage === 'intro' && info.mock.available) || stage === 'run');
-        if (stage === 'result') {
-            animateRing(content);
-            celebrate();
-        }
+        view.classList.toggle('has-abar', (stage === 'intro' && info.mock.available) || stage === 'run' || stage === 'result');
+        // แถบล่างสูงไม่เท่ากัน: เว้นที่ท้ายหน้าตามความสูงจริง
+        const abarEl = typeof content.querySelector === 'function' ? content.querySelector('.abar') : null;
+        if (view.style && typeof view.style.setProperty === 'function') view.style.setProperty('--abar-h', abarEl ? `${abarEl.offsetHeight}px` : '0px');
+        if (stage === 'result' && flow) flow.afterRender(content);
         if (focus) focusView();
-    }
-
-    // ผลสรุป: ดาวนับขึ้น + ริบบิ้นเมื่อผ่านเกณฑ์ (หรือได้ตั้งแต่ 70% ถ้าไม่มีเกณฑ์) ทำครั้งเดียวต่อผลหนึ่งครั้ง
-    let celebrated = null;
-    function celebrate() {
-        if (!result || celebrated === result) return;
-        celebrated = result;
-        const el = typeof content.querySelector === 'function' ? content.querySelector('[data-countup]') : null;
-        if (el) { countUp(el, Number(el.dataset.countup)); pop(el.closest('.stars-big'), { scale: 1.12, ms: 500 }); }
-        animateReward(content);
-        if (result.passed === true || (result.passed === null && result.percent >= 70)) confetti();
     }
 
     async function backToIntro() {
@@ -391,6 +387,7 @@ export async function initMockExam({ api = studyApi, saveDebounceMs = 1000, tick
 
     // ───── เหตุการณ์ ─────
     content.onclick = (e) => {
+        if (stage === 'result' && flow && flow.handleClick(e)) return;
         const act = e.target.closest('[data-act]')?.dataset.act;
         if (act === 'start') return start();
         if (act === 'retry') return backToIntro();

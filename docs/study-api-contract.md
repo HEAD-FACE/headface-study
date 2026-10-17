@@ -542,14 +542,19 @@ UI แสดงป้ายตัวเลือก ก ข ค ง ตามล
 **รูป `reward`** (ใส่มากับผลของกิจกรรมที่จบ; `null` = ไม่ได้อะไร):
 ```json
 { "exp": 25, "baseExp": 25, "firstTime": true, "halved": false, "stars": 0,
+  "parts": { "answers": 10, "completion": 15 },
+  "levelUp": { "from": 1, "to": 2 },
   "totals": { "exp": 125, "stars": 12, "level": { "level": 2, "from": 50, "to": 200, "pct": 50, "toNext": 75 } } }
 ```
+- `parts` = EXP เต็มก่อนหาร ประกอบด้วยอะไร (`answers` = จากข้อที่ตอบถูก, `completion` = ตอนทำเสร็จ) มีเฉพาะ Quiz/Mock และเฉพาะคำตอบของคำขอที่จ่ายรางวัลจริง; `levelUp` = `{ from, to }` เมื่อรางวัลนี้พาผู้เรียนข้ามเลเวล (ไม่มี = `null`) **ไม่ส่งซ้ำ** เมื่อเปิดผลของครั้งที่เสร็จไปแล้วอีกครั้ง (กันเล่นแอนิเมชันเลื่อนเลเวลซ้ำ)
 - `PUT …/nodes/:nodeId/progress` → `{ progress, reward }` (`reward` เฉพาะเมื่อส่ง `completed: true`)
 - `POST /quiz-attempts/:id/submit` → `{ result, node, lesson, current, reward }` (ส่งซ้ำได้ `reward` เดิมกลับมา)
 - `PUT …/practice/:questionId/result` → `{ summary, reward }` (`reward` เฉพาะตอนข้อสุดท้ายของชุดได้ผลเป็นครั้งแรกของรอบนั้น; เปลี่ยนผลทีหลังไม่ได้เพิ่ม)
 - Mock: `result.reward` (ทั้งตอนส่งและตอนเปิดดูผลย้อนหลัง) พร้อม `starsBase / starsTimeBonus / starsEarned` เดิม
-- `GET /subjects/:id` → ทุก node มี `reward: { exp, repeat }` = EXP **สูงสุดที่วงนี้ให้ได้ตอนนี้** (Quiz = `exp` ของชุด + ข้อที่ให้ EXP สูงสุด `questionCount` ข้อ; ถ้าเคยได้รางวัลวงนี้แล้ว `repeat: true` และเป็นครึ่งเดียว)
-- `GET /subjects/:id/mock` → `mock.exp` และ `mock.stars.max` (= `maxStars`)
+- **EXP ก่อนเริ่ม (ให้ผู้เรียนเห็นว่าอย่างน้อยจะได้เท่าไร):** `GET /subjects/:id` และ `GET …/nodes/:nodeId` → ทุก node มี `reward: { exp, min, repeat }` — `exp` = EXP **สูงสุดที่วงนี้ให้ได้ตอนนี้** (Quiz = `exp` ของชุด + ข้อที่ให้ EXP สูงสุด `questionCount` ข้อ), `min` = **ขั้นต่ำ** (ทำเสร็จก็ได้เท่านี้ = `exp` ของชุด); ถ้าเคยได้รางวัลวงนี้แล้ว `repeat: true` และทั้งสองค่าเป็นครึ่งเดียวแล้ว
+- `POST …/quiz-attempts` → `attempt.reward: { min, max, repeat }` ของชุดที่เพิ่งสุ่ม (ขั้นต่ำ = EXP ของชุด, สูงสุด = บวกทุกข้อที่สุ่มได้ถูกหมด)
+- `POST /quiz-attempts/:id/answer` → `feedback.exp` = EXP ที่ข้อนี้ให้เมื่อตอบถูก (เต็มค่า ผิด = 0) หน้าเรียนใช้นับ EXP สะสมระหว่างทำ (ทำซ้ำแสดงครึ่งเดียว)
+- `GET /subjects/:id/mock` → `mock.exp` (EXP ตอนทำเสร็จ), `mock.stars.max` (= `maxStars`) และ `mock.reward: { min, max, repeat }` (ขั้นต่ำ = `mock.exp`, สูงสุด = บวกข้อที่ให้ EXP สูงสุดที่สุ่มได้ตามแพลน; ทำซ้ำครึ่งเดียว)
 - `GET /progress` → `rewards: { exp, stars, level }` (EXP/ดาวรวมของผู้เรียนคนนั้นเท่านั้น; ไม่มีการจัดอันดับระหว่างผู้เรียน)
 - ถ้ายังไม่ได้รัน migration 0010: ทุกหน้าเรียนทำงานตามปกติ แต่ `reward` เป็น `null`, `nodes[].reward` ไม่มี, `rewards` เป็น 0 และดาวของ Mock ใช้ค่าสูงสุดเริ่มต้น 10
 

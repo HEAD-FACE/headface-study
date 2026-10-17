@@ -64,4 +64,5 @@ export function animateRing(root) {
 }
 
 /** แถบปุ่มค้างด้านล่าง; cls = is-ok / is-bad ย้อมแถบเป็นสีเขียว/แดงตามผลของข้อ (เหมือนการตอบในแอปเรียนภาษา) */
-export const abar = (inner, cls = '') => `<div class="abar${cls ? ` ${cls}` : ''}"><div class="abar-in">${inner}</div></div>`;
+/** top = แผงที่อยู่เหนือปุ่ม (เช่น เฉลยของข้อที่เพิ่งตอบ) ย้อมสีตามผลเดียวกับแถบ */
+export const abar = (inner, cls = '', top = '') => `<div class="abar${cls ? ` ${cls}` : ''}">${top}<div class="abar-in">${inner}</div></div>`;

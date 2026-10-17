@@ -12,7 +12,8 @@ import { esc, ICON, abar } from './study-ui.js';
 import { blocksHtml } from './study-blocks.js';
 import { messageOf } from './study-live-common.js';
 import { confetti, pop } from './study-fx.js';
-import { animateReward, expPillHtml } from './study-reward.js';
+import { expTagHtml } from './study-reward.js';
+import { createResultFlow, rewardSteps } from './study-result.js';
 
 /**
  * @param {object} deps
@@ -31,7 +32,7 @@ export function createContent({ subject, lessonNo, node, api, render, applyProgr
     const reached = Number(node.progress && node.progress.pageReached) || 0;
     const wasDone = !!(node.progress && node.progress.completedAt);
 
-    const s = { phase: 'read', page: wasDone ? 0 : Math.min(reached, last), dir: 0, busy: false, error: null, saved: reached, fx: null, reward: null };
+    const s = { phase: 'read', page: wasDone ? 0 : Math.min(reached, last), dir: 0, busy: false, error: null, saved: reached, fx: null, reward: null, flow: null };
 
     /** บันทึกหน้าที่อ่านถึง (ไม่รอผล: ถ้าล้มเหลวก็แค่เปิดใหม่แล้วเริ่มหน้าก่อนหน้า) */
     function savePage() {
@@ -60,6 +61,7 @@ export function createContent({ subject, lessonNo, node, api, render, applyProgr
             const done = await api.setNodeProgress(subject.id, lessonNo, node.id, { page: last, completed: true });
             applyProgress(done);
             s.reward = done.reward || null;
+            s.flow = buildFlow();
             s.phase = 'done';
             s.fx = 'finish';
             window.scrollTo(0, 0);
@@ -84,7 +86,7 @@ export function createContent({ subject, lessonNo, node, api, render, applyProgr
             ? `<button type="button" class="btn btn-lg" data-act="cn-finish"${s.busy ? ' disabled' : ''}><span>${s.busy ? 'กำลังบันทึก...' : wasDone ? 'จบ' : 'จบเนื้อหา'}</span>${s.busy ? '' : ICON.check(18, 3.2)}</button>`
             : `<button type="button" class="btn btn-lg" data-act="cn-next"><span>ถัดไป</span>${ICON.next(14)}</button>`;
         return `<div class="cn">
-          <div class="cn-top">${dots()}${pages.length > 1 ? `<span class="cn-count">${s.page + 1}/${pages.length}</span>` : ''}</div>
+          <div class="cn-top">${dots()}${pages.length > 1 ? `<span class="cn-count">${s.page + 1}/${pages.length}</span>` : ''}${expTagHtml(node.reward)}</div>
           <div class="cn-view" data-key="p${s.page}" data-dir="${s.dir}">
             ${page.title ? `<p class="cn-kicker">${esc(page.title)}</p>` : ''}
             <div class="read cn-page">${blocksHtml(page.blocks) || '<p class="empty-p">หน้านี้ยังไม่มีเนื้อหา</p>'}</div>
@@ -94,35 +96,38 @@ export function createContent({ subject, lessonNo, node, api, render, applyProgr
         ${abar(`<button type="button" class="btn-ico" data-act="cn-prev" aria-label="หน้าก่อนหน้า"${s.page === 0 ? ' disabled' : ''}>${ICON.prev(18)}</button>${action}`)}`;
     }
 
-    function doneHtml() {
-        return `<section class="rblock result cn-done" data-key="done">
-          <div class="cn-medal" aria-hidden="true">🎉</div>
-          <h2>เรียนจบแล้ว!</h2>
-          <p class="cn-done-t">“${esc(node.title)}”</p>
-          <div class="pills"><span class="pill ok">${ICON.check(14, 3.4)} อ่านครบ ${pages.length} หน้า</span>${expPillHtml(s.reward)}</div>
-          <div class="res-actions">
-            ${nextHref ? `<a class="btn btn-lg btn-block" href="${esc(nextHref)}" style="margin-top:0"><span>ไปกิจกรรมถัดไป</span>${ICON.next(14)}</a>` : ''}
-            <a class="btn btn-lg btn-block${nextHref ? ' btn-line' : ''}" href="${esc(courseHref)}" style="margin-top:0">กลับไปเส้นทางเรียน</a>
-            <button type="button" class="linkbtn" data-act="cn-again">อ่านอีกครั้ง</button>
-          </div>
-        </section>`;
+    /** หลังจบ: หน้าเฉลิมฉลอง + EXP ที่ได้ → (เลื่อนเลเวล) → ปุ่มไปต่อ ทีละหน้า (ไม่มี EXP = หน้าเดียว) */
+    function buildFlow() {
+        const steps = rewardSteps(s.reward, { emoji: '🎉', title: 'เรียนจบแล้ว!' });
+        if (steps.length === 0) {
+            steps.push({
+                key: 'done',
+                html: () => `<section class="rs-card"><div class="rs-emoji" aria-hidden="true">🎉</div><h2>เรียนจบแล้ว!</h2><p class="rs-cap">“${esc(node.title)}” • อ่านครบ ${pages.length} หน้า</p></section>`,
+                label: 'ต่อไป',
+                fx(root) { pop(root.querySelector('.rs-emoji'), { scale: 1.35, ms: 650 }); },
+            });
+        }
+        const first = steps[0].fx;
+        steps[0].fx = (root) => { confetti({ count: 100 }); if (first) first(root); };
+        return createResultFlow({
+            steps, render,
+            finalCta: nextHref ? { href: nextHref, label: 'ไปกิจกรรมถัดไป' } : { href: courseHref, label: 'กลับไปเส้นทางเรียน' },
+            linksHtml: `<button type="button" class="linkbtn" data-act="cn-again">อ่านอีกครั้ง</button>${nextHref ? `<a class="linkbtn" href="${esc(courseHref)}">เส้นทางเรียน</a>` : ''}`,
+        });
     }
 
     return {
-        hasAbar: () => s.phase === 'read' && pages.length > 0,
-        html: () => (s.phase === 'done' ? doneHtml() : readHtml()),
+        hasAbar: () => s.phase === 'done' || (s.phase === 'read' && pages.length > 0),
+        html: () => (s.phase === 'done' ? s.flow.html() : readHtml()),
         afterRender(root) {
             const fx = s.fx;
             s.fx = null;
             s.dir = 0;
             if (!root || typeof root.querySelector !== 'function') return;
-            if (fx === 'finish') {
-                confetti({ count: 100 });
-                pop(root.querySelector('.cn-medal'), { scale: 1.35, ms: 650 });
-                animateReward(root);
-            }
+            if (s.phase === 'done' && s.flow) s.flow.afterRender(root);
         },
         handleClick(e) {
+            if (s.phase === 'done' && s.flow && s.flow.handleClick(e)) return true;
             const act = e.target.closest('[data-act]')?.dataset.act;
             if (act === 'cn-next') { go(1); return true; }
             if (act === 'cn-prev') { go(-1); return true; }

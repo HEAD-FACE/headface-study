@@ -82,6 +82,9 @@ export async function initNode({ api = studyApi } = {}) {
     function draw({ focus = false } = {}) {
         patchHtml(content, controller.html());
         if (view) view.classList.toggle('has-abar', !!(controller.hasAbar && controller.hasAbar()));
+        // แถบล่างสูงไม่เท่ากัน (มีแผงเฉลย): เว้นที่ท้ายหน้าตามความสูงจริง ไม่ให้เนื้อหาถูกบัง
+        const bar = typeof content.querySelector === 'function' ? content.querySelector('.abar') : null;
+        if (view && view.style && typeof view.style.setProperty === 'function') view.style.setProperty('--abar-h', bar ? `${bar.offsetHeight}px` : '0px');
         if (controller.afterRender) controller.afterRender(content);
         if (focus) focusView();
     }

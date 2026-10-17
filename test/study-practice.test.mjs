@@ -109,9 +109,9 @@ describe('ทีละข้อ: ข้ามข้อ เฉลย และก
         assert.match(practice.html(), /data-key="c-p3"/);
         practice.step(1);
         h = practice.html();
-        assert.match(h, /data-key="pk-done"/, 'เลยข้อสุดท้าย = หน้าสรุป');
+        assert.match(h, /data-key="done-0"/, 'เลยข้อสุดท้าย = หน้าสรุป');
         assert.equal(practice.step(1), false);
-        assert.equal(practice.hasAbar(), false);
+        assert.equal(practice.hasAbar(), true, "หน้าสรุปมีแถบปุ่มของตัวเอง");
     });
 
     test('เฉลยถูกขอเมื่อกดดูครั้งแรกเท่านั้น (ครั้งต่อไปใช้ที่เก็บไว้) และแสดงแบบ escape; เมื่อเปิดเฉลยจึงมีปุ่มทำถูก/ทำผิด', async () => {
@@ -184,9 +184,9 @@ describe('ทีละข้อ: ข้ามข้อ เฉลย และก
         click(manual.practice, { act: 'pk-next' });
         click(manual.practice, { act: 'pk-next' });
         click(manual.practice, { act: 'pk-next' });
-        assert.match(manual.practice.html(), /data-key="pk-done"/);
+        assert.match(manual.practice.html(), /data-key="done-0"/);
         await wait(50);
-        assert.match(manual.practice.html(), /data-key="pk-done"/, 'ไม่ถูกดึงกลับหรือเลื่อนซ้ำ');
+        assert.match(manual.practice.html(), /data-key="done-0"/, 'ไม่ถูกดึงกลับหรือเลื่อนซ้ำ');
     });
 
     test('กดซ้ำระหว่างรอบันทึก → ส่งครั้งเดียว; บันทึกไม่ได้ → ผลเดิมคงอยู่พร้อมข้อความ', async () => {
@@ -243,13 +243,15 @@ describe('กรอง หน้าสรุป และล้างผล', ()
         practice.step(1);
         practice.step(1);
         const h = practice.html();
+        assert.doesNotMatch(h, /pfilter|data-pf="easy"/, 'หน้าสรุปไม่แสดงตัวกรอง (เรื่องเดียวต่อหน้า)');
         assert.match(h, /ครบ 3 ข้อแล้ว/);
         assert.match(h, /ถูก 1/);
         assert.match(h, /ผิด 1/);
         assert.match(h, /ยังไม่ได้ทำ 1/);
-        assert.match(h, /data-pf="wrong"[^>]*><span>ฝึกข้อที่ผิดอีกครั้ง \(1\)/);
+        assert.match(h, /data-pf="wrong">ฝึกข้อที่ผิด \(1\)<\/button>/);
         assert.match(h, /href="lesson\.html\?s=sci&amp;l=2&amp;n=sci-n3"[^>]*><span>ไปกิจกรรมถัดไป/);
-        assert.match(h, /href="course\.html\?s=sci"[^>]*>กลับไปเส้นทางเรียน/);
+        assert.match(h, /data-act="practice-reset">ล้างผล/);
+        assert.equal((h.match(/<(button|a) /g) || []).length > 0, true);
         click(practice, { act: 'pk-restart' });
         assert.match(practice.html(), /data-key="c-p1" data-dir="-1"/);
         practice.step(1);

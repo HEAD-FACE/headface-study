@@ -67,7 +67,7 @@ describe('เปิดกิจกรรมตามชนิด', () => {
         dom.click({ act: 'cn-finish' });
         await wait(5);
         assert.match(html(), /href="lesson\.html\?s=sci&amp;l=2&amp;n=sci-z1"[^>]*><span>ไปกิจกรรมถัดไป/);
-        assert.equal(dom.el.view.toggled['has-abar'], false);
+        assert.equal(dom.el.view.toggled['has-abar'], true, 'หน้าสรุปมีแถบปุ่มของตัวเอง');
     });
 
     test('Quiz: แสดงหน้าเริ่มของชุดนั้น และไม่มีกิจกรรมถัดไปก็กลับเส้นทางเรียน', async () => {

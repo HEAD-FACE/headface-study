@@ -2,26 +2,31 @@
  * js/study-live-quiz.js — Quiz หนึ่งชุด (วงกลม 1 วงบนเส้นทางเรียน) โหมดข้อมูลจริง
  *
  * ตรวจคำตอบที่ Backend ทั้งหมด: หน้านี้ไม่เคยได้เฉลยก่อนตอบ ตอบทีละข้อแล้ว Backend ส่งเฉลยของข้อนั้นกลับมา
- * และส่งผลสรุปทั้งชุดหลังกดส่ง ตัวนี้จึงแค่แสดงผลและเรียก API ตามลำดับ intro → ถามทีละข้อ → ผลคะแนน
+ * และส่งผลสรุปทั้งชุดหลังกดส่ง ตัวนี้จึงแค่แสดงผลและเรียก API ตามลำดับ intro → ถามทีละข้อ → ผลสรุปทีละหน้า
  * โจทย์มีภาพ/วิดีโอประกอบได้ (media) และตัวเลือกมีภาพได้ (choice.image)
  *
- * ข้อความน้อยที่สุด และไม่กะพริบ: html() คืนมุมมองที่มี data-key (intro / ข้อที่ N / ผลคะแนน) หน้าถูกแก้เฉพาะจุด (study-dom.js)
- * เลือกตัวเลือก/กดตรวจ = เปลี่ยนแค่สีและกล่องเฉลย ไม่วาดโจทย์ใหม่ เปลี่ยนข้อ = การ์ดข้อใหม่เลื่อนเข้ามา แถบความคืบหน้าวิ่งต่อ
+ * ให้อยากทำต่อ: ตอบถูก = เด้ง + ดาวกระจาย + "+N EXP" ลอยขึ้น ตัวนับ EXP ขยับ (และบอกเมื่อถึงเกณฑ์ผ่าน);
+ * ตอบผิด = สั่นเบา ๆ และ "เฉลย + เหตุผล" ขึ้นทันทีใต้ข้อ (ในแถบล่าง เห็นโดยไม่ต้องเลื่อน); ก่อนเริ่มบอก EXP ขั้นต่ำ/สูงสุด
+ * จบชุด: หน้าสรุปทีละหน้า (คะแนน → ทบทวนข้อที่ผิดทีละข้อ → EXP ที่ได้ → เลื่อนเลเวล) ดู study-result.js
+ * หน้าแก้เฉพาะจุดที่เปลี่ยน (study-dom.js): data-key = มุมมอง (intro / ข้อที่ N / ผลสรุป)
  */
 import { StudyApiError } from './study-api.js';
-import { $, esc, ICON, abar, ringHtml, animateRing } from './study-ui.js';
-import { choiceLabel, scoreMessage } from './study-format.js';
+import { $, esc, ICON, abar } from './study-ui.js';
+import { choiceLabel } from './study-format.js';
 import { questionMediaHtml, choiceImageHtml } from './study-media.js';
-import { burst, confetti, countUp, pop, shake } from './study-fx.js';
-import { animateReward, expPillHtml } from './study-reward.js';
+import { burst, confetti, floatText, pop, shake } from './study-fx.js';
+import { expRangeChipsHtml } from './study-reward.js';
+import { countAll, createResultFlow, reviewStepHtml, rewardSteps, scoreStepHtml } from './study-result.js';
 
 const messageOf = (err) => (err instanceof StudyApiError ? err.message : 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
+const CHEERS = ['ถูกต้อง!', 'เยี่ยมมาก!', 'เก่งมาก!', 'ใช่เลย!', 'สุดยอด!'];
+const BOLT = '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 3l0 7l6 0l-8 11l0 -7l-6 0l8 -11"/></svg>';
 
 /**
  * @param {object} deps
  * @param {{ id: string }} deps.subject
  * @param {number} deps.lessonNo           เลขบทที่ Quiz ชุดนี้อยู่
- * @param {object} deps.node               node ชนิด quiz จาก API: { id, title, quiz: {available, questionCount, passPct}, progress: {attempts, best, last, passed} }
+ * @param {object} deps.node               node ชนิด quiz จาก API: { id, title, quiz: {available, questionCount, passPct}, progress: {attempts, best, last, passed}, reward }
  * @param {object} deps.api                studyApi
  * @param {(opts?: {focus?: boolean}) => void} deps.render  วาดหน้าใหม่
  * @param {(done: object) => void} deps.applyProgress  ผลหลังส่งชุด (คำตอบของ submit: node / lesson / current)
@@ -30,15 +35,16 @@ const messageOf = (err) => (err instanceof StudyApiError ? err.message : 'เก
  * @param {string} [deps.reviewHref]      ลิงก์กลับไปทบทวนเนื้อหาของบทนี้
  */
 export function createQuiz({ subject, lessonNo, node, api, render, applyProgress, nextHref, courseHref, reviewHref }) {
-    const fresh = () => ({ phase: 'intro', attempt: null, i: 0, picks: {}, feedback: {}, busy: false, error: null, result: null, lessonStatus: null, fx: null, streak: 0, dir: 0, reward: null });
+    const fresh = () => ({
+        phase: 'intro', attempt: null, i: 0, picks: {}, feedback: {}, busy: false, error: null, result: null, lessonStatus: null,
+        fx: null, streak: 0, dir: 0, reward: null, flow: null, xp: 0, right: 0, repeat: false, passShown: false, passNow: {},
+    });
     let s = fresh();
 
     const passPct = () => (node.quiz ? node.quiz.passPct : null);
-    const passText = () => (passPct() === null || passPct() === undefined
-        ? 'ทำครบแล้วส่ง 1 ครั้งถือว่าผ่าน'
-        : `ผ่านเมื่อตอบถูกอย่างน้อย ${passPct()}% ในการทำ 1 ครั้ง`);
-
     const errorBox = () => (s.error ? `<p class="errbox" role="alert">${esc(s.error)}</p>` : '');
+    /** EXP ที่แสดงระหว่างทำ: ทำซ้ำได้ครึ่งเดียว (ตอนจบมีหน้าที่บอกยอดจริงเสมอ) */
+    const shownExp = (n) => (s.repeat ? Math.floor(n / 2) : n);
 
     // ───── intro ─────
     function introHtml() {
@@ -53,7 +59,8 @@ export function createQuiz({ subject, lessonNo, node, api, render, applyProgress
             <span class="chip chip-g">${pass === null || pass === undefined ? 'ทำครบ = ผ่าน' : `ผ่าน ≥ ${pass}%`}</span>
             ${passed ? '<span class="chip chip-amber">ผ่านแล้ว ✓</span>' : ''}
             ${best ? `<span class="chip chip-amber">ดีที่สุด ${best.correct}/${best.total}</span>` : ''}
-          </div>` : '<p class="note">Quiz ชุดนี้ยังไม่มีโจทย์</p>'}
+          </div>
+          ${node.reward ? `<div class="facts">${expRangeChipsHtml(node.reward)}</div>` : ''}` : '<p class="note">Quiz ชุดนี้ยังไม่มีโจทย์</p>'}
           ${errorBox()}
           ${available ? `<button type="button" class="btn btn-lg btn-block" data-act="quiz-start"${s.busy ? ' disabled' : ''}><span>${s.busy ? 'กำลังเตรียมโจทย์...' : attempts ? 'ทำ Quiz อีกครั้ง' : 'เริ่มทำ Quiz'}</span>${s.busy ? '' : ICON.next(14)}</button>` : ''}
         </section>`;
@@ -77,12 +84,16 @@ export function createQuiz({ subject, lessonNo, node, api, render, applyProgress
         }).join('')}</div>`;
     }
 
-    function feedbackHtml(fb) {
+    /** เฉลยทันที: อยู่ในแถบล่างเหนือปุ่ม (ผิด = เฉลย + เหตุผล, ถูก = ชม + EXP ที่ได้ + ถึงเกณฑ์ผ่านแล้ว) */
+    function feedbackPanel(q, fb) {
         const ok = fb.isCorrect;
-        return `<div class="fb ${ok ? 'ok' : 'bad'}" role="status">
+        const ci = q.choices.findIndex((c) => c.id === fb.correctChoiceId);
+        const gain = ok ? shownExp(Number(fb.exp) || 0) : 0;
+        return `<div class="abar-fb fb ${ok ? 'ok' : 'bad'}" data-key="fb" role="status">
           <span class="fb-i" aria-hidden="true">${ok ? ICON.check(22, 3.4) : ICON.x(22, 3.4)}</span>
           <div class="fb-b">
-            <h3><span>${ok ? 'ถูกต้อง!' : 'ยังไม่ถูกต้อง'}</span>${ok && s.streak >= 3 ? `<em class="streak">${ICON.flame(14)} ติดกัน ${s.streak} ข้อ</em>` : ''}</h3>
+            <h3><span>${ok ? CHEERS[s.i % CHEERS.length] : 'ยังไม่ถูกต้อง'}</span>${gain > 0 ? `<em class="xp-gain">${BOLT} +${gain} EXP</em>` : ''}${ok && s.streak >= 3 ? `<em class="streak">${ICON.flame(14)} ติดกัน ${s.streak} ข้อ</em>` : ''}${ok && s.passNow[q.id] ? '<em class="passed-now">ผ่านเกณฑ์แล้ว!</em>' : ''}</h3>
+            ${!ok && ci >= 0 ? `<p class="fb-ans">เฉลย <b>${choiceLabel(ci)} ${esc(q.choices[ci].text)}</b></p>` : ''}
             ${fb.explanation ? `<p>${esc(fb.explanation)}</p>` : ''}
             ${!ok && reviewHref ? `<a class="linkbtn" href="${esc(reviewHref)}">ทบทวนเนื้อหา</a>` : ''}
           </div>
@@ -99,7 +110,8 @@ export function createQuiz({ subject, lessonNo, node, api, render, applyProgress
         const action = fb
             ? `<button type="button" class="btn btn-lg ${fb.isCorrect ? 'btn-ok' : 'btn-bad'}" data-act="quiz-next"${s.busy ? ' disabled' : ''}><span>${s.busy ? 'กำลังสรุปผล...' : last ? 'ดูผลคะแนน' : 'ข้อถัดไป'}</span>${s.busy ? '' : ICON.next(14)}</button>`
             : `<button type="button" class="btn btn-lg" data-act="quiz-check"${!pick || s.busy ? ' disabled' : ''}><span>${s.busy ? 'กำลังตรวจ...' : 'ตรวจคำตอบ'}</span></button>`;
-        return `<div class="qhead" data-key="qhead"><div class="qbar" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${s.i + 1}"><i style="width:${(checked / total) * 100}%"></i></div><span class="qcount">${s.i + 1}/${total}</span></div>
+        const xp = shownExp(s.xp);
+        return `<div class="qhead" data-key="qhead"><div class="qbar" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${s.i + 1}"><i style="width:${(checked / total) * 100}%"></i></div><span class="qcount">${s.i + 1}/${total}</span>${xp > 0 ? `<span class="xp-pill" aria-label="EXP ที่สะสมแล้ว ${xp}">${BOLT}<b>${xp}</b></span>` : ''}</div>
         <div class="qview" data-key="q-${esc(q.id)}" data-dir="${s.dir}">
           <section class="qcard" aria-labelledby="q-t">
             <p class="qtopic">${esc(q.topic)}</p>
@@ -107,38 +119,32 @@ export function createQuiz({ subject, lessonNo, node, api, render, applyProgress
             ${questionMediaHtml(q.media)}
             ${choicesHtml(q, pick, fb)}
           </section>
-          ${fb ? feedbackHtml(fb) : ''}
           ${errorBox()}
         </div>
-        ${abar(action, fb ? (fb.isCorrect ? 'is-ok' : 'is-bad') : '')}`;
+        ${abar(action, fb ? (fb.isCorrect ? 'is-ok' : 'is-bad') : '', fb ? feedbackPanel(q, fb) : '')}`;
     }
 
-    // ───── result ─────
-    function resultHtml() {
+    // ───── result: ทีละหน้า ─────
+    function buildFlow() {
         const r = s.result;
         const wrong = r.review.filter((x) => !x.isCorrect);
-        const pills = [
-            r.passed === true ? `<span class="pill ok">${ICON.check(14, 3.4)} ผ่านเกณฑ์</span>`
-                : r.passed === false ? `<span class="pill warn">ยังไม่ถึงเกณฑ์ ${passPct() === null || passPct() === undefined ? '' : `${passPct()}%`}</span>` : '',
-            s.lessonStatus === 'done' ? '<span class="pill gold">บทนี้เสร็จสมบูรณ์ 🎉</span>' : '',
-            expPillHtml(s.reward),
-        ].filter(Boolean).join('');
-        const review = wrong.map((x) => {
-            const ci = x.choices.findIndex((c) => c.id === x.correctChoiceId);
-            const correct = ci >= 0 ? `${choiceLabel(ci)} ${esc(x.choices[ci].text)}` : '';
-            return `<div class="review-i bad"><h3>${x.yourChoiceId ? ICON.x(16) : ICON.info(16)}<span>ข้อ ${x.n} ${esc(x.text)}${x.yourChoiceId ? '' : ' — ยังไม่ได้ตอบ'}</span></h3>${questionMediaHtml(x.media)}<p>เฉลย: ${correct}</p>${x.explanation ? `<p>${esc(x.explanation)}</p>` : ''}</div>`;
-        }).join('');
-        return `<section class="rblock result" data-key="result">
-          ${ringHtml(r.percent, `${r.correct}/${r.total} ข้อ`)}
-          <h2>${esc(scoreMessage(r.percent))}</h2>
-          ${pills ? `<div class="pills">${pills}</div>` : ''}
-          ${wrong.length ? `<details class="fold"><summary><span>ข้อที่ควรทบทวน (${wrong.length})</span><i>${ICON.down(18)}</i></summary><div class="review">${review}</div></details>` : ''}
-          <div class="res-actions">
-            ${nextHref ? `<a class="btn btn-lg btn-block" href="${esc(nextHref)}" style="margin-top:0"><span>ไปกิจกรรมถัดไป</span>${ICON.next(14)}</a>` : `<a class="btn btn-lg btn-block" href="${esc(courseHref)}" style="margin-top:0"><span>กลับไปเส้นทางเรียน</span>${ICON.next(14)}</a>`}
-            <button type="button" class="btn btn-lg btn-block btn-line" data-act="quiz-start" style="margin-top:0">ทำ Quiz อีกครั้ง</button>
-            <div class="res-links">${reviewHref ? `<a class="linkbtn" href="${esc(reviewHref)}">ทบทวนเนื้อหา</a>` : ''}${nextHref ? `<a class="linkbtn" href="${esc(courseHref)}">เส้นทางเรียน</a>` : ''}</div>
-          </div>
-        </section>`;
+        const celebrate = r.passed === true || (r.passed === null && r.percent >= 50);
+        const steps = [{
+            key: 'score',
+            html: () => scoreStepHtml({ correct: r.correct, total: r.total, marks: r.review.map((x) => x.isCorrect), passed: r.passed, lessonDone: s.lessonStatus === 'done' }),
+            label: 'ต่อไป',
+            fx(root) { countAll(root); if (celebrate) confetti(); },
+        }];
+        if (wrong.length) {
+            steps.push({
+                key: 'review', count: wrong.length, skippable: true,
+                html: (sub) => reviewStepHtml({ item: wrong[sub], index: sub, count: wrong.length }),
+                label: (sub) => (sub + 1 < wrong.length ? 'ข้อถัดไป' : 'เข้าใจแล้ว'),
+            });
+        }
+        steps.push(...rewardSteps(s.reward, { title: 'EXP ที่ได้รับ' }));
+        const links = `<button type="button" class="linkbtn" data-act="quiz-start">ทำอีกครั้ง</button>${nextHref ? `<a class="linkbtn" href="${esc(courseHref)}">เส้นทางเรียน</a>` : reviewHref ? `<a class="linkbtn" href="${esc(reviewHref)}">ทบทวนเนื้อหา</a>` : ''}`;
+        return createResultFlow({ steps, render, finalCta: nextHref ? { href: nextHref, label: 'ไปกิจกรรมถัดไป' } : { href: courseHref, label: 'กลับไปเส้นทางเรียน' }, linksHtml: links });
     }
 
     // ───── actions ─────
@@ -160,7 +166,7 @@ export function createQuiz({ subject, lessonNo, node, api, render, applyProgress
 
     const start = () => run(async () => {
         const { attempt } = await api.startQuiz(subject.id, lessonNo, node.id);
-        s = { ...fresh(), phase: 'q', attempt, dir: 1 };
+        s = { ...fresh(), phase: 'q', attempt, dir: 1, repeat: !!(attempt.reward && attempt.reward.repeat) };
         window.scrollTo(0, 0);
     }, true);
 
@@ -171,6 +177,12 @@ export function createQuiz({ subject, lessonNo, node, api, render, applyProgress
             const { feedback } = await api.answerQuiz(s.attempt.id, q.id, s.picks[q.id]);
             s.feedback[q.id] = feedback;
             s.streak = feedback.isCorrect ? s.streak + 1 : 0;
+            if (feedback.isCorrect) {
+                s.right++;
+                s.xp += Number(feedback.exp) || 0;
+                const pass = passPct();
+                if (!s.passShown && pass !== null && pass !== undefined && s.right * 100 >= pass * s.attempt.questions.length) { s.passShown = true; s.passNow[q.id] = true; }
+            }
             s.fx = feedback.isCorrect ? 'ok' : 'bad';
         });
     };
@@ -188,16 +200,16 @@ export function createQuiz({ subject, lessonNo, node, api, render, applyProgress
             s.lessonStatus = done.lesson ? done.lesson.status : null;
             s.reward = done.reward || null;
             s.phase = 'result';
-            s.fx = done.result.passed === true || (done.result.passed === null && done.result.percent >= 50) ? 'pass' : 'done';
             applyProgress(done);
+            s.flow = buildFlow();
             window.scrollTo(0, 0);
         }, true);
     };
 
     return {
-        hasAbar: () => s.phase === 'q',
+        hasAbar: () => s.phase === 'q' || s.phase === 'result',
         html() {
-            return s.phase === 'intro' ? introHtml() : s.phase === 'result' ? resultHtml() : questionHtml();
+            return s.phase === 'intro' ? introHtml() : s.phase === 'result' ? s.flow.html() : questionHtml();
         },
         afterRender(root) {
             if (!root || typeof root.querySelector !== 'function') return;
@@ -205,16 +217,17 @@ export function createQuiz({ subject, lessonNo, node, api, render, applyProgress
             s.fx = null;
             s.dir = 0;
             if (s.phase === 'result') {
-                animateRing(root);
-                const pctEl = $('.ring-t b', root);
-                if (pctEl) countUp(pctEl, s.result.percent, { ms: 900, format: (n) => `${n}%` });
-                animateReward(root);
-                if (fx === 'pass') confetti();
+                s.flow.afterRender(root);
             } else if (fx === 'ok') {
                 const el = $('.choice.is-ok', root);
                 pop(el, { scale: 1.05, ms: 380 });
                 burst(el);
                 pop($('.fb-i', root), { scale: 1.3, ms: 460 });
+                const gain = $('.xp-gain', root);
+                if (gain) floatText(gain, gain.textContent.trim(), { color: '#B45309' });
+                const pill = $('.xp-pill', root);
+                if (pill && typeof pill.classList !== 'undefined') { pill.classList.remove('bump'); void pill.offsetWidth; pill.classList.add('bump'); }
+                if ($('.passed-now', root)) confetti({ count: 60 });
             } else if (fx === 'bad') {
                 shake($('.choice.is-bad', root));
             } else if (fx === 'pick') {
@@ -223,6 +236,7 @@ export function createQuiz({ subject, lessonNo, node, api, render, applyProgress
         },
         /** ส่งต่อเหตุการณ์คลิกจากหน้ากิจกรรม; คืน true เมื่อจัดการแล้ว */
         handleClick(e) {
+            if (s.phase === 'result' && s.flow && s.flow.handleClick(e)) return true;
             const act = e.target.closest('[data-act]')?.dataset.act;
             if (act === 'quiz-start') { start(); return true; }
             if (act === 'quiz-check') { check(); return true; }

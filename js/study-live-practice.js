@@ -11,7 +11,8 @@ import { esc, ICON, abar } from './study-ui.js';
 import { messageOf } from './study-live-common.js';
 import { questionMediaHtml } from './study-media.js';
 import { burst, pop, shake } from './study-fx.js';
-import { animateReward, expPillHtml } from './study-reward.js';
+import { expTagHtml } from './study-reward.js';
+import { createResultFlow, rewardSteps } from './study-result.js';
 
 const LEVELS = { easy: 'ง่าย', medium: 'กลาง', hard: 'ยาก' };
 const MAX_DOTS = 14;
@@ -29,7 +30,7 @@ const MAX_DOTS = 14;
  * @param {number} [deps.advanceMs]      หน่วงก่อนไปข้อถัดไปหลังกดทำถูก/ทำผิด (<= 0 = ไม่ไปเอง)
  */
 export function createPractice({ subject, lessonNo, node, api, render, applySummary, nextHref = null, courseHref = '', advanceMs = 650 }) {
-    const s = { load: 'idle', items: [], summary: null, filter: 'all', idx: 0, dir: 0, shown: {}, solutions: {}, busy: new Set(), error: null, fx: null, reward: null, rewardShown: false };
+    const s = { load: 'idle', items: [], summary: null, filter: 'all', idx: 0, dir: 0, shown: {}, solutions: {}, busy: new Set(), error: null, fx: null, reward: null, flow: null };
     let advanceToken = 0;
 
     async function load() {
@@ -61,7 +62,7 @@ export function createPractice({ subject, lessonNo, node, api, render, applySumm
         const dots = total <= MAX_DOTS
             ? `<div class="pk-dots" aria-hidden="true">${cards.map((c, i) => `<i class="${c.result === 'ok' ? 'ok' : c.result === 'wrong' ? 'bad' : ''}${i === at && s.idx < total ? ' cur' : ''}"></i>`).join('')}</div>`
             : `<div class="qbar" aria-hidden="true"><i style="width:${(cards.filter((c) => c.result).length / total) * 100}%"></i></div>`;
-        return `<div class="pk-top" data-key="pk-top">${dots}<span class="qcount" aria-label="ข้อที่ ${at + 1} จาก ${total}">${Math.min(s.idx, total - 1) + 1}/${total}</span></div>`;
+        return `<div class="pk-top" data-key="pk-top">${dots}<span class="qcount" aria-label="ข้อที่ ${at + 1} จาก ${total}">${Math.min(s.idx, total - 1) + 1}/${total}</span>${expTagHtml(node.reward)}</div>`;
     };
 
     function cardHtml(item) {
@@ -89,21 +90,23 @@ export function createPractice({ subject, lessonNo, node, api, render, applySumm
         return abar(`<button type="button" class="btn btn-lg btn-bad${item.result === 'wrong' ? ' on' : ''}" data-key="m-wrong" data-pmark="${esc(item.id)}:wrong" aria-pressed="${item.result === 'wrong'}"${busy ? ' disabled' : ''}>${ICON.x(18, 3.2)}<span>ทำผิด</span></button><button type="button" class="btn btn-lg btn-ok${item.result === 'ok' ? ' on' : ''}" data-key="m-ok" data-pmark="${esc(item.id)}:ok" aria-pressed="${item.result === 'ok'}"${busy ? ' disabled' : ''}>${ICON.check(18, 3.2)}<span>ทำถูก</span></button>`);
     }
 
-    function doneHtml(cards) {
+    /** จบชุด: หน้าสรุปสั้น (ถูก/ผิด) → EXP ที่ได้ → (เลื่อนเลเวล) → ปุ่มไปต่อ ทีละหน้า */
+    function buildFlow(cards) {
         const ok = cards.filter((c) => c.result === 'ok').length;
         const wrong = cards.filter((c) => c.result === 'wrong').length;
         const left = cards.length - ok - wrong;
-        return `<section class="rblock result pk-done" data-key="pk-done">
-          <div class="cn-medal" aria-hidden="true">🏁</div>
-          <h2>ครบ ${cards.length} ข้อแล้ว</h2>
-          <div class="pills"><span class="pill ok">${ICON.check(14, 3.4)} ถูก ${ok}</span>${wrong ? `<span class="pill warn">${ICON.x(14, 3.4)} ผิด ${wrong}</span>` : ''}${left ? `<span class="pill">ยังไม่ได้ทำ ${left}</span>` : ''}${expPillHtml(s.reward)}</div>
-          <div class="res-actions">
-            ${wrong ? `<button type="button" class="btn btn-lg btn-block btn-bad" data-pf="wrong" style="margin-top:0"><span>ฝึกข้อที่ผิดอีกครั้ง (${wrong})</span></button>` : ''}
-            ${nextHref ? `<a class="btn btn-lg btn-block" href="${esc(nextHref)}" style="margin-top:0"><span>ไปกิจกรรมถัดไป</span>${ICON.next(14)}</a>` : ''}
-            ${courseHref ? `<a class="btn btn-lg btn-block btn-line" href="${esc(courseHref)}" style="margin-top:0">กลับไปเส้นทางเรียน</a>` : ''}
-            <div class="res-links"><button type="button" class="linkbtn" data-act="pk-restart">ทำตั้งแต่ข้อแรก</button><button type="button" class="linkbtn" data-act="practice-reset">ล้างผลการฝึก</button></div>
-          </div>
-        </section>`;
+        const steps = [{
+            key: 'done',
+            html: () => `<section class="rs-card"><div class="rs-emoji" aria-hidden="true">🏁</div><h2>ครบ ${cards.length} ข้อแล้ว</h2>
+              <div class="rs-pills"><span class="pill ok">${ICON.check(14, 3.4)} ถูก ${ok}</span>${wrong ? `<span class="pill warn">${ICON.x(14, 3.4)} ผิด ${wrong}</span>` : ''}${left ? `<span class="pill">ยังไม่ได้ทำ ${left}</span>` : ''}</div></section>`,
+            label: 'ต่อไป',
+            fx(root) { pop(root.querySelector('.rs-emoji'), { scale: 1.35, ms: 650 }); },
+        }, ...rewardSteps(s.reward, { title: 'ทบทวนเรียบร้อย!' })];
+        return createResultFlow({
+            steps, render,
+            finalCta: nextHref ? { href: nextHref, label: 'ไปกิจกรรมถัดไป' } : { href: courseHref || '#', label: 'กลับไปเส้นทางเรียน' },
+            linksHtml: `${wrong ? `<button type="button" class="linkbtn" data-pf="wrong">ฝึกข้อที่ผิด (${wrong})</button>` : '<button type="button" class="linkbtn" data-act="pk-restart">ทำตั้งแต่ข้อแรก</button>'}<button type="button" class="linkbtn" data-act="practice-reset">ล้างผล</button>`,
+        });
     }
 
     function html() {
@@ -118,7 +121,10 @@ export function createPractice({ subject, lessonNo, node, api, render, applySumm
         if (cards.length === 0) {
             return `${chips}<p class="empty-p" data-key="none-${esc(s.filter)}">ยังไม่มีโจทย์ในหมวดนี้${s.filter === 'wrong' ? ' — ข้อที่ทำผิดจะมารวมอยู่ที่นี่' : ''}</p>${err}`;
         }
-        if (s.idx >= cards.length) return `${chips}${doneHtml(cards)}${err}`;
+        if (s.idx >= cards.length) {
+            if (!s.flow) s.flow = buildFlow(cards);
+            return `${s.flow.html()}${err}`; // หน้าสรุปมีเรื่องเดียวต่อหน้า: ไม่แสดงตัวกรอง
+        }
         const item = cards[s.idx];
         return `${chips}${topHtml(cards)}${cardHtml(item)}${err}${barHtml(item)}`;
     }
@@ -128,6 +134,7 @@ export function createPractice({ subject, lessonNo, node, api, render, applySumm
         const to = Math.min(cards.length, Math.max(0, s.idx + delta));
         if (to === s.idx || cards.length === 0) return false;
         advanceToken++;
+        s.flow = null;
         s.dir = delta;
         s.idx = to;
         window.scrollTo(0, 0);
@@ -158,7 +165,7 @@ export function createPractice({ subject, lessonNo, node, api, render, applySumm
         try {
             const { summary, reward } = await api.setPracticeResult(subject.id, lessonNo, id, result, node.id);
             s.fx = { id, result };
-            if (reward) { s.reward = reward; s.rewardShown = false; }
+            if (reward) { s.reward = reward; s.flow = null; }
             s.items = s.items.map((i) => (i.id === id ? { ...i, result } : i));
             s.summary = summary;
             saved = true;
@@ -188,6 +195,7 @@ export function createPractice({ subject, lessonNo, node, api, render, applySumm
             s.idx = 0;
             s.dir = -1;
             s.reward = null;
+            s.flow = null;
             applySummary(summary);
         } catch (err) {
             s.error = messageOf(err);
@@ -201,16 +209,14 @@ export function createPractice({ subject, lessonNo, node, api, render, applySumm
         html,
         hasAbar: () => {
             if (s.load !== 'ready') return false;
-            const cards = deck();
-            return cards.length > 0 && s.idx < cards.length;
+            return deck().length > 0; // ทำทีละข้อ: ปุ่มเฉลย/ทำถูก/ทำผิด; จบชุด: ปุ่มของหน้าสรุป
         },
         /** เอฟเฟกต์หลังวาดหน้า: ทำถูก = ปุ่มเด้ง+ดาวกระจาย, ทำผิด = การ์ดสั่นเบา ๆ */
         afterRender(root) {
             const fx = s.fx;
             s.fx = null;
             s.dir = 0;
-            // ตัวเลข EXP นับขึ้นครั้งเดียวตอนหน้าสรุปโผล่ (ไม่นับซ้ำทุกครั้งที่วาดหน้า)
-            if (s.reward && !s.rewardShown && root && typeof root.querySelector === 'function' && root.querySelector('[data-exp-count]')) { s.rewardShown = true; animateReward(root); }
+            if (s.flow && root && typeof root.querySelector === 'function' && root.querySelector('.rs-view')) s.flow.afterRender(root);
             if (!fx || !root || typeof root.querySelector !== 'function') return;
             if (fx.result === 'ok') {
                 const btn = root.querySelector('.btn-ok');
@@ -221,14 +227,15 @@ export function createPractice({ subject, lessonNo, node, api, render, applySumm
             }
         },
         handleClick(e) {
+            if (s.flow && s.flow.handleClick(e)) return true;
             const act = e.target.closest('[data-act]')?.dataset.act;
             if (act === 'practice-retry') { load(); return true; }
             if (act === 'practice-reset') { reset(); return true; }
             if (act === 'pk-prev') { go(-1); return true; }
             if (act === 'pk-next') { go(1); return true; }
-            if (act === 'pk-restart') { advanceToken++; s.idx = 0; s.dir = -1; render({ focus: true }); return true; }
+            if (act === 'pk-restart') { advanceToken++; s.flow = null; s.idx = 0; s.dir = -1; render({ focus: true }); return true; }
             const filter = e.target.closest('[data-pf]');
-            if (filter) { advanceToken++; s.filter = filter.dataset.pf; s.idx = 0; s.dir = 0; render(); return true; }
+            if (filter) { advanceToken++; s.flow = null; s.filter = filter.dataset.pf; s.idx = 0; s.dir = 0; render(); return true; }
             const show = e.target.closest('[data-pshow]');
             if (show) { showSolution(show.dataset.pshow); return true; }
             const markBtn = e.target.closest('[data-pmark]');

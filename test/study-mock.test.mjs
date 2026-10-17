@@ -108,6 +108,16 @@ describe('เงื่อนไขก่อนสอบและประวั�
         assert.equal(dom.el.eyebrow.textContent, 'Mock Exam • วิทยาศาสตร์');
         assert.equal(dom.el.backLink.href, 'course.html?s=sci');
     });
+    test('บอก EXP ขั้นต่ำ/สูงสุดและดาวสูงสุดก่อนเริ่มสอบ (ทำซ้ำได้ครึ่งเดียวตามที่ Backend คำนวณ)', async () => {
+        const info = baseInfo();
+        info.mock.reward = { min: 30, max: 50, repeat: false };
+        await open(fakeApi({ getMockInfo: async () => info }));
+        assert.match(html(), /class="facts"[\s\S]*อย่างน้อย \+30 EXP[\s\S]*สูงสุด \+50[\s\S]*ดาวสูงสุด 10/);
+        assert.doesNotMatch(html(), /ทำซ้ำ ได้ครึ่งเดียว/);
+        info.mock.reward = { min: 15, max: 25, repeat: true };
+        await open(fakeApi({ getMockInfo: async () => info }));
+        assert.match(html(), /อย่างน้อย \+15 EXP[\s\S]*สูงสุด \+25[\s\S]*ทำซ้ำ ได้ครึ่งเดียว/);
+    });
     test('แพลนที่ได้ข้อพิเศษเห็นข้อความของตัวเอง; ถ้าตั้งโบนัสเวลาเป็น 0 ไม่พูดถึงโบนัส', async () => {
         const info = baseInfo();
         info.mock.advanced.unlocked = true;
@@ -255,22 +265,42 @@ describe('ทำข้อสอบ', () => {
         assert.match(html(), /กำลังส่ง/);
         release();
         await wait(20);
-        const h = html();
-        assert.match(h, /data-key="result"/);
-        assert.match(h, /2\/3 ข้อ/, 'คะแนนอยู่ในวงแหวน');
+        let h = html();
+        const next = () => { dom.click({ act: 'rs-next' }); h = html(); };
+        // หน้า 1: คะแนน (ตัวเลขใหญ่ + ลูกบอลต่อข้อ ไม่มีกราฟ ไม่มีตาราง)
+        assert.match(h, /data-key="score-0"/);
+        assert.match(h, /data-count="2">2<\/span><small>\/ 3 ข้อ/);
         assert.match(h, /<span class="pill">[\s\S]*02:05 \/ 20:00/);
-        assert.match(h, /<details class="fold"><summary><span>ผลรายหัวข้อ/, 'ผลรายหัวข้อและเฉลยพับเก็บไว้');
-        assert.match(h, /<details class="fold"><summary><span>เฉลยรายข้อ \(3\)/);
-        assert.match(h, /<span data-countup="7">7<\/span> ดาว[\s\S]*จากคะแนน 67% = 6 ดาว \+ โบนัสเวลา 1/, 'ดาวมาจากเปอร์เซ็นต์ที่ตอบถูก แล้วบวกโบนัสเวลา');
-        assert.match(h, /class="pill gold exp-pill"[\s\S]*\+<span data-exp-count="31">31<\/span> EXP/, 'EXP ที่ได้');
-        assert.match(h, /<span class="pill">ทำซ้ำ ได้ครึ่งเดียว<\/span>/, 'ทำซ้ำได้ครึ่งเดียว');
-        assert.match(h, /▲ \+10%/);
-        assert.match(h, /หัวข้อ A<\/span><span>2\/2/);
-        assert.match(h, /ข้อ 2 โจทย์สอง — ผิด • ข้อพิเศษ/);
-        assert.match(h, /ข้อ 3 โจทย์สาม — ไม่ได้ตอบ/);
-        assert.match(h, /เฉลย: ข ข3/);
-        assert.match(h, /คุณตอบ ข/);
+        assert.match(h, /ดีขึ้น \+10%/, 'บอกเฉพาะเมื่อดีขึ้น');
+        assert.doesNotMatch(h, /ring|<table|fold|rs-exp|rs-stars/);
+        assert.equal((h.match(/<(button|a) /g) || []).length, 1, 'ปุ่มเดียว');
+        // หน้า 2-3: ทบทวนข้อที่ผิด/ไม่ได้ตอบ ทีละข้อ
+        next();
+        assert.match(h, /data-key="review-0"/);
+        assert.match(h, /ข้อ 2 โจทย์สอง/);
+        assert.match(h, /คุณตอบ <s>ข ข2<\/s>/);
+        assert.match(h, /เฉลย <b>ก ก2<\/b>/);
         assert.doesNotMatch(h, /<i>หนึ่ง/, 'ข้อความในผลถูก escape');
+        next();
+        assert.match(h, /data-key="review-1"/);
+        assert.match(h, /ข้อ 3 โจทย์สาม/);
+        assert.match(h, /ยังไม่ได้ตอบข้อนี้/);
+        assert.match(h, /เฉลย <b>ข ข3<\/b>/);
+        // หน้า 4: ดาว (จากเปอร์เซ็นต์ที่ตอบถูก แล้วบวกโบนัสเวลา)
+        next();
+        assert.match(h, /data-key="stars-0"/);
+        assert.match(h, /data-count="7">7<\/span><small>ดาว/);
+        assert.match(h, /จากคะแนน 67% = 6 ดาว \+ โบนัสเวลา 1/);
+        // หน้า 5: EXP (ทำซ้ำได้ครึ่งเดียว) + แถบเลเวลวิ่งจากค่าก่อนหน้า
+        next();
+        assert.match(h, /data-key="exp-0"/);
+        assert.match(h, /\+<span data-count="31">31<\/span><small>EXP/);
+        assert.match(h, /ทำซ้ำ ได้ครึ่งเดียว/);
+        assert.match(h, /<b>Lv\. 3<\/b>[\s\S]*data-to="80" style="width:67%"/);
+        // หน้าสุดท้าย: ปุ่มหลักปุ่มเดียว + ลิงก์ทำอีกครั้ง
+        assert.match(h, /href="course\.html\?s=sci"><span>กลับหน้ารายละเอียดวิชา/);
+        assert.match(h, /data-act="retry">ทำข้อสอบอีกครั้ง/);
+        assert.doesNotMatch(h, /data-act="rs-next"/);
         assert.equal(dom.el.barRight.innerHTML, '', 'ตัวจับเวลาหายไปหลังส่ง');
         assert.equal(dom.winListeners.beforeunload?.length || 0, 0, 'เลิกกันปิดหน้าแล้ว');
     });
@@ -290,7 +320,7 @@ describe('ทำข้อสอบ', () => {
         dom.click({ act: 'ask-submit' });
         dom.clickOverlay({ act: 'submit' });
         await wait(20);
-        assert.match(html(), /data-key="result"/);
+        assert.match(html(), /data-key="score-0"/);
         assert.equal(api.calls.filter((c) => c[0] === 'submit').length, 2);
     });
 
@@ -301,8 +331,8 @@ describe('ทำข้อสอบ', () => {
         dom.click({ choice: 'a' });
         await wait(60);
         const h = html();
-        assert.match(h, /หมดเวลา ระบบส่งคำตอบที่ทำไว้ให้อัตโนมัติ/);
-        assert.match(h, /data-key="result"/);
+        assert.match(h, /หมดเวลา ระบบส่งให้อัตโนมัติ/);
+        assert.match(h, /data-key="score-0"/);
         assert.doesNotMatch(h, /โบนัสเวลา/);
     });
 
@@ -311,7 +341,7 @@ describe('ทำข้อสอบ', () => {
         await started(api);
         await wait(120);
         assert.equal(api.calls.filter((c) => c[0] === 'submit').length, 1);
-        assert.match(html(), /data-key="result"/);
+        assert.match(html(), /data-key="score-0"/);
     });
 
     test('เวลาที่เหลือใช้เวลา server ไม่ใช่นาฬิกาเครื่อง (เครื่องเดินเร็ว/ช้า)', async () => {

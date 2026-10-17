@@ -54,7 +54,11 @@ export function ringPercent(node) {
 export const nodeStatusText = (status) => (status === 'done' ? 'เสร็จแล้ว' : status === 'now' ? 'ถัดไป' : 'ยังไม่เริ่ม');
 
 /** EXP ที่วงกลมนี้ให้ตอนนี้ (Backend คำนวณมาให้: ทำซ้ำได้ครึ่งเดียว) หรือ null ถ้าระบบรางวัลยังไม่เปิด / วงนี้ไม่ให้ */
-const expOf = (node) => (node.reward && Number(node.reward.exp) > 0 ? { exp: Math.round(Number(node.reward.exp)), repeat: !!node.reward.repeat } : null);
+const expOf = (node) => {
+    if (!node.reward || !(Number(node.reward.exp) > 0)) return null;
+    const exp = Math.round(Number(node.reward.exp));
+    return { exp, min: node.reward.min === undefined ? exp : Math.round(Number(node.reward.min)), repeat: !!node.reward.repeat };
+};
 
 /** เนื้อหาของการ์ดที่เด้งขึ้นใต้วงกลมเมื่อแตะ: ป้ายชนิด + EXP + ชื่อ + (ถ้ามี) สถานะบรรทัดเดียว + ปุ่ม */
 export function nodeInfo(node, subjectId, lessonNo) {
@@ -117,7 +121,7 @@ export function nodeHtml(node, { subjectId, lessonNo, index, seq }) {
       <button type="button" class="cp-node" data-node="${esc(node.id)}" aria-expanded="false" aria-label="${esc(`${TYPE_LABEL[node.type] || ''} ${node.title} — ${nodeStatusText(status)}`)}">${nodeSvg({ type: node.type, status, ring })}</button>
       ${status === 'now' ? `<span class="cp-start" aria-hidden="true">${resumed ? 'ต่อ' : 'เริ่ม'}</span>` : ''}
       <template class="cp-tpl"><div class="cp-pop" role="dialog" aria-label="${esc(node.title)}" style="--dx:${dx}px">
-        <div class="cp-pop-row"><span class="cp-pop-chip">${esc(info.chip)}</span>${info.exp ? `<span class="cp-pop-exp">+${info.exp.exp} EXP${info.exp.repeat ? ' • ทำซ้ำ' : ''}</span>` : ''}</div>
+        <div class="cp-pop-row"><span class="cp-pop-chip">${esc(info.chip)}</span>${info.exp ? `<span class="cp-pop-exp">+${info.exp.min !== info.exp.exp ? `${info.exp.min}–${info.exp.exp}` : info.exp.exp} EXP${info.exp.repeat ? ' • ทำซ้ำ' : ''}</span>` : ''}</div>
         <h3>${esc(node.title)}</h3>
         ${info.line ? `<p>${esc(info.line)}</p>` : ''}
         <a class="cp-go" href="${esc(info.href)}"><span>${esc(info.label)}</span>${glyph('next', 18, 3.2)}</a>
