@@ -313,6 +313,7 @@ body {
 .streak-row .num { font-size: 28px; line-height: 34px; color: #B45309; }
 .streak-note { margin: 2px 0 0; font-size: 11px; line-height: 16px; font-weight: 700; color: #92400E; }
 .streak-note.is-risk { color: #BE123C; }
+.exam-row .is-none { color: #64748B; font-weight: 600; }
 .exam { padding: 12px 14px 14px; }
 .exam-top { display: flex; align-items: center; gap: 10px; }
 .exam-main { flex: 1; min-width: 0; }

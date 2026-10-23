@@ -5,6 +5,8 @@
  * ผิดพลาดทุกกรณีโยน StudyApiError ที่มี code / status / message ภาษาไทยพร้อมแสดงผู้ใช้
  * createStudyApi รับฟังก์ชันส่งคำขอเข้ามา เพื่อให้เทสต์ใน Node ไม่ต้องพึ่งเบราว์เซอร์
  */
+import './study-streak-fx.js'; // ฟังเหตุการณ์ study:streak (เติมไฟ)
+
 export const CONTRACT_VERSION = 2;
 
 export class StudyApiError extends Error {
@@ -34,6 +36,10 @@ export function createStudyApi(send) {
         try { data = await response.json(); } catch (_) { /* ไม่ใช่ JSON */ }
         if (!response.ok || !data || data.success !== true) {
             throw new StudyApiError((data && data.error) || `HTTP_${response.status}`, response.status, (data && data.message) || FALLBACK_MESSAGE, data);
+        }
+        // ทำกิจกรรมเสร็จครั้งแรกของวัน: Backend ตอบ streakUp → หน้าเล่นแอนิเมชัน "เติมไฟ" (js/study-streak-fx.js)
+        if (data.streakUp && typeof document !== 'undefined' && typeof document.dispatchEvent === 'function' && typeof CustomEvent === 'function') {
+            document.dispatchEvent(new CustomEvent('study:streak', { detail: data.streakUp }));
         }
         return data;
     }

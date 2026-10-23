@@ -14,7 +14,7 @@ const PAGES = ['index', 'subject', 'progress', 'course', 'lesson', 'mock-exam', 
 
 describe('HTML ก่อนข้อมูลจริงมา: ไม่มีข้อมูลเสมือน', () => {
     test('ไม่มีตัวเลข/ชื่อ/ภาพตัวอย่างหลงเหลือ (EXP, เลเวล, streak, สอบใกล้ถึง, อันดับตัวอย่าง, รูป Felix, "กำลังโหลด...")', () => {
-        const banned = [/2,480/, /Lv\. 14/, /เลเวล 14/, /สู่ Lv\. 15/, /สอบใกล้ถึง/, /กลางภาค คณิต/, /อันดับที่ 7/, /chip-amber">Top 10/, /น้องฟ้าใส|น้องกัปตัน|น้องไทเกอร์/, /seed=Felix/, />กำลังโหลด\.\.\.</, /data-study-hide-real/, /ยอดเยี่ยม 🚀/];
+        const banned = [/2,480/, /Lv\. 14/, /เลเวล 14/, /สู่ Lv\. 15/, /กลางภาค/, /กลางภาค คณิต ม\.5/, /2 ต\.ค\. • 3 บทเรียน/, />3<\/span><span class="unit">วันข้างหน้า/, /อันดับที่ 7/, /chip-amber">Top 10/, /น้องฟ้าใส|น้องกัปตัน|น้องไทเกอร์/, /seed=Felix/, />กำลังโหลด\.\.\.</, /data-study-hide-real/, /ยอดเยี่ยม 🚀/];
         for (const page of PAGES) {
             const html = read(`${page}.html`);
             for (const re of banned) assert.doesNotMatch(html, re, `${page}.html: ${re}`);

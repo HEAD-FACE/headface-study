@@ -10,9 +10,10 @@
  * EXP / ดาว / เลเวล / Streak ในหน้าแรกและ Progress เป็นของจริง (applyRewards, applyStreak) และตารางอันดับดาวเป็นของจริง (study-ranking.js)
  */
 import { studyApi } from './study-api.js';
-import { formatThaiDate } from './study-format.js';
+import { formatThaiDate, formatThaiDay } from './study-format.js';
 import { hydrateRanking } from './study-ranking.js';
 import { settle } from './study-delight.js';
+import { igniteStreakCard } from './study-streak-fx.js';
 
 const KEY_RE = /[?&]s=([a-z][a-z0-9-]{1,23})(?:&|$)/;
 const CHEVRON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 6l-.112 .006a1 1 0 0 0 -.669 1.619l3.501 4.375l-3.5 4.375a1 1 0 0 0 .78 1.625h6a1 1 0 0 0 .78 -.375l4 -5a1 1 0 0 0 0 -1.25l-4 -5a1 1 0 0 0 -.78 -.375h-6z"/></svg>';
@@ -153,6 +154,7 @@ export function streakText(streak) {
 
 export function applyStreak(scope, streak) {
     const t = streakText(streak);
+    const known = !!streak && Number.isFinite(Number(streak.current));
     for (const el of scope.querySelectorAll('[data-study-streak]')) {
         const key = el.getAttribute('data-study-streak');
         if (key === 'note') {
@@ -160,6 +162,41 @@ export function applyStreak(scope, streak) {
             el.textContent = t.note;
             if (el.classList) el.classList.toggle('is-risk', t.risk);
         } else if (key in t) el.textContent = t[key];
+        // ไฟติดอยู่เมื่อวันนี้ทำกิจกรรมแล้ว ไม่งั้นเป็นไฟมอด (รอ "เติมไฟ" จากกิจกรรมแรกของวัน)
+        const card = known && el.closest ? el.closest('.streak, .qs-i') : null;
+        if (card && card.classList && !card.dataset.flame) {
+            card.dataset.flame = streak.activeToday ? 'lit' : 'dim';
+            card.classList.toggle('is-lit', !!streak.activeToday);
+            card.classList.toggle('is-dim', !streak.activeToday);
+            if (streak.activeToday) igniteStreakCard(card);
+        }
+    }
+}
+
+/** ข้อความของการ์ด "สอบใกล้ถึง" จาก exam ของ GET /progress (null = ไม่มีสอบที่กำหนดไว้; undefined = Backend ยังไม่รองรับ) */
+export function examView(exam) {
+    if (exam === undefined) return { days: '—', unit: '', chip: '', title: 'ยังไม่มีข้อมูลการสอบ', date: '' };
+    if (!exam) return { days: '—', unit: '', chip: '', title: 'ยังไม่มีสอบที่กำหนดไว้', date: 'เพิ่มได้ในแอปการบ้าน', none: true };
+    const n = Math.max(0, Math.floor(Number(exam.daysLeft) || 0));
+    return {
+        days: n === 0 ? 'วันนี้' : n === 1 ? 'พรุ่งนี้' : String(n),
+        unit: n >= 2 ? 'วันข้างหน้า' : '',
+        chip: String(exam.subject || '').trim() || 'สอบ',
+        title: String(exam.title || '').trim() || 'การสอบ',
+        date: formatThaiDay(exam.dueAt),
+        soon: n <= 1,
+    };
+}
+
+export function applyExam(scope, exam) {
+    const v = examView(exam);
+    for (const el of scope.querySelectorAll('[data-study-exam]')) {
+        const key = el.getAttribute('data-study-exam');
+        if (key === 'chip' && !v.chip) { el.remove(); continue; }
+        if (key === 'unit' && !v.unit) { el.remove(); continue; }
+        if (key === 'date' && !v.date) { el.remove(); continue; }
+        if (key in v) el.textContent = v[key];
+        if (key === 'title' && el.classList) el.classList.toggle('is-none', !!v.none);
     }
 }
 
@@ -181,6 +218,7 @@ async function applyProgressPage(scope, subjects) {
     if (progress.rewards) applyRewards(scope, progress.rewards);
     else markUnavailable(scope, '[data-study-reward]');
     applyStreak(scope, progress.streak);
+    applyExam(scope, progress.exam);
     if (section) {
         const body = section.querySelector('#my-progress-body');
         if (body) { body.innerHTML = progressSectionHtml(subjects, progress); body.removeAttribute('aria-busy'); }

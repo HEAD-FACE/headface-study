@@ -25,6 +25,14 @@ export function formatClock(totalSeconds) {
 
 const THAI_MONTHS = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
 
+/** วันที่ (ISO text หรือ epoch ms) → "14 ต.ค." และ " • 09:05" ต่อท้ายเมื่อมีเวลา (00:00 ถือว่าไม่ระบุเวลา); อ่านไม่ได้ → "" */
+export function formatThaiDay(value) {
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return '';
+    const day = `${d.getDate()} ${THAI_MONTHS[d.getMonth()]}`;
+    return d.getHours() === 0 && d.getMinutes() === 0 ? day : `${day} • ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+}
+
 /** เวลา (ISO text หรือ epoch ms) → "14 ต.ค. 09:05" ตามเขตเวลาของเครื่อง; ค่าที่อ่านไม่ได้ → "" */
 export function formatThaiDate(value) {
     const d = new Date(value);
