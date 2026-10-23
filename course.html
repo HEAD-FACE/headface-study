@@ -58,6 +58,7 @@
   <link rel="stylesheet" href="css/course.css">
   <link rel="stylesheet" href="css/fx.css">
   <link rel="stylesheet" href="css/delight.css">
+  <link rel="stylesheet" href="css/loading.css">
   
   <script>
     window.handleCardImgError = window.handleCardImgError || function(img, id, altName) {
@@ -111,18 +112,18 @@
           <!-- 1. ปุ่ม Profile แสดงรูป Avatar และชื่อผู้ใช้ -->
           <button id="profileBtn" type="button" class="profile-btn" aria-haspopup="true" aria-expanded="false" aria-controls="profileDropdown" aria-label="โปรไฟล์ผู้ใช้">
             <span class="profile-text">
-              <span id="headerName" class="profile-name">กำลังโหลด...</span>
-              <span id="headerStudentId" class="profile-id">เลขประจำตัว: -</span>
+              <span id="headerName" class="profile-name ld-e" style="--w:7em"></span>
+              <span id="headerStudentId" class="profile-id ld-e" style="--w:6em"></span>
             </span>
-            <img id="headerAvatar" src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix&amp;backgroundColor=e2e8f0" alt="Profile" width="44" height="44">
+            <img id="headerAvatar" class="skl" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Profile" width="44" height="44">
           </button>
 
           <!-- 2. Profile Popup Dropdown Card -->
           <div id="profileDropdown" class="menu hidden" role="dialog" aria-label="เมนูโปรไฟล์">
             <div class="menu-h">
-              <p id="dropdownName" class="menu-n">กำลังโหลด...</p>
-              <p id="dropdownNumber" class="menu-s">เลขที่ -</p>
-              <p id="dropdownStudentId" class="menu-s">เลขประจำตัว: -</p>
+              <p id="dropdownName" class="menu-n ld-e" style="--w:8em"></p>
+              <p id="dropdownNumber" class="menu-s ld-e" style="--w:4em"></p>
+              <p id="dropdownStudentId" class="menu-s ld-e" style="--w:6em"></p>
             </div>
             <a id="dropdownProfileLink" href="#" class="menu-a">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"/><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/></svg>
@@ -147,7 +148,7 @@
         <a id="cpBack" class="cp-back" href="subject.html" aria-label="กลับไปหน้ารายวิชา"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6l6 6"/></svg></a>
         <div class="cp-ht">
           <p id="cpEyebrow" class="cp-eyebrow"></p>
-          <h1 id="cpTitle" class="cp-title">กำลังโหลด...</h1>
+          <h1 id="cpTitle" class="cp-title ld-e" style="--w:10em"></h1>
           <p id="cpMeta" class="cp-meta"></p>
         </div>
         <span id="cpEmoji" class="cp-emoji" aria-hidden="true"></span>

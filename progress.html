@@ -58,6 +58,7 @@
   <link rel="stylesheet" href="css/course.css">
   <link rel="stylesheet" href="css/fx.css">
   <link rel="stylesheet" href="css/delight.css">
+  <link rel="stylesheet" href="css/loading.css">
   
   <!-- Instant Preload for Smooth Barba Transitions -->
   <link rel="prefetch" href="index.html">
@@ -96,18 +97,18 @@
           <!-- 1. ปุ่ม Profile แสดงรูป Avatar และชื่อผู้ใช้ -->
           <button id="profileBtn" type="button" class="profile-btn" aria-haspopup="true" aria-expanded="false" aria-controls="profileDropdown" aria-label="โปรไฟล์ผู้ใช้">
             <span class="profile-text">
-              <span id="headerName" class="profile-name">กำลังโหลด...</span>
-              <span id="headerStudentId" class="profile-id">เลขประจำตัว: -</span>
+              <span id="headerName" class="profile-name ld-e" style="--w:7em"></span>
+              <span id="headerStudentId" class="profile-id ld-e" style="--w:6em"></span>
             </span>
-            <img id="headerAvatar" src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix&amp;backgroundColor=e2e8f0" alt="Profile" width="44" height="44">
+            <img id="headerAvatar" class="skl" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Profile" width="44" height="44">
           </button>
 
           <!-- 2. Profile Popup Dropdown Card -->
           <div id="profileDropdown" class="menu hidden" role="dialog" aria-label="เมนูโปรไฟล์">
             <div class="menu-h">
-              <p id="dropdownName" class="menu-n">กำลังโหลด...</p>
-              <p id="dropdownNumber" class="menu-s">เลขที่ -</p>
-              <p id="dropdownStudentId" class="menu-s">เลขประจำตัว: -</p>
+              <p id="dropdownName" class="menu-n ld-e" style="--w:8em"></p>
+              <p id="dropdownNumber" class="menu-s ld-e" style="--w:4em"></p>
+              <p id="dropdownStudentId" class="menu-s ld-e" style="--w:6em"></p>
             </div>
             <a id="dropdownProfileLink" href="#" class="menu-a">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"/><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/></svg>
@@ -135,9 +136,9 @@
         <!-- 1. กล่อง EXP สะสม -->
         <section class="card card-mint pc" aria-label="ค่าพลังสะสม">
           <div class="pc-top"><p class="cap">ค่าพลังสะสม</p><span class="tile tile-sm tile-amber"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2l.018 .001l.016 .001l.083 .005l.011 .002h.011l.038 .009l.052 .008l.016 .006l.011 .001l.029 .011l.052 .014l.019 .009l.015 .004l.028 .014l.04 .017l.021 .012l.022 .01l.023 .015l.031 .017l.034 .024l.018 .011l.013 .012l.024 .017l.038 .034l.022 .017l.008 .01l.014 .012l.036 .041l.026 .027l.006 .009c.12 .147 .196 .322 .218 .513l.001 .012l.002 .041l.004 .064v6h5a1 1 0 0 1 .868 1.497l-.06 .091l-8 11c-.568 .783 -1.808 .38 -1.808 -.588v-6h-5a1 1 0 0 1 -.868 -1.497l.06 -.091l8 -11l.01 -.013l.018 -.024l.033 -.038l.018 -.022l.009 -.008l.013 -.014l.04 -.036l.028 -.026l.008 -.006a1 1 0 0 1 .402 -.199l.011 -.001l.027 -.005l.074 -.013l.011 -.001l.041 -.002z"/></svg></span></div>
-          <p class="pc-val"><span class="num" style="color:#047857" data-study-reward="exp">2,480</span><span class="unit">EXP</span></p>
-          <div class="pc-sub"><span class="cap" data-study-reward="level-long">เลเวล 14</span><span class="pc-good" data-study-hide-real>ยอดเยี่ยม 🚀</span></div>
-          <div class="bar" aria-hidden="true"><i style="width:82%" data-study-reward="level-bar"></i></div>
+          <p class="pc-val"><span class="num ld-e" style="color:#047857;--w:3.6em" data-study-reward="exp"></span><span class="unit">EXP</span></p>
+          <div class="pc-sub"><span class="cap ld-e" data-study-reward="level-long" style="--w:5em"></span></div>
+          <div class="bar ld" aria-hidden="true"><i style="width:0%" data-study-reward="level-bar"></i></div>
         </section>
 
         <!-- 2. กล่อง จำนวน STARS (พร้อมปุ่ม Info เปิดป๊อปอัป) -->
@@ -150,9 +151,8 @@
             </div>
             <span class="tile tile-sm tile-gold"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg></span>
           </div>
-          <p class="pc-val"><span class="num" style="color:#B45309" data-study-reward="stars">74</span><span class="unit">ดาวสะสม</span></p>
-          <div class="pc-sub" data-study-hide-real><span class="cap">อันดับที่ 7</span><span class="chip chip-amber">Top 10<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="flameGradTop10" x1="0%" y1="100%" x2="0%" y2="0%"><stop offset="0%" stop-color="#EA580C"/><stop offset="45%" stop-color="#F97316"/><stop offset="80%" stop-color="#FBBF24"/><stop offset="100%" stop-color="#FDE047"/></linearGradient></defs><path d="M10 2c0 -.88 1.056 -1.331 1.692 -.722c1.958 1.876 3.096 5.995 1.75 9.12l-.08 .174l.012 .003c.625 .133 1.203 -.43 2.303 -2.173l.14 -.224a1 1 0 0 1 1.582 -.153c1.334 1.435 2.601 4.377 2.601 6.27c0 4.265 -3.591 7.705 -8 7.705s-8 -3.44 -8 -7.706c0 -2.252 1.022 -4.716 2.632 -6.301l.605 -.589c.241 -.236 .434 -.43 .618 -.624c1.43 -1.512 2.145 -2.924 2.145 -4.78" fill="url(#flameGradTop10)"/><path d="M12 12c.9 1.6 2 2.5 2 4.2a2 2 0 0 1 -4 0c0-1.7 1.1-2.6 2-4.2z" fill="#FFF7ED" opacity="0.85"/></svg></span></div>
-          <div class="bar bar-amber" aria-hidden="true" data-study-hide-real><i style="width:74%"></i></div>
+          <p class="pc-val"><span class="num ld-e" style="color:#B45309;--w:2.4em" data-study-reward="stars"></span><span class="unit">ดาวสะสม</span></p>
+          <div class="pc-sub"><span class="cap ld-e" data-study-rank style="--w:6.5em"></span></div>
         </section>
       </div>
 
@@ -161,11 +161,11 @@
       <!-- ============================================== -->
       <section class="pad" style="margin-top:30px" aria-label="สถิติการเรียนรู้">
         <div class="qs">
-          <div class="qs-i"><p class="qs-v">5 วัน</p><p class="qs-l" style="color:#C2410C"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="flameGradStreak" x1="0%" y1="100%" x2="0%" y2="0%"><stop offset="0%" stop-color="#EA580C"/><stop offset="45%" stop-color="#F97316"/><stop offset="80%" stop-color="#FBBF24"/><stop offset="100%" stop-color="#FDE047"/></linearGradient></defs><path d="M10 2c0 -.88 1.056 -1.331 1.692 -.722c1.958 1.876 3.096 5.995 1.75 9.12l-.08 .174l.012 .003c.625 .133 1.203 -.43 2.303 -2.173l.14 -.224a1 1 0 0 1 1.582 -.153c1.334 1.435 2.601 4.377 2.601 6.27c0 4.265 -3.591 7.705 -8 7.705s-8 -3.44 -8 -7.706c0 -2.252 1.022 -4.716 2.632 -6.301l.605 -.589c.241 -.236 .434 -.43 .618 -.624c1.43 -1.512 2.145 -2.924 2.145 -4.78" fill="url(#flameGradStreak)"/><path d="M12 12c.9 1.6 2 2.5 2 4.2a2 2 0 0 1 -4 0c0-1.7 1.1-2.6 2-4.2z" fill="#FFF7ED" opacity="0.85"/></svg><span>Streak ต่อเนื่อง</span></p></div>
+          <div class="qs-i"><p class="qs-v ld-e" data-study-streak="days" style="--w:3em"></p><p class="qs-l" style="color:#C2410C"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="flameGradStreak" x1="0%" y1="100%" x2="0%" y2="0%"><stop offset="0%" stop-color="#EA580C"/><stop offset="45%" stop-color="#F97316"/><stop offset="80%" stop-color="#FBBF24"/><stop offset="100%" stop-color="#FDE047"/></linearGradient></defs><path d="M10 2c0 -.88 1.056 -1.331 1.692 -.722c1.958 1.876 3.096 5.995 1.75 9.12l-.08 .174l.012 .003c.625 .133 1.203 -.43 2.303 -2.173l.14 -.224a1 1 0 0 1 1.582 -.153c1.334 1.435 2.601 4.377 2.601 6.27c0 4.265 -3.591 7.705 -8 7.705s-8 -3.44 -8 -7.706c0 -2.252 1.022 -4.716 2.632 -6.301l.605 -.589c.241 -.236 .434 -.43 .618 -.624c1.43 -1.512 2.145 -2.924 2.145 -4.78" fill="url(#flameGradStreak)"/><path d="M12 12c.9 1.6 2 2.5 2 4.2a2 2 0 0 1 -4 0c0-1.7 1.1-2.6 2-4.2z" fill="#FFF7ED" opacity="0.85"/></svg><span>Streak ต่อเนื่อง</span></p></div>
           <span class="qs-div"></span>
-          <div class="qs-i"><p class="qs-v" data-study-stat="answers">248 ข้อ</p><p class="qs-l" style="color:#047857">✅ ทำโจทย์สะสม</p></div>
+          <div class="qs-i"><p class="qs-v ld-e" data-study-stat="answers" style="--w:3em"></p><p class="qs-l" style="color:#047857">✅ ทำโจทย์สะสม</p></div>
           <span class="qs-div"></span>
-          <div class="qs-i"><p class="qs-v" data-study-stat="accuracy">88%</p><p class="qs-l" style="color:#0369A1">🎯 แม่นยำเฉลี่ย</p></div>
+          <div class="qs-i"><p class="qs-v ld-e" data-study-stat="accuracy" style="--w:2.4em"></p><p class="qs-l" style="color:#0369A1">🎯 แม่นยำเฉลี่ย</p></div>
         </div>
       </section>
 
@@ -175,11 +175,11 @@
       <!-- ============================================== -->
       <!-- ผลการเรียนของฉัน (เติมจากข้อมูลจริงโดย js/study-hydrate.js; ซ่อนอยู่จนกว่าจะได้ข้อมูล) -->
       <!-- ============================================== -->
-      <section id="my-progress" class="pad sec" style="margin-top:26px" aria-labelledby="h-my" hidden>
+      <section id="my-progress" class="pad sec" style="margin-top:26px" aria-labelledby="h-my">
         <div class="sec-h">
           <div class="sec-t"><span class="tile tile-teal" style="width:32px;height:32px;border-radius:10px" aria-hidden="true">📈</span><h2 id="h-my">ผลการเรียนของฉัน</h2></div>
         </div>
-        <div id="my-progress-body"></div>
+        <div id="my-progress-body" aria-busy="true"><div class="ld-wrap" role="status"><span class="sr-only">กำลังโหลดผลการเรียน</span><div class="ldbar" aria-hidden="true"></div><i class="skl" style="width:100%;height:96px"></i><i class="skl" style="width:100%;height:64px"></i><i class="skl" style="width:100%;height:64px"></i></div></div>
       </section>
 
       <section id="lb-section" class="pad" style="margin-top:26px" aria-labelledby="h-lb">
@@ -190,85 +190,7 @@
         </div>
 
         <!-- ตารางอันดับ: โหมดข้อมูลจริงให้ js/study-ranking.js แทนที่ทั้ง #lb-body ด้วยข้อมูลจริง; ข้อมูลข้างในนี้เป็นของตัวอย่างสำหรับโหมดเดโมเท่านั้น -->
-        <div id="lb-body">
-        <!-- TOP 3 PODIUM -->
-        <div class="pod">
-          <div class="pod-col">
-            <div class="pod-av" style="--ring:#94A3B8;--rk:#475569"><img src="https://api.dicebear.com/7.x/bottts/svg?seed=student2&amp;backgroundColor=c0aede" alt="อันดับ 2" width="56" height="56"><span class="rank">2</span></div>
-            <p class="pod-name">น้องกัปตัน</p>
-            <span class="starchip"><svg width="12" height="12" viewBox="0 0 24 24" fill="#D97706" aria-hidden="true"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg><span>115</span></span>
-            <div class="pod-block" style="height:48px;background:#E2E8F0;border-color:#94A3B8"><span aria-hidden="true">🥈</span></div>
-          </div>
-          <div class="pod-col">
-            <div class="crown" aria-hidden="true">👑</div>
-            <div class="pod-av" style="--ring:#D97706;--rk:#B45309"><img src="https://api.dicebear.com/7.x/bottts/svg?seed=student1&amp;backgroundColor=ffd5dc" alt="อันดับ 1" width="72" height="72"><span class="rank">1</span></div>
-            <p class="pod-name">น้องฟ้าใส</p>
-            <span class="starchip"><svg width="12" height="12" viewBox="0 0 24 24" fill="#D97706" aria-hidden="true"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg><span>128</span></span>
-            <div class="pod-block" style="height:72px;background:linear-gradient(180deg,#FCD34D,#FBBF24);border-color:#D97706"><span aria-hidden="true">🥇</span></div>
-          </div>
-          <div class="pod-col">
-            <div class="pod-av" style="--ring:#C2410C;--rk:#9A3412"><img src="https://api.dicebear.com/7.x/bottts/svg?seed=student3&amp;backgroundColor=d1d4f9" alt="อันดับ 3" width="56" height="56"><span class="rank">3</span></div>
-            <p class="pod-name">น้องไทเกอร์</p>
-            <span class="starchip"><svg width="12" height="12" viewBox="0 0 24 24" fill="#D97706" aria-hidden="true"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg><span>98</span></span>
-            <div class="pod-block" style="height:36px;background:#FED7AA;border-color:#FB923C"><span aria-hidden="true">🥉</span></div>
-          </div>
-        </div>
-
-        <!-- MY RANKING CARD -->
-        <div class="me">
-          <span class="me-rank">#7</span>
-          <img class="me-av" src="assets/avatar.webp" alt="My Profile" width="44" height="44" onerror="this.onerror=null; this.src='assets/avatar.png';">
-          <div class="me-t">
-            <p class="me-name"><span>น้องพรีม</span><span class="me-chip">ฉัน</span></p>
-            <p class="me-sub">ขาดอีก 4 ดาวขึ้นสู่อันดับ 6!</p>
-          </div>
-          <div class="me-r">
-            <p class="me-star"><svg width="18" height="18" viewBox="0 0 24 24" fill="#FCD34D" aria-hidden="true"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg><span>74</span></p>
-            <p class="me-cap">ดาวสะสม</p>
-          </div>
-        </div>
-
-        <!-- LEADERBOARD LIST (อันดับอื่นๆ 4-10) -->
-        <div class="lb-list">
-          <div class="lb-row">
-            <span class="lb-rank">4</span>
-            <img class="lb-av" src="https://api.dicebear.com/7.x/bottts/svg?seed=rank4&amp;backgroundColor=b6e3f4" alt="" width="40" height="40">
-            <div class="lb-t"><h3>น้องมาร์ค วิทย์-คอม</h3><p>โรงเรียนเตรียมฯ</p></div>
-            <span class="starchip"><svg width="12" height="12" viewBox="0 0 24 24" fill="#D97706" aria-hidden="true"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg><span>91</span></span>
-          </div>
-          <div class="lb-row">
-            <span class="lb-rank">5</span>
-            <img class="lb-av" src="https://api.dicebear.com/7.x/bottts/svg?seed=rank5&amp;backgroundColor=c0aede" alt="" width="40" height="40">
-            <div class="lb-t"><h3>น้องแพรว สรุปเคมี</h3><p>ม.5 ห้องกิฟต์</p></div>
-            <span class="starchip"><svg width="12" height="12" viewBox="0 0 24 24" fill="#D97706" aria-hidden="true"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg><span>85</span></span>
-          </div>
-          <div class="lb-row">
-            <span class="lb-rank">6</span>
-            <img class="lb-av" src="https://api.dicebear.com/7.x/bottts/svg?seed=rank6&amp;backgroundColor=ffd5dc" alt="" width="40" height="40">
-            <div class="lb-t"><h3>น้องเจมส์ ฟิสิกส์เก่ง</h3><p>สายวิทย์-คณิต</p></div>
-            <span class="starchip"><svg width="12" height="12" viewBox="0 0 24 24" fill="#D97706" aria-hidden="true"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg><span>78</span></span>
-          </div>
-          <div class="lb-row">
-            <span class="lb-rank">8</span>
-            <img class="lb-av" src="https://api.dicebear.com/7.x/bottts/svg?seed=rank8&amp;backgroundColor=d1d4f9" alt="" width="40" height="40">
-            <div class="lb-t"><h3>น้องบิว สายอังกฤษ</h3><p>เด็กสายศิลป์</p></div>
-            <span class="starchip"><svg width="12" height="12" viewBox="0 0 24 24" fill="#D97706" aria-hidden="true"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg><span>70</span></span>
-          </div>
-          <div class="lb-row">
-            <span class="lb-rank">9</span>
-            <img class="lb-av" src="https://api.dicebear.com/7.x/bottts/svg?seed=rank9&amp;backgroundColor=b6e3f4" alt="" width="40" height="40">
-            <div class="lb-t"><h3>น้องเต้ เลขง่ายนิดเดียว</h3><p>ม.5 ชายล้วน</p></div>
-            <span class="starchip"><svg width="12" height="12" viewBox="0 0 24 24" fill="#D97706" aria-hidden="true"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg><span>66</span></span>
-          </div>
-          <div class="lb-row">
-            <span class="lb-rank">10</span>
-            <img class="lb-av" src="https://api.dicebear.com/7.x/bottts/svg?seed=rank10&amp;backgroundColor=c0aede" alt="" width="40" height="40">
-            <div class="lb-t"><h3>น้องมายด์ ขยันทุกวัน</h3><p>ม.ปลายขยันขันแข็ง</p></div>
-            <span class="starchip"><svg width="12" height="12" viewBox="0 0 24 24" fill="#D97706" aria-hidden="true"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg><span>62</span></span>
-          </div>
-        </div>
-
-        </div><!-- /#lb-body -->
+        <div id="lb-body"><div class="ld-wrap" role="status"><span class="sr-only">กำลังโหลดตารางอันดับ</span><div class="ldbar" aria-hidden="true"></div><i class="skl" style="width:100%;height:180px"></i><i class="skl" style="width:100%;height:64px"></i><i class="skl" style="width:100%;height:52px"></i><i class="skl" style="width:100%;height:52px"></i><i class="skl" style="width:100%;height:52px"></i></div></div><!-- /#lb-body -->
 
         <!-- Action Button -->
         <a href="mock-exam.html" class="exam-btn"><span>เข้าสอบ Mock Exam ล่าดาวเพิ่ม</span><svg width="18" height="18" viewBox="0 0 24 24" fill="#ffffff" aria-hidden="true"><path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/></svg></a>

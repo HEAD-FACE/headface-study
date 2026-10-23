@@ -1,0 +1,99 @@
+/* HEADFACE STUDY - สถานะกำลังโหลด
+   ใช้ได้ "เฉพาะ 3 แบบ" เท่านั้น และห้ามใส่ข้อมูลเสมือน (ตัวเลข ชื่อ ภาพ ตัวอย่าง) ระหว่างรอข้อมูลจริง:
+     1) Skeleton        .skl  กล่องเรืองแสงวิ่ง ใช้แทนข้อความ/ภาพที่ยังไม่มา
+                        .ld-e ใส่กับองค์ประกอบข้อความที่ "ว่างอยู่" เมื่อ JS ใส่ข้อความจริงลงไป skeleton หายเองทันที (:empty)
+                        .bar.ld แถบความคืบหน้าที่ยังไม่มีค่า
+     2) Spinner         .spin วงกลมหมุน (ใช้กับปุ่ม/ส่วนเล็ก ๆ ที่กำลังโหลดเพิ่ม)
+     3) เส้นวิ่งไปมา    .ldbar เส้นบาง ๆ ที่แท่งสีวิ่งไป-กลับ (ใช้บนหัวของส่วนที่กำลังโหลด)
+   ผู้ใช้ตั้ง "ลดการเคลื่อนไหว" = หยุดวิ่ง/หมุน เหลือรูปทรงนิ่งที่ยังบอกว่ากำลังรออยู่ */
+
+:root { --skl-a: #E2E8F0; --skl-b: #F1F5F9; --ld-accent: #10B981; }
+
+/* ── 1) Skeleton ─────────────────────────────────────────────────────────────── */
+.skl,
+.ld-e:empty,
+.bar.ld {
+  background: linear-gradient(100deg, var(--skl-a) 30%, var(--skl-b) 50%, var(--skl-a) 70%);
+  background-size: 300% 100%;
+  animation: sklMove 1.4s linear infinite;
+}
+.skl { display: block; border-radius: 10px; color: transparent !important; }
+.ld-e:empty {
+  display: inline-block;
+  width: var(--w, 4em);
+  max-width: 100%;
+  height: 1.05em;
+  border-radius: 8px;
+  vertical-align: middle;
+  color: transparent !important;
+}
+/* ชิปกลม/ปุ่ม (ป้ายเลเวล ฯลฯ) ที่ว่างอยู่ ไม่ต้องมีขอบข้อความ */
+.chip.ld-e:empty, .go.ld-e:empty, .sc-pct.ld-e:empty { height: 1.5em; border-radius: 999px; }
+.bar.ld > i { opacity: 0; }
+@keyframes sklMove { from { background-position: 100% 0; } to { background-position: 0 0; } }
+
+/* บนพื้นหลังสีเขียว/ขาวโปร่ง (แถบหัวเว็บ) ใช้เฉดสว่างโปร่งแสงแทน เพื่อให้ยังเห็นว่าเป็นกล่องที่กำลังโหลด */
+.hdr .ld-e:empty, .hdr .skl, .fbar .ld-e:empty, .chd .ld-e:empty, .cp-head .ld-e:empty {
+  --skl-a: rgba(255, 255, 255, .26);
+  --skl-b: rgba(255, 255, 255, .5);
+}
+#headerAvatar.skl { border-radius: 50%; object-fit: cover; }
+
+/* การ์ดบทที่ค้างบนหน้าแรก ระหว่างรอ */
+.cc-skl { display: grid; align-content: start; gap: 12px; min-height: 196px; }
+.cc-skl .skl { max-width: 100%; }
+.ld-wrap { display: grid; gap: 12px; margin-top: 12px; }
+.ld-wrap .skl { border-radius: 18px; }
+
+/* ── 2) Spinner ──────────────────────────────────────────────────────────────── */
+.spin {
+  display: inline-block;
+  width: 1.15em;
+  height: 1.15em;
+  vertical-align: -.2em;
+  border: .18em solid rgba(100, 116, 139, .3);
+  border-top-color: var(--ld-accent);
+  border-radius: 50%;
+  animation: ldSpin .75s linear infinite;
+}
+@keyframes ldSpin { to { transform: rotate(360deg); } }
+/* ปุ่ม "ดูเพิ่มอีก" ที่กำลังดึงหน้าถัดไป */
+.lb-more.is-busy { color: transparent; }
+.lb-more.is-busy::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1.2em;
+  height: 1.2em;
+  margin: -.6em 0 0 -.6em;
+  border: .18em solid rgba(5, 150, 105, .28);
+  border-top-color: #059669;
+  border-radius: 50%;
+  animation: ldSpin .75s linear infinite;
+}
+
+/* ── 3) เส้นวิ่งไปมา ──────────────────────────────────────────────────────────── */
+.ldbar { position: relative; height: 4px; overflow: hidden; border-radius: 999px; background: #E2E8F0; }
+.ldbar::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 38%;
+  border-radius: inherit;
+  background: var(--ld-accent);
+  animation: ldRun 1.15s ease-in-out infinite;
+}
+@keyframes ldRun { 0% { transform: translateX(-100%); } 100% { transform: translateX(263%); } }
+
+/* ── เมื่อโหลดไม่ได้: บอกตรง ๆ พร้อมปุ่มลองใหม่ (ไม่เอาข้อมูลตัวอย่างมาแทน) ─────────── */
+.ld-err { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 14px 16px 0; padding: 10px 14px; border-radius: 16px; background: #FFF1F2; border: 2px solid #FECDD3; color: #9F1239; font-size: 14px; line-height: 22px; font-weight: 600; }
+.ld-err button { flex: none; min-height: 36px; padding: 0 14px; border-radius: 12px; border: 0; background: #E11D48; color: #fff; font-weight: 700; box-shadow: 0 3px 0 #9F1239; cursor: pointer; }
+.ld-err button:active { transform: translateY(2px); box-shadow: 0 1px 0 #9F1239; }
+.ld-na { color: #64748B; }
+
+@media (prefers-reduced-motion: reduce) {
+  .skl, .ld-e:empty, .bar.ld { animation: none; background: var(--skl-a); }
+  .spin, .lb-more.is-busy::after { animation: none; }
+  .ldbar::before { animation: none; width: 100%; opacity: .45; }
+}

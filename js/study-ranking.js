@@ -205,6 +205,7 @@ export async function loadMoreMembers(api, host, button) {
     if (!button || button.disabled) return;
     const offset = Number(button.getAttribute ? button.getAttribute('data-next') : button.dataset && button.dataset.next) || 0;
     button.disabled = true;
+    if (button.classList) button.classList.add('is-busy'); // วงกลมหมุนบนปุ่ม (css/loading.css)
     try {
         const data = await api.getRanking({ offset });
         const m = data && data.members;
@@ -216,13 +217,28 @@ export async function loadMoreMembers(api, host, button) {
     } catch (err) {
         button.disabled = false;
         console.warn('[Study] โหลดรายชื่อเพิ่มไม่ได้:', err && err.message);
+    } finally {
+        if (button.classList) button.classList.remove('is-busy');
     }
+}
+
+/** ข้อความ "อันดับที่ N" ใต้ดาวสะสมของหน้า Progress (ว่างอยู่ = skeleton จนกว่าจะรู้อันดับจริง) */
+export function rankLabel(data) {
+    if (!data || data.available === false || !data.me) return '—';
+    return data.me.rank === null || data.me.rank === undefined ? 'ยังไม่มีอันดับ' : `อันดับที่ ${data.me.rank}`;
+}
+
+function setRankLabel(host, data) {
+    const scope = host.closest ? (host.closest('main') || host.closest('[data-barba="container"]')) : null;
+    const el = scope && scope.querySelector ? scope.querySelector('[data-study-rank]') : null;
+    if (el) el.textContent = rankLabel(data);
 }
 
 async function load(api, host, doc) {
     try {
         const data = await api.getRanking();
         patchHtml(host, rankingBodyHtml(data));
+        setRankLabel(host, data);
         if (typeof host.addEventListener === 'function' && !host.dataset.more) {
             host.dataset.more = '1';
             host.addEventListener('click', (event) => {
@@ -238,6 +254,7 @@ async function load(api, host, doc) {
         } else hideFloatBar(doc);
     } catch (err) {
         patchHtml(host, '<p class="lb-empty" role="alert">โหลดตารางอันดับไม่สำเร็จ ลองรีเฟรชหน้าอีกครั้ง</p>');
+        setRankLabel(host, null);
         hideFloatBar(doc);
         console.warn('[Study] โหลดอันดับไม่ได้:', err && err.message);
     }

@@ -58,6 +58,7 @@
   <link rel="stylesheet" href="css/course.css">
   <link rel="stylesheet" href="css/fx.css">
   <link rel="stylesheet" href="css/delight.css">
+  <link rel="stylesheet" href="css/loading.css">
   
   <script>
     window.handleCardImgError = window.handleCardImgError || function(img, id, altName) {
@@ -110,18 +111,18 @@
           <!-- 1. ปุ่ม Profile แสดงรูป Avatar และชื่อผู้ใช้ -->
           <button id="profileBtn" type="button" class="profile-btn" aria-haspopup="true" aria-expanded="false" aria-controls="profileDropdown" aria-label="โปรไฟล์ผู้ใช้">
             <span class="profile-text">
-              <span id="headerName" class="profile-name">กำลังโหลด...</span>
-              <span id="headerStudentId" class="profile-id">เลขประจำตัว: -</span>
+              <span id="headerName" class="profile-name ld-e" style="--w:7em"></span>
+              <span id="headerStudentId" class="profile-id ld-e" style="--w:6em"></span>
             </span>
-            <img id="headerAvatar" src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix&amp;backgroundColor=e2e8f0" alt="Profile" width="44" height="44">
+            <img id="headerAvatar" class="skl" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Profile" width="44" height="44">
           </button>
 
           <!-- 2. Profile Popup Dropdown Card -->
           <div id="profileDropdown" class="menu hidden" role="dialog" aria-label="เมนูโปรไฟล์">
             <div class="menu-h">
-              <p id="dropdownName" class="menu-n">กำลังโหลด...</p>
-              <p id="dropdownNumber" class="menu-s">เลขที่ -</p>
-              <p id="dropdownStudentId" class="menu-s">เลขประจำตัว: -</p>
+              <p id="dropdownName" class="menu-n ld-e" style="--w:8em"></p>
+              <p id="dropdownNumber" class="menu-s ld-e" style="--w:4em"></p>
+              <p id="dropdownStudentId" class="menu-s ld-e" style="--w:6em"></p>
             </div>
             <a id="dropdownProfileLink" href="#" class="menu-a">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"/><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/></svg>
@@ -155,12 +156,12 @@
               <span class="tile tile-amber"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2l.018 .001l.016 .001l.083 .005l.011 .002h.011l.038 .009l.052 .008l.016 .006l.011 .001l.029 .011l.052 .014l.019 .009l.015 .004l.028 .014l.04 .017l.021 .012l.022 .01l.023 .015l.031 .017l.034 .024l.018 .011l.013 .012l.024 .017l.038 .034l.022 .017l.008 .01l.014 .012l.036 .041l.026 .027l.006 .009c.12 .147 .196 .322 .218 .513l.001 .012l.002 .041l.004 .064v6h5a1 1 0 0 1 .868 1.497l-.06 .091l-8 11c-.568 .783 -1.808 .38 -1.808 -.588v-6h-5a1 1 0 0 1 -.868 -1.497l.06 -.091l8 -11l.01 -.013l.018 -.024l.033 -.038l.018 -.022l.009 -.008l.013 -.014l.04 -.036l.028 -.026l.008 -.006a1 1 0 0 1 .402 -.199l.011 -.001l.027 -.005l.074 -.013l.011 -.001l.041 -.002z"/></svg></span>
               <div class="exp-main">
                 <p class="cap">ค่าพลังสะสม</p>
-                <p class="exp-val"><span class="num" data-study-reward="exp">2,480</span><span class="unit">EXP</span></p>
+                <p class="exp-val"><span class="num ld-e" data-study-reward="exp" style="--w:3.6em"></span><span class="unit">EXP</span></p>
               </div>
-              <span class="chip chip-g" data-study-reward="level">Lv. 14</span>
+              <span class="chip chip-g ld-e" data-study-reward="level" style="--w:3.2em"></span>
             </div>
-            <p class="cap exp-next" data-study-reward="next">สู่ Lv. 15 (82%)</p>
-            <div class="bar" aria-hidden="true"><i style="width:82%" data-study-reward="level-bar"></i></div>
+            <p class="cap exp-next ld-e" data-study-reward="next" style="--w:8em"></p>
+            <div class="bar ld" aria-hidden="true"><i style="width:0%" data-study-reward="level-bar"></i></div>
           </section>
 
           <!-- การ์ด Streak ความต่อเนื่อง -->
@@ -168,23 +169,11 @@
             <p class="streak-label">STREAK</p>
             <div class="streak-row">
               <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="flameGradStreakHome" x1="0%" y1="100%" x2="0%" y2="0%"><stop offset="0%" stop-color="#EA580C"/><stop offset="45%" stop-color="#F97316"/><stop offset="80%" stop-color="#FBBF24"/><stop offset="100%" stop-color="#FDE047"/></linearGradient></defs><path d="M10 2c0 -.88 1.056 -1.331 1.692 -.722c1.958 1.876 3.096 5.995 1.75 9.12l-.08 .174l.012 .003c.625 .133 1.203 -.43 2.303 -2.173l.14 -.224a1 1 0 0 1 1.582 -.153c1.334 1.435 2.601 4.377 2.601 6.27c0 4.265 -3.591 7.705 -8 7.705s-8 -3.44 -8 -7.706c0 -2.252 1.022 -4.716 2.632 -6.301l.605 -.589c.241 -.236 .434 -.43 .618 -.624c1.43 -1.512 2.145 -2.924 2.145 -4.78" fill="url(#flameGradStreakHome)"/><path d="M12 12c.9 1.6 2 2.5 2 4.2a2 2 0 0 1 -4 0c0-1.7 1.1-2.6 2-4.2z" fill="#FFF7ED" opacity="0.85"/></svg>
-              <span class="num">5</span><span class="unit">วัน</span>
+              <span class="num ld-e" data-study-streak="current" style="--w:1.6em"></span><span class="unit">วัน</span>
             </div>
+            <p class="streak-note ld-e" data-study-streak="note" style="--w:9em"></p>
           </section>
         </div>
-
-        <!-- แถวที่ 2: การ์ด สอบที่ใกล้มาถึง (เต็มแถว 100%) -->
-        <section class="card card-rose exam" aria-label="สอบใกล้ถึง">
-          <div class="exam-top">
-            <span class="tile tile-rose"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-5 2.66a1 1 0 0 0 -.993 .883l-.007 .117v5l.009 .131a1 1 0 0 0 .197 .477l.087 .1l3 3l.094 .082a1 1 0 0 0 1.226 0l.094 -.083l.083 -.094a1 1 0 0 0 0 -1.226l-.083 -.094l-2.707 -2.708v-4.585l-.007 -.117a1 1 0 0 0 -.993 -.883z"/></svg></span>
-            <div class="exam-main">
-              <p class="cap">สอบใกล้ถึง</p>
-              <p class="exam-val"><span class="num">3</span><span class="unit">วันข้างหน้า</span></p>
-            </div>
-            <span class="chip chip-rose">กลางภาค</span>
-          </div>
-          <div class="exam-row"><b>กลางภาค คณิต ม.5</b><span>2 ต.ค. • 3 บทเรียน</span></div>
-        </section>
       </div>
 
       <!-- ============================================== -->
@@ -198,34 +187,9 @@
 
         <!-- Horizontal Carousel Track -->
         <div id="continued-scroll-track" class="rail no-scrollbar" role="list">
-          <article class="cc hue-orange" role="listitem">
-            <div class="cc-top"><span class="cc-chip">ฟิสิกส์</span><span class="cc-pct">75%</span></div>
-            <h3 class="cc-title">การเคลื่อนที่แบบฮาร์มอนิกอย่างง่าย</h3>
-            <p class="cc-sub">ค้างข้อ 15 จาก 20</p>
-            <div class="bar" aria-hidden="true"><i style="width:75%"></i></div>
-            <a class="btn btn-block" href="lesson.html?s=phy&amp;l=current"><span>ลุยต่อ</span><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 6l-.112 .006a1 1 0 0 0 -.669 1.619l3.501 4.375l-3.5 4.375a1 1 0 0 0 .78 1.625h6a1 1 0 0 0 .78 -.375l4 -5a1 1 0 0 0 0 -1.25l-4 -5a1 1 0 0 0 -.78 -.375h-6z"/></svg></a>
-          </article>
-          <article class="cc hue-emerald" role="listitem">
-            <div class="cc-top"><span class="cc-chip">เคมี</span><span class="cc-pct">45%</span></div>
-            <h3 class="cc-title">กรด-เบสและการแตกตัว</h3>
-            <p class="cc-sub">ค้างบทสรุปสำคัญ</p>
-            <div class="bar" aria-hidden="true"><i style="width:45%"></i></div>
-            <a class="btn btn-block" href="lesson.html?s=sci&amp;l=current"><span>ลุยต่อ</span><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 6l-.112 .006a1 1 0 0 0 -.669 1.619l3.501 4.375l-3.5 4.375a1 1 0 0 0 .78 1.625h6a1 1 0 0 0 .78 -.375l4 -5a1 1 0 0 0 0 -1.25l-4 -5a1 1 0 0 0 -.78 -.375h-6z"/></svg></a>
-          </article>
-          <article class="cc hue-sky" role="listitem">
-            <div class="cc-top"><span class="cc-chip">คณิตศาสตร์</span><span class="cc-pct">20%</span></div>
-            <h3 class="cc-title">ลิมิตและความต่อเนื่องของฟังก์ชัน</h3>
-            <p class="cc-sub">เพิ่งเริ่มทำแบบทดสอบ</p>
-            <div class="bar" aria-hidden="true"><i style="width:20%"></i></div>
-            <a class="btn btn-block" href="lesson.html?s=mat&amp;l=current"><span>ลุยต่อ</span><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 6l-.112 .006a1 1 0 0 0 -.669 1.619l3.501 4.375l-3.5 4.375a1 1 0 0 0 .78 1.625h6a1 1 0 0 0 .78 -.375l4 -5a1 1 0 0 0 0 -1.25l-4 -5a1 1 0 0 0 -.78 -.375h-6z"/></svg></a>
-          </article>
-          <article class="cc hue-violet" role="listitem">
-            <div class="cc-top"><span class="cc-chip">อังกฤษ</span><span class="cc-pct">90%</span></div>
-            <h3 class="cc-title">Grammar &amp; Error Identification</h3>
-            <p class="cc-sub">เหลืออีก 2 ข้อสุดท้าย!</p>
-            <div class="bar" aria-hidden="true"><i style="width:90%"></i></div>
-            <a class="btn btn-block" href="lesson.html?s=eng&amp;l=current"><span>ลุยต่อ</span><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 6l-.112 .006a1 1 0 0 0 -.669 1.619l3.501 4.375l-3.5 4.375a1 1 0 0 0 .78 1.625h6a1 1 0 0 0 .78 -.375l4 -5a1 1 0 0 0 0 -1.25l-4 -5a1 1 0 0 0 -.78 -.375h-6z"/></svg></a>
-          </article>
+          <div class="cc cc-skl" aria-hidden="true"><i class="skl" style="width:40%;height:18px"></i><i class="skl" style="width:85%;height:20px"></i><i class="skl" style="width:55%;height:14px"></i><i class="skl" style="width:100%;height:8px"></i><i class="skl" style="width:100%;height:44px;border-radius:14px"></i></div>
+          <div class="cc cc-skl" aria-hidden="true"><i class="skl" style="width:40%;height:18px"></i><i class="skl" style="width:85%;height:20px"></i><i class="skl" style="width:55%;height:14px"></i><i class="skl" style="width:100%;height:8px"></i><i class="skl" style="width:100%;height:44px;border-radius:14px"></i></div>
+          <span class="sr-only" role="status">กำลังโหลดบทที่ค้าง</span>
         </div>
       </section>
 
@@ -246,10 +210,10 @@
               <div>
                 <p class="sc-eyebrow">วิชาหลัก 1 • วิทยาศาสตร์</p>
                 <h3 class="sc-title">วิทยาศาสตร์</h3>
-                <p class="sc-meta">16 บทเรียน • 110 แบบฝึกหัด</p>
+                <p class="sc-meta ld-e" style="--w:10em"></p>
               </div>
               <div class="sc-side">
-                <span class="sc-pct">75%</span>
+                <span class="sc-pct ld-e" style="--w:2.6em"></span>
                 <div class="art" aria-hidden="true"><svg class="ar ar-sci" viewBox="0 0 88 66" width="88" height="66" aria-hidden="true" focusable="false"><defs><clipPath id="h-sci-sci-c"><path d="M38 12H50V27L64 51Q67 58 60 58H28Q21 58 24 51L38 27Z"/></clipPath><linearGradient id="h-sci-sci-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6EE7B7"/><stop offset="1" stop-color="#10B981"/></linearGradient></defs><g transform="translate(44 35)"><circle class="bk-disc" r="27"/><circle class="bk-ring" r="30.5"/></g><g transform="translate(44 58)"><g class="pv sci-tilt"><g transform="translate(-44 -58)">
 <path d="M38 12H50V27L64 51Q67 58 60 58H28Q21 58 24 51L38 27Z" fill="#fff" fill-opacity=".92"/>
 <g clip-path="url(#h-sci-sci-c)">
@@ -269,7 +233,7 @@
 <g transform="translate(71 17) scale(5.5)"><path class="tw" style="animation-delay:-0.4s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#FBBF24"/></g><g transform="translate(17 24) scale(3.6)"><path class="tw" style="animation-delay:-1.4s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#34D399"/></g><g transform="translate(73 51) scale(3.2)"><path class="tw" style="animation-delay:-2s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#F59E0B"/></g></svg></div>
               </div>
             </div>
-            <div class="bar" aria-hidden="true"><i style="width:75%"></i></div>
+            <div class="bar ld" aria-hidden="true"><i style="width:0%"></i></div>
           </a>
           <a href="course.html?s=mat" class="sc subject-card-item hue-sky">
             <div class="sc-grid">
@@ -277,10 +241,10 @@
               <div>
                 <p class="sc-eyebrow">วิชาหลัก 2 • คณิตศาสตร์</p>
                 <h3 class="sc-title">คณิตศาสตร์</h3>
-                <p class="sc-meta">18 บทเรียน • 120 แบบฝึกหัด</p>
+                <p class="sc-meta ld-e" style="--w:10em"></p>
               </div>
               <div class="sc-side">
-                <span class="sc-pct">65%</span>
+                <span class="sc-pct ld-e" style="--w:2.6em"></span>
                 <div class="art" aria-hidden="true"><svg class="ar ar-mat" viewBox="0 0 88 66" width="88" height="66" aria-hidden="true" focusable="false"><g transform="translate(44 35)"><circle class="bk-disc" r="27"/><circle class="bk-ring" r="30.5"/></g><ellipse cx="44" cy="52" rx="22" ry="7.5" fill="none" stroke="#7DD3FC" stroke-width="1.4" stroke-dasharray="2 3.5" stroke-linecap="round"/>
 <path class="mat-draw" pathLength="1" d="M66 52A22 7.5 0 1 1 22 52A22 7.5 0 1 1 66 52" fill="none" stroke="#0284C7" stroke-width="3.2" stroke-linecap="round"/>
 <line x1="44" y1="11" x2="44" y2="49" stroke="#0369A1" stroke-width="3.2" stroke-linecap="round"/>
@@ -298,7 +262,7 @@
 <g transform="translate(11 44) scale(3.4)"><path class="tw" style="animation-delay:-1s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#38BDF8"/></g></svg></div>
               </div>
             </div>
-            <div class="bar" aria-hidden="true"><i style="width:65%"></i></div>
+            <div class="bar ld" aria-hidden="true"><i style="width:0%"></i></div>
           </a>
           <a href="course.html?s=tha" class="sc subject-card-item hue-rose">
             <div class="sc-grid">
@@ -306,10 +270,10 @@
               <div>
                 <p class="sc-eyebrow">วิชาหลัก 3 • ภาษาไทย</p>
                 <h3 class="sc-title">ภาษาไทย</h3>
-                <p class="sc-meta">12 บทเรียน • 80 ข้อสอบวิเคราะห์</p>
+                <p class="sc-meta ld-e" style="--w:10em"></p>
               </div>
               <div class="sc-side">
-                <span class="sc-pct">85%</span>
+                <span class="sc-pct ld-e" style="--w:2.6em"></span>
                 <div class="art" aria-hidden="true"><svg class="ar ar-tha" viewBox="0 0 88 66" width="88" height="66" aria-hidden="true" focusable="false"><g transform="translate(44 35)"><circle class="bk-disc" r="27"/><circle class="bk-ring" r="30.5"/></g><ellipse class="fb tha-sh" cx="42" cy="62.5" rx="17" ry="2.6" fill="#BE123C" opacity=".16"/>
 <g transform="translate(36 44.5) rotate(-7)"><g class="pv tha-tile">
 <rect x="-17" y="-19" width="34" height="34" rx="9" fill="#FB7185" stroke="#BE123C" stroke-width="2.4"/>
@@ -330,7 +294,7 @@
 <g transform="translate(74 30) scale(3.4)"><path class="tw" style="animation-delay:-0.5s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#FBBF24"/></g><g transform="translate(13 50) scale(3.2)"><path class="tw" style="animation-delay:-1.7s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#FB7185"/></g></svg></div>
               </div>
             </div>
-            <div class="bar" aria-hidden="true"><i style="width:85%"></i></div>
+            <div class="bar ld" aria-hidden="true"><i style="width:0%"></i></div>
           </a>
           <a href="course.html?s=eng" class="sc subject-card-item hue-violet">
             <div class="sc-grid">
@@ -338,10 +302,10 @@
               <div>
                 <p class="sc-eyebrow">วิชาหลัก 4 • ภาษาต่างประเทศ</p>
                 <h3 class="sc-title">ภาษาอังกฤษ</h3>
-                <p class="sc-meta">20 บทเรียน • คลังศัพท์ 450 คำ</p>
+                <p class="sc-meta ld-e" style="--w:10em"></p>
               </div>
               <div class="sc-side">
-                <span class="sc-pct">55%</span>
+                <span class="sc-pct ld-e" style="--w:2.6em"></span>
                 <div class="art" aria-hidden="true"><svg class="ar ar-eng" viewBox="0 0 88 66" width="88" height="66" aria-hidden="true" focusable="false"><g transform="translate(44 35)"><circle class="bk-disc" r="27"/><circle class="bk-ring" r="30.5"/></g><g transform="translate(29 22)"><g class="pv eng-fl" style="animation-delay:-.4s"><g class="pv eng-p1" style="transform-origin:-12px 19px">
 <path d="M-8 -11H8A11 11 0 0 1 19 0A11 11 0 0 1 8 11H-3L-12 19L-10 11H-8A11 11 0 0 1 -19 0A11 11 0 0 1 -8 -11Z" fill="#8B5CF6" stroke="#5B21B6" stroke-width="2.4" stroke-linejoin="round"/>
 <text x="0" y="5.2" text-anchor="middle" font-size="15" font-weight="800" fill="#fff">Aa</text>
@@ -355,7 +319,7 @@
 <g transform="translate(74 28) scale(3.6)"><path class="tw" style="animation-delay:-0.9s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#FBBF24"/></g><g transform="translate(12 12) scale(3)"><path class="tw" style="animation-delay:-1.8s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#A78BFA"/></g></svg></div>
               </div>
             </div>
-            <div class="bar" aria-hidden="true"><i style="width:55%"></i></div>
+            <div class="bar ld" aria-hidden="true"><i style="width:0%"></i></div>
           </a>
           <a href="course.html?s=soc" class="sc subject-card-item hue-amber">
             <div class="sc-grid">
@@ -363,10 +327,10 @@
               <div>
                 <p class="sc-eyebrow">วิชาหลัก 5 • สังคมศึกษา</p>
                 <h3 class="sc-title">สังคมศึกษา</h3>
-                <p class="sc-meta">15 บทเรียน • 90 แนวข้อสอบ</p>
+                <p class="sc-meta ld-e" style="--w:10em"></p>
               </div>
               <div class="sc-side">
-                <span class="sc-pct">40%</span>
+                <span class="sc-pct ld-e" style="--w:2.6em"></span>
                 <div class="art" aria-hidden="true"><svg class="ar ar-soc" viewBox="0 0 88 66" width="88" height="66" aria-hidden="true" focusable="false"><defs><clipPath id="h-soc-soc-c"><circle cx="44" cy="35" r="22"/></clipPath>
 <linearGradient id="h-soc-soc-o" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#38BDF8"/><stop offset="1" stop-color="#0369A1"/></linearGradient>
 <radialGradient id="h-soc-soc-v" cx=".35" cy=".3" r=".85"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset=".55" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#082F49" stop-opacity=".4"/></radialGradient></defs><g transform="translate(44 35)"><circle class="bk-disc" r="27"/><circle class="bk-ring" r="30.5"/></g><circle cx="44" cy="35" r="22" fill="url(#h-soc-soc-o)"/>
@@ -393,7 +357,7 @@
 <g transform="translate(16 16) scale(4.2)"><path class="tw" style="animation-delay:-0.3s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#FBBF24"/></g><g transform="translate(73 54) scale(3.4)"><path class="tw" style="animation-delay:-1.5s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#F59E0B"/></g><g transform="translate(14 54) scale(3)"><path class="tw" style="animation-delay:-2.3s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#38BDF8"/></g></svg></div>
               </div>
             </div>
-            <div class="bar" aria-hidden="true"><i style="width:40%"></i></div>
+            <div class="bar ld" aria-hidden="true"><i style="width:0%"></i></div>
           </a>
           <a href="course.html?s=his" class="sc subject-card-item hue-orange">
             <div class="sc-grid">
@@ -401,10 +365,10 @@
               <div>
                 <p class="sc-eyebrow">วิชาหลัก 6 • ประวัติศาสตร์</p>
                 <h3 class="sc-title">ประวัติศาสตร์</h3>
-                <p class="sc-meta">10 บทเรียน • 60 แบบทดสอบ</p>
+                <p class="sc-meta ld-e" style="--w:10em"></p>
               </div>
               <div class="sc-side">
-                <span class="sc-pct">50%</span>
+                <span class="sc-pct ld-e" style="--w:2.6em"></span>
                 <div class="art" aria-hidden="true"><svg class="ar ar-his" viewBox="0 0 88 66" width="88" height="66" aria-hidden="true" focusable="false"><defs><clipPath id="h-his-his-c"><path d="M-14 -21C-14 -9 -4 -5 -1.6 0C-4 5 -14 9 -14 21H14C14 9 4 5 1.6 0C4 -5 14 -9 14 -21Z"/></clipPath></defs><g transform="translate(44 35)"><circle class="bk-disc" r="27"/><circle class="bk-ring" r="30.5"/></g><g transform="translate(44 34.5) scale(.92)"><g class="pv his-flip">
 <path d="M-14 -21C-14 -9 -4 -5 -1.6 0C-4 5 -14 9 -14 21H14C14 9 4 5 1.6 0C4 -5 14 -9 14 -21Z" fill="#fff" fill-opacity=".9"/>
 <g clip-path="url(#h-his-his-c)">
@@ -420,7 +384,7 @@
 <g transform="translate(15 18) scale(4.2)"><path class="tw" style="animation-delay:-0.4s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#FBBF24"/></g><g transform="translate(73 50) scale(3.6)"><path class="tw" style="animation-delay:-1.6s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#F97316"/></g><g transform="translate(72 17) scale(3)"><path class="tw" style="animation-delay:-2.4s" d="M0 -1C.12 -.35 .35 -.12 1 0C.35 .12 .12 .35 0 1C-.12 .35 -.35 .12 -1 0C-.35 -.12 -.12 -.35 0 -1Z" fill="#FDBA74"/></g></svg></div>
               </div>
             </div>
-            <div class="bar" aria-hidden="true"><i style="width:50%"></i></div>
+            <div class="bar ld" aria-hidden="true"><i style="width:0%"></i></div>
           </a>
         </div>
 

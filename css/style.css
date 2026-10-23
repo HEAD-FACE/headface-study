@@ -311,6 +311,8 @@ body {
 .streak-label { margin: 0; font-size: 12px; line-height: 18px; font-weight: 800; letter-spacing: .06em; color: #92400E; }
 .streak-row { display: flex; align-items: center; justify-content: center; gap: 4px; }
 .streak-row .num { font-size: 28px; line-height: 34px; color: #B45309; }
+.streak-note { margin: 2px 0 0; font-size: 11px; line-height: 16px; font-weight: 700; color: #92400E; }
+.streak-note.is-risk { color: #BE123C; }
 .exam { padding: 12px 14px 14px; }
 .exam-top { display: flex; align-items: center; gap: 10px; }
 .exam-main { flex: 1; min-width: 0; }
@@ -868,14 +870,7 @@ nav a * { pointer-events: none !important; }
 @keyframes ielOk{0%,34%{transform:scale(0);animation-timing-function:cubic-bezier(.34,1.56,.64,1)}44%{transform:scale(1)}86%{transform:scale(1);animation-timing-function:ease-in}94%,100%{transform:scale(0)}}
 
 /* ───── ข้อมูลจริงบนการ์ดวิชา (js/study-hydrate.js) ───── */
-/* ระหว่างรอ API ซ่อนเลขตัวอย่างไว้ก่อน แล้วค่อยแสดงค่าจริง (ถ้า JS ไม่ทำงาน แสดงเองหลัง 4 วินาที) */
-@keyframes study-reveal { to { visibility: visible; } }
-html[data-study-pending] .sc-pct,
-html[data-study-pending] .sc .bar,
-html[data-study-pending] #continued-scroll-track .cc {
-  visibility: hidden;
-  animation: study-reveal 0s linear 4s forwards;
-}
+/* ระหว่างรอ API ช่องตัวเลข/ข้อความของการ์ดเป็น skeleton (css/loading.css) ไม่มีค่าตัวอย่างให้เห็นเลย */
 /* วิชาที่ยังไม่เผยแพร่ */
 .sc.is-soon { cursor: default; box-shadow: 0 4px 0 var(--edge); }
 .sc.is-soon .art { opacity: .55; filter: grayscale(.35); }
@@ -884,7 +879,6 @@ html[data-study-pending] #continued-scroll-track .cc {
 .sc.is-soon:active { transform: none; box-shadow: 0 4px 0 var(--edge); }
 
 /* ───── ส่วน "ผลการเรียนของฉัน" ในหน้า Progress (js/study-hydrate.js) ───── */
-html[data-study-pending] [data-study-stat] { visibility: hidden; animation: study-reveal 0s linear 4s forwards; }
 /* ส่วนที่ยังพลาดบ่อย (หน้าความคืบหน้า) */
 .wk { margin-top: 16px; }
 .wk-h h3 { display: flex; align-items: center; gap: 6px; font-size: 16px; line-height: 24px; font-weight: 800; color: #881337; }
@@ -915,7 +909,4 @@ html[data-study-pending] [data-study-stat] { visibility: hidden; animation: stud
 .mp-row .bar { margin-top: 6px; }
 .mp-row .bar > i { background: var(--bar); }
 .mp-row .mp-n { flex: none; font-size: 16px; font-weight: 800; color: var(--strong); font-variant-numeric: tabular-nums; }
-.mp-recent { display: grid; gap: 6px; margin-top: 14px; }
-.mp-recent li { font-size: 13px; line-height: 20px; color: #334155; }
-.mp-sub { margin-top: 14px; font-size: 14px; line-height: 22px; font-weight: 800; color: #0F172A; }
 [hidden] { display: none !important; }

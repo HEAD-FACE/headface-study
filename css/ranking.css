@@ -1,7 +1,7 @@
 /* HEADFACE STUDY - ตารางอันดับดาว (หน้า Progress) และหน้า "เลื่อนอันดับ" หลังจบ Mock Exam  (js/study-ranking.js)
    ใช้ต่อจาก css/style.css (.pod .me .lb-row .starchip ฯลฯ ของ Leaderboard เดิม) */
 
-#lb-body[aria-busy="true"] { min-height: 220px; opacity: .55; transition: opacity .3s; }
+#lb-body[aria-busy="true"] { min-height: 220px; }
 
 /* ───────── โพเดียม SVG ───────── */
 .pod { display: grid; grid-template-columns: 1fr 1.18fr 1fr; gap: 2px; align-items: end; margin-top: 12px; padding: 18px 8px 0; background: radial-gradient(120% 80% at 50% 0%, #FEF9C3 0%, #E0F2FE 46%, #ECFDF5 100%); border: 1.5px solid #E2E8F0; border-radius: 26px; overflow: hidden; position: relative; animation: lbIn .5s cubic-bezier(.2, .8, .2, 1) both; }

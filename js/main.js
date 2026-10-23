@@ -486,6 +486,7 @@ function renderUserProfileUI(user) {
     const seed = user.student_id || user.first_name || 'Felix';
     const defaultAvatar = `https://api.dicebear.com/7.x/notionists/svg?seed=${seed}&backgroundColor=e2e8f0`;
     headerAvatar.src = user.avatar || user.picture || defaultAvatar;
+    headerAvatar.classList.remove('skl'); // ได้รูปจริงแล้ว: เลิกเป็น skeleton (css/loading.css)
   }
 
   // 3. อัปเดตในการ์ด Dropdown

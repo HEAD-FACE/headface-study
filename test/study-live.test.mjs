@@ -262,7 +262,8 @@ describe('การเชื่อมหน้า', () => {
         const progress = read('progress.html');
         assert.match(progress, /<html lang="th" data-study-pending>/);
         assert.ok(progress.indexOf('js/study-hydrate.js') > 0 && progress.indexOf('js/study-hydrate.js') < progress.indexOf('js/main.js'));
-        assert.match(progress, /<section id="my-progress"[^>]*hidden>/, 'ส่วนผลการเรียนซ่อนอยู่จนกว่าจะได้ข้อมูลจริง');
+        assert.doesNotMatch(progress, /<section id="my-progress"[^>]*hidden>/, 'ส่วนผลการเรียนแสดงเป็น skeleton ระหว่างรอ ไม่ซ่อน');
+        assert.match(progress, /id="my-progress-body"[^>]*aria-busy="true"><div class="ld-wrap"/);
         assert.match(progress, /data-study-stat="answers"/);
         assert.match(progress, /data-study-stat="accuracy"/);
     });
@@ -313,7 +314,7 @@ describe('study-hydrate: ผลการเรียนของฉัน (ห�
         assert.deepEqual(answersStats({ total: 0, correct: 0, accuracy: null }), { answers: '0 ข้อ', accuracy: '—' });
     });
 
-    test('ส่วนผลการเรียน: ความคืบหน้ารวม รายวิชา (ลิงก์ไปหน้ารายงาน) และผลล่าสุด พร้อม escape', () => {
+    test('ส่วนผลการเรียน: ความคืบหน้ารวม รายวิชา (ลิงก์ไปหน้ารายงาน) พร้อม escape และไม่มีรายการ "ผลล่าสุด" แล้ว', () => {
         const h = progressSectionHtml(subjects, progress);
         assert.match(h, /25%<\/span><span class="cap">ความคืบหน้ารวม/);
         assert.match(h, /เรียนจบ 3 จาก 12 บทเรียน/);
@@ -322,12 +323,11 @@ describe('study-hydrate: ผลการเรียนของฉัน (ห�
         assert.match(h, /href="report\.html\?s=tha"/, 'วิชาที่เรียนครบแล้วยังแสดง');
         assert.match(h, /คณิต &lt;b&gt;/);
         assert.doesNotMatch(h, /คณิต <b>/);
-        assert.match(h, /Quiz บทที่ 1 • วิทยาศาสตร์ • 3\/3 ข้อ/);
-        assert.match(h, /Mock Exam • คณิต &lt;b&gt; • 2\/5 ข้อ/);
+        assert.doesNotMatch(h, /ผลล่าสุด|mp-recent|Quiz บทที่ 1 • วิทยาศาสตร์|Mock Exam • คณิต/, 'ข้อมูล recent ยังส่งมาได้ แต่หน้าไม่แสดง');
         assert.ok(h.indexOf('report.html?s=sci') < h.indexOf('report.html?s=mat'), 'วิชาที่เริ่มแล้วขึ้นก่อน');
     });
 
-    test('ยังไม่มีวิชา/ผลล่าสุด → ข้อความแทนรายการว่าง', () => {
+    test('ยังไม่มีวิชา → ข้อความแทนรายการว่าง', () => {
         const h = progressSectionHtml([], { overall: { lessonsDone: 0, lessonsTotal: 0, pct: 0, subjectsStarted: 0, subjectsCompleted: 0 }, answers: { total: 0, correct: 0, accuracy: null }, recent: [] });
         assert.match(h, /ยังไม่มีวิชาที่เปิดให้เรียน/);
         assert.doesNotMatch(h, /ผลล่าสุด/);

@@ -5,10 +5,10 @@
  * เปอร์เซ็นต์ ข้อความสรุป ป้ายปุ่ม และแถว "ทำต่อ" ของหน้าแรก แล้วทำให้วิชาที่ยังไม่เผยแพร่เป็นสถานะ "เร็ว ๆ นี้"
  * main.js ส่งเหตุการณ์ study:page ทุกครั้งที่หน้าถูกแสดง (ทั้งโหลดครั้งแรกและตอน Barba สลับหน้า)
  *
- * ถ้า API ใช้ไม่ได้ จะปล่อยการ์ดตามเดิม (ไม่ลบอะไร) และแจ้งใน console เท่านั้น
- * EXP / ดาว / เลเวล ในหน้าแรกและ Progress เป็นของจริง (applyRewards) และตารางอันดับดาวเป็นของจริง (study-ranking.js) ส่วน Streak ยังเป็นข้อมูลตัวอย่าง ไฟล์นี้ไม่แตะ
+ * ระหว่างรอ API ช่องข้อมูลเป็น skeleton (css/loading.css) — ใน HTML ไม่มีตัวเลข/ชื่อ/ภาพตัวอย่างอยู่เลย จึงไม่มีทางเห็นข้อมูลเสมือนก่อนข้อมูลจริง
+ * ถ้า API ใช้ไม่ได้: ช่องที่รอข้อมูลแสดง "—" พร้อมแถบแจ้งว่าโหลดไม่สำเร็จและปุ่มลองใหม่ (ไม่เอาค่าตัวอย่างมาแทน)
+ * EXP / ดาว / เลเวล / Streak ในหน้าแรกและ Progress เป็นของจริง (applyRewards, applyStreak) และตารางอันดับดาวเป็นของจริง (study-ranking.js)
  */
-import { isDemo } from './study-source.js';
 import { studyApi } from './study-api.js';
 import { formatThaiDate } from './study-format.js';
 import { hydrateRanking } from './study-ranking.js';
@@ -63,12 +63,6 @@ export function answersStats(answers) {
     };
 }
 
-function recentLine(r, byId) {
-    const title = byId.get(r.subjectId)?.title || '';
-    const label = r.type === 'quiz' ? `Quiz บทที่ ${r.lessonNo}` : 'Mock Exam';
-    return `<li>${esc(label)} • ${esc(title)} • ${r.correct}/${r.total} ข้อ • ${esc(formatThaiDate(r.at))}</li>`;
-}
-
 const lessonLink = (subjectId, no) => `lesson.html?s=${encodeURIComponent(subjectId)}&l=${encodeURIComponent(no)}`;
 
 /**
@@ -91,9 +85,8 @@ export function weakSectionHtml(weak) {
     return `<section class="wk" aria-label="ส่วนที่ยังพลาดบ่อย">${head}<div class="wk-list">${cards}</div></section>`;
 }
 
-/** ส่วน "ผลการเรียนของฉัน": ความคืบหน้ารวม + ส่วนที่ยังพลาดบ่อย + รายวิชา (ลิงก์ไปหน้าผลการเรียนรายวิชา) + ผลล่าสุด */
+/** ส่วน "ผลการเรียนของฉัน": ความคืบหน้ารวม + ส่วนที่ยังพลาดบ่อย + รายวิชา (ลิงก์ไปหน้าผลการเรียนรายวิชา) */
 export function progressSectionHtml(subjects, progress) {
-    const byId = new Map(subjects.map((s) => [s.id, s]));
     const o = progress.overall;
     const rows = railSubjects(subjects, 50)
         .concat(subjects.filter((s) => !s.current && s.lessonsTotal > 0)) // เรียนครบแล้ว (ไม่มีบทที่ค้าง) ก็แสดง
@@ -103,17 +96,13 @@ export function progressSectionHtml(subjects, progress) {
             const last = s.lastActivityAt ? ` • ทำล่าสุด ${formatThaiDate(s.lastActivityAt)}` : '';
             return `<a class="mp-row hue-${hue}" href="report.html?s=${encodeURIComponent(s.id)}" data-subject="${esc(s.id)}"${v.pct >= 100 ? ' data-done="1"' : ''}><span class="sc-tile" aria-hidden="true">${esc(s.emoji || '📘')}</span><div class="mp-t"><h3>${esc(s.title)}</h3><p class="cap">เรียนจบ ${s.lessonsDone}/${s.lessonsTotal} บท${esc(last)}</p><div class="bar" aria-hidden="true"><i style="width:${v.pct}%"></i></div></div><span class="mp-n">${v.pct}%</span></a>`;
         });
-    const recent = progress.recent.length
-        ? `<p class="mp-sub">ผลล่าสุด</p><ul class="mp-recent">${progress.recent.map((r) => recentLine(r, byId)).join('')}</ul>`
-        : '';
     return `<div class="mp-card">
           <div class="mp-top"><p class="mp-pct"><span class="num">${o.pct}%</span><span class="cap">ความคืบหน้ารวม</span></p><p class="cap">เรียนจบ ${o.lessonsDone} จาก ${o.lessonsTotal} บทเรียน</p></div>
           <div class="bar" aria-hidden="true"><i style="width:${o.pct}%"></i></div>
           <p class="cap" style="margin-top:8px">เริ่มเรียนแล้ว ${o.subjectsStarted} วิชา • เรียนครบ ${o.subjectsCompleted} วิชา</p>
         </div>
         ${weakSectionHtml(progress.weak)}
-        ${rows.length ? `<div class="mp-list">${rows.join('')}</div>` : '<p class="note">ยังไม่มีวิชาที่เปิดให้เรียน เมื่อเปิดแล้วความคืบหน้าจะแสดงที่นี่</p>'}
-        ${recent}`;
+        ${rows.length ? `<div class="mp-list">${rows.join('')}</div>` : '<p class="note">ยังไม่มีวิชาที่เปิดให้เรียน เมื่อเปิดแล้วความคืบหน้าจะแสดงที่นี่</p>'}`;
 }
 
 /** EXP / ดาว / เลเวลของผู้เรียนจาก GET /progress (rewards) เป็นข้อความที่จะแสดง */
@@ -126,15 +115,52 @@ export function rewardsView(rewards) {
     return { exp: exp.toLocaleString('en-US'), stars: String(stars), level: `Lv. ${level}`, 'level-long': `เลเวล ${level}`, next: `สู่ Lv. ${level + 1} (${pct}%)`, pct };
 }
 
-/** ใส่ตัวเลขจริงลงองค์ประกอบที่มี data-study-reward="exp|stars|level|level-long|next|level-bar" และซ่อนส่วนตัวอย่าง (data-study-hide-real) */
+/** ใส่ตัวเลขจริงลงองค์ประกอบที่มี data-study-reward="exp|stars|level|level-long|next|level-bar" (skeleton หายเองเมื่อมีข้อความ) */
 export function applyRewards(scope, rewards) {
     const v = rewardsView(rewards);
     for (const el of scope.querySelectorAll('[data-study-reward]')) {
         const key = el.getAttribute('data-study-reward');
-        if (key === 'level-bar') el.style.width = `${v.pct}%`;
-        else if (key in v) el.textContent = v[key];
+        if (key === 'level-bar') {
+            el.style.width = `${v.pct}%`;
+            if (el.parentElement && el.parentElement.classList) el.parentElement.classList.remove('ld');
+        } else if (key in v) el.textContent = v[key];
     }
     for (const el of scope.querySelectorAll('[data-study-hide-real]')) el.style.display = 'none';
+}
+
+/** เมื่อ Backend ไม่มีข้อมูลส่วนนั้น (ยังไม่ได้ migrate) ช่องแสดง "—" แทนที่จะแสดงเลข 0 ที่ไม่จริง */
+export function markUnavailable(scope, selector) {
+    for (const el of scope.querySelectorAll(selector)) {
+        if (el.tagName === 'I' && el.parentElement) { if (el.parentElement.classList) el.parentElement.classList.remove('ld'); continue; }
+        if (el.textContent === '') { el.textContent = '—'; el.setAttribute('data-ld-na', ''); }
+    }
+}
+
+/**
+ * Streak ที่เก็บใน DB (ซิงก์ข้ามอุปกรณ์): ตัวเลข "N วัน" และข้อความใต้ตัวเลข
+ * null = Backend ยังไม่มีข้อมูล (ไม่ได้ migrate) → "—" ไม่แสดงเลข 0 ที่ไม่จริง
+ */
+export function streakText(streak) {
+    if (!streak || !Number.isFinite(Number(streak.current))) return { current: '—', days: '—', note: '', risk: false };
+    const n = Math.max(0, Math.floor(Number(streak.current)));
+    const best = Math.max(n, Math.floor(Number(streak.longest) || 0));
+    let note = '';
+    if (streak.atRisk) note = 'อย่าให้ขาด! เรียนวันนี้';
+    else if (streak.activeToday) note = 'วันนี้ครบแล้ว ✓';
+    else if (n === 0) note = best > 0 ? `สูงสุด ${best} วัน • เริ่มใหม่วันนี้` : 'เริ่มวันนี้เลย';
+    return { current: String(n), days: `${n} วัน`, note, risk: !!streak.atRisk };
+}
+
+export function applyStreak(scope, streak) {
+    const t = streakText(streak);
+    for (const el of scope.querySelectorAll('[data-study-streak]')) {
+        const key = el.getAttribute('data-study-streak');
+        if (key === 'note') {
+            if (!t.note) { el.remove(); continue; }
+            el.textContent = t.note;
+            if (el.classList) el.classList.toggle('is-risk', t.risk);
+        } else if (key in t) el.textContent = t[key];
+    }
 }
 
 let progressCache = null;
@@ -151,13 +177,35 @@ async function applyProgressPage(scope, subjects) {
     if (!section && !hasStats) return;
     const progress = await loadProgress();
     const stats = answersStats(progress.answers);
-    for (const el of scope.querySelectorAll('[data-study-stat]')) el.textContent = stats[el.getAttribute('data-study-stat')] ?? el.textContent;
+    for (const el of scope.querySelectorAll('[data-study-stat]')) el.textContent = stats[el.getAttribute('data-study-stat')] ?? '—';
     if (progress.rewards) applyRewards(scope, progress.rewards);
+    else markUnavailable(scope, '[data-study-reward]');
+    applyStreak(scope, progress.streak);
     if (section) {
         const body = section.querySelector('#my-progress-body');
-        if (body) body.innerHTML = progressSectionHtml(subjects, progress);
-        section.hidden = false;
+        if (body) { body.innerHTML = progressSectionHtml(subjects, progress); body.removeAttribute('aria-busy'); }
     }
+}
+
+/**
+ * API ใช้ไม่ได้: ช่องที่ยังรออยู่ในหน้านี้ (ไม่รวมแถบหัวเว็บ) แสดง "—" และแถบความคืบหน้าหยุดเป็น skeleton
+ * พร้อมแถบแจ้งว่าโหลดไม่สำเร็จ + ปุ่มลองใหม่ — ไม่มีข้อมูลตัวอย่างมาแทนที่
+ */
+export function showLoadFailed(scope, retry = () => { if (typeof location !== 'undefined') location.reload(); }) {
+    for (const el of scope.querySelectorAll('.ld-e:empty')) {
+        if (el.closest && el.closest('.hdr')) continue; // ชื่อ/รูปบนแถบหัวเว็บเป็นของระบบเข้าสู่ระบบ ไม่ใช่ของหน้านี้
+        el.textContent = '—';
+        el.setAttribute('data-ld-na', '');
+    }
+    for (const bar of scope.querySelectorAll('.bar.ld')) bar.classList.remove('ld');
+    const rail = scope.querySelector('#continued-scroll-track');
+    if (rail && rail.querySelector('.cc-skl')) rail.innerHTML = '';
+    const body = scope.querySelector('#my-progress-body');
+    if (body && body.querySelector('.ld-wrap')) { body.removeAttribute('aria-busy'); body.innerHTML = ''; }
+    if (scope.querySelector('.ld-err') || typeof scope.insertAdjacentHTML !== 'function') return;
+    scope.insertAdjacentHTML('afterbegin', '<div class="ld-err" role="alert"><span>โหลดข้อมูลไม่สำเร็จ ตรวจอินเทอร์เน็ตแล้วลองใหม่อีกครั้ง</span><button type="button" data-act="ld-retry">ลองใหม่</button></div>');
+    const button = scope.querySelector('[data-act="ld-retry"]');
+    if (button && typeof button.addEventListener === 'function') button.addEventListener('click', retry);
 }
 
 // ───────────── DOM ─────────────
@@ -168,7 +216,9 @@ function setText(root, selector, text) {
 
 function setBar(card, pct) {
     const bar = card.querySelector('.bar > i');
-    if (bar) bar.style.width = `${pct}%`;
+    if (!bar) return;
+    bar.style.width = `${pct}%`;
+    if (bar.parentElement && bar.parentElement.classList) bar.parentElement.classList.remove('ld');
 }
 
 function applyCards(root, byId) {
@@ -180,7 +230,7 @@ function applyCards(root, byId) {
             const v = subjectCardView(subject);
             setText(card, '.sc-pct', `${v.pct}%`);
             setBar(card, v.pct);
-            if (v.meta) setText(card, '.sc-meta', v.meta);
+            setText(card, '.sc-meta', v.meta || 'ยังไม่มีบทเรียน');
             setText(card, '.go', v.goLabel);
             card.classList.remove('is-soon');
         } else {
@@ -220,7 +270,7 @@ const clearPending = () => html().removeAttribute('data-study-pending');
 export async function hydrate(root) {
     const scope = root && root.querySelectorAll ? root : document;
     const hasCards = scope.querySelector('a.subject-card-item') || scope.querySelector('#continued-scroll-track') || scope.querySelector('#my-progress') || scope.querySelector('#lb-body');
-    if (!hasCards || isDemo()) { clearPending(); settle(scope); return; }
+    if (!hasCards) { clearPending(); return; }
 
     html().setAttribute('data-study-pending', '');
     try {
@@ -229,7 +279,8 @@ export async function hydrate(root) {
         applyRail(scope, subjects);
         await applyProgressPage(scope, subjects);
     } catch (err) {
-        console.warn('[Study] ใช้ข้อมูลรายวิชาจริงไม่ได้ จึงคงการ์ดเดิมไว้:', err && err.message);
+        console.warn('[Study] โหลดข้อมูลรายวิชาไม่ได้:', err && err.message);
+        showLoadFailed(scope);
     } finally {
         clearPending();
     }
