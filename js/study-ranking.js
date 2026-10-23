@@ -1,7 +1,8 @@
 /**
  * js/study-ranking.js — ตารางอันดับดาว (Leaderboard) และแอนิเมชันเลื่อนอันดับ (สัญญา: docs/study-api-contract.md ข้อ 2.13)
  *
- *   • หน้า Progress: โพเดียม SVG 3 อันดับแรก (ขั้นบันไดทอง/เงิน/ทองแดง มีแอนิเมชัน), รายการอันดับ 4–10, การ์ดอันดับของฉัน
+ *   • หน้า Progress: โพเดียม SVG 3 อันดับแรก (ขั้นบันไดทอง/เงิน/ทองแดง มีแอนิเมชัน; มอบให้เฉพาะคนที่มีดาวแล้วเท่านั้น),
+ *     รายชื่อ "ทุกคน" ถัดจากโพเดียมทีละหน้า (คนที่ยังไม่มีดาวก็แสดง ไม่มีเลขอันดับ อยู่ท้ายสุด + ปุ่มโหลดเพิ่ม), การ์ดอันดับของฉัน
  *     และ "แถบชื่อของฉัน" ที่ลอยเหนือ navbar ตลอดเวลา — ชื่อของตัวเองแสดงเต็มเสมอ ไม่มีทางซ่อน (ตั้งใจ ไม่มีสวิตช์ซ่อนชื่อ)
  *   • หน้าสรุปผล Mock: ถ้าดาวที่ได้ทำให้อันดับขยับ (หรือเพิ่งติดอันดับครั้งแรก) มีหน้า "เลื่อนอันดับ" ที่คนที่แซงไปเลื่อนลง
  *     ตัวเราเลื่อนขึ้น ตัวเลขอันดับนับลง และมีเอฟเฟกต์ฉลอง
@@ -115,8 +116,9 @@ function podiumColumn(entry, place) {
 }
 
 function listRow(entry) {
-    return `<div class="lb-row${entry.isMe ? ' is-me' : ''}" data-rank-row>
-      <span class="lb-rank">${entry.rank}</span>${img(entry.avatar, entry.isMe ? 46 : 40, 'lb-av')}
+    const none = entry.rank === null || entry.rank === undefined; // ยังไม่มีดาว = ไม่มีอันดับ
+    return `<div class="lb-row${entry.isMe ? ' is-me' : ''}${none ? ' no-star' : ''}" data-rank-row>
+      <span class="lb-rank${none ? ' is-none' : ''}"${none ? ' aria-label="ยังไม่มีอันดับ"' : ''}>${none ? '–' : entry.rank}</span>${img(entry.avatar, entry.isMe ? 46 : 40, 'lb-av')}
       <div class="lb-t"><h3>${esc(entry.name)}${entry.isMe ? ` ${MY_BADGE}` : ''}</h3></div>${starChip(entry.stars)}
     </div>`;
 }
@@ -140,11 +142,28 @@ export function rankingBodyHtml(data) {
     const top = Array.isArray(data.top) ? data.top : [];
     const me = data.me || DEFAULT_ME;
     if (top.length === 0) {
-        return `<div class="lb-empty" role="status"><span class="lb-empty-i" aria-hidden="true">⭐</span><p><b>ยังไม่มีใครติดอันดับ</b><br>ทำ Mock Exam เพื่อรับดาวแรก แล้วคุณจะเป็นคนแรกบนตาราง!</p></div>${meCard(me)}`;
+        return `<div class="lb-empty" role="status"><span class="lb-empty-i" aria-hidden="true">⭐</span><p><b>ยังไม่มีใครติดอันดับ</b><br>ทำ Mock Exam เพื่อรับดาวแรก แล้วคุณจะเป็นคนแรกบนตาราง!</p></div>${meCard(me)}${memberListHtml(data, top)}${totalLine(data)}`;
     }
     const pod = `<div class="pod" data-key="pod">${podiumColumn(top[1], 1)}${podiumColumn(top[0], 0)}${podiumColumn(top[2], 2)}</div>`;
-    const rest = top.slice(3);
-    return `${pod}${meCard(me)}${rest.length ? `<div class="lb-list" data-key="list">${rest.map(listRow).join('')}</div>` : ''}${Number(data.total) > 0 ? `<p class="lb-total">ติดอันดับแล้ว ${Number(data.total)} คน</p>` : ''}`;
+    return `${pod}${meCard(me)}${memberListHtml(data, top)}${totalLine(data)}`;
+}
+
+/** รายชื่อถัดจากโพเดียม: ทุกคน (data.members) — ถ้า Backend รุ่นเก่าไม่ส่งมาก็ใช้ที่เหลือของ top */
+function memberListHtml(data, top) {
+    const m = data.members;
+    const items = m && Array.isArray(m.items) ? m.items : top.slice(3);
+    if (items.length === 0) return '';
+    const more = m && m.hasMore ? moreButton(m) : '';
+    return `<div class="lb-list" data-key="list">${items.map(listRow).join('')}</div>${more}`;
+}
+
+const moreButton = (m) => `<button type="button" class="lb-more" data-act="lb-more" data-next="${(Number(m.offset) || 0) + (Number(m.limit) || 0)}">ดูเพิ่มอีก</button>`;
+
+function totalLine(data) {
+    const ranked = Number(data.total) || 0;
+    const everyone = data.members ? Number(data.members.count) || 0 : 0;
+    if (ranked <= 0 && everyone <= 0) return '';
+    return `<p class="lb-total">ติดอันดับแล้ว ${ranked} คน${everyone > ranked ? ` • ผู้เรียนทั้งหมด ${everyone} คน` : ''}</p>`;
 }
 
 // ───────────── แถบชื่อของฉัน: ลอยเหนือ navbar ตลอด ─────────────
@@ -181,10 +200,36 @@ export function hideFloatBar(doc = typeof document !== 'undefined' ? document : 
 }
 
 // ───────────── หน้า Progress ─────────────
+/** กด "ดูเพิ่มอีก": ดึงหน้าถัดไปของรายชื่อมาต่อท้าย (ปุ่มหายเมื่อหมด; โหลดพลาดก็ให้กดซ้ำได้) */
+export async function loadMoreMembers(api, host, button) {
+    if (!button || button.disabled) return;
+    const offset = Number(button.getAttribute ? button.getAttribute('data-next') : button.dataset && button.dataset.next) || 0;
+    button.disabled = true;
+    try {
+        const data = await api.getRanking({ offset });
+        const m = data && data.members;
+        const list = host.querySelector && host.querySelector('.lb-list');
+        if (m && Array.isArray(m.items) && list && typeof list.insertAdjacentHTML === 'function') {
+            list.insertAdjacentHTML('beforeend', m.items.map(listRow).join(''));
+            if (m.hasMore) { button.setAttribute('data-next', String((Number(m.offset) || 0) + (Number(m.limit) || 0))); button.disabled = false; } else button.remove();
+        } else button.disabled = false;
+    } catch (err) {
+        button.disabled = false;
+        console.warn('[Study] โหลดรายชื่อเพิ่มไม่ได้:', err && err.message);
+    }
+}
+
 async function load(api, host, doc) {
     try {
         const data = await api.getRanking();
         patchHtml(host, rankingBodyHtml(data));
+        if (typeof host.addEventListener === 'function' && !host.dataset.more) {
+            host.dataset.more = '1';
+            host.addEventListener('click', (event) => {
+                const button = event.target && event.target.closest ? event.target.closest('[data-act="lb-more"]') : null;
+                if (button) loadMoreMembers(api, host, button);
+            });
+        }
         if (data && data.available !== false && data.me) {
             showFloatBar(data.me, doc);
             // เว้นที่ท้ายหน้าไม่ให้แถบลอยบังเนื้อหา

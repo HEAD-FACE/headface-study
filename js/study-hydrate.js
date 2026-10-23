@@ -12,6 +12,7 @@ import { isDemo } from './study-source.js';
 import { studyApi } from './study-api.js';
 import { formatThaiDate } from './study-format.js';
 import { hydrateRanking } from './study-ranking.js';
+import { settle } from './study-delight.js';
 
 const KEY_RE = /[?&]s=([a-z][a-z0-9-]{1,23})(?:&|$)/;
 const CHEVRON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 6l-.112 .006a1 1 0 0 0 -.669 1.619l3.501 4.375l-3.5 4.375a1 1 0 0 0 .78 1.625h6a1 1 0 0 0 .78 -.375l4 -5a1 1 0 0 0 0 -1.25l-4 -5a1 1 0 0 0 -.78 -.375h-6z"/></svg>';
@@ -68,7 +69,29 @@ function recentLine(r, byId) {
     return `<li>${esc(label)} • ${esc(title)} • ${r.correct}/${r.total} ข้อ • ${esc(formatThaiDate(r.at))}</li>`;
 }
 
-/** ส่วน "ผลการเรียนของฉัน": ความคืบหน้ารวม + รายวิชา (ลิงก์ไปหน้าผลการเรียนรายวิชา) + ผลล่าสุด */
+const lessonLink = (subjectId, no) => `lesson.html?s=${encodeURIComponent(subjectId)}&l=${encodeURIComponent(no)}`;
+
+/**
+ * "ส่วนที่ยังพลาดบ่อย": เฉพาะบทที่มีหัวข้อผิดเยอะ (ตอบอย่างน้อย N ข้อและถูกไม่ถึง P%) เรียงบทที่ผิดมากสุดก่อน
+ * แต่ละบทมีปุ่ม "ทบทวนบทนี้" พาเข้าหน้าเรียนทันที; ไม่มีข้อมูล/ไม่มีส่วนที่พลาดบ่อย = ข้อความสั้น ๆ (Backend รุ่นเก่าไม่ส่งมา = ไม่แสดงส่วนนี้)
+ */
+export function weakSectionHtml(weak) {
+    if (!weak || !Array.isArray(weak.items)) return '';
+    const head = `<div class="wk-h"><h3><span class="wk-fire" aria-hidden="true">🎯</span> ส่วนที่ยังพลาดบ่อย</h3><p class="cap">เฉพาะหัวข้อที่ตอบไปอย่างน้อย ${Number(weak.minAnswers) || 3} ข้อ แล้วถูกไม่ถึง ${Number(weak.belowPct) || 60}% (จาก Quiz และ Mock Exam)</p></div>`;
+    if (weak.items.length === 0) {
+        const msg = weak.hasAnswers
+            ? '<b>ยอดเยี่ยม!</b> ตอนนี้ยังไม่มีหัวข้อไหนที่พลาดบ่อย ทำ Quiz ต่อเพื่อรักษาฟอร์มไว้'
+            : 'ทำ Quiz หรือ Mock Exam สักครั้ง แล้วที่นี่จะบอกว่าควรกลับไปทบทวนส่วนไหนของบทไหน';
+        return `<section class="wk" aria-label="ส่วนที่ยังพลาดบ่อย">${head}<p class="wk-empty">${msg}</p></section>`;
+    }
+    const cards = weak.items.map((l) => {
+        const topics = l.topics.map((t) => `<li><div class="wk-row"><span class="wk-name">${esc(t.topic)}</span><span class="wk-n">ผิด ${Number(t.wrong)}/${Number(t.total)} ข้อ</span></div><div class="bar wk-bar" aria-hidden="true"><i style="width:${Math.max(4, 100 - (Number(t.accuracy) || 0))}%"></i></div></li>`).join('');
+        return `<article class="wk-card"><div class="wk-top"><span class="sc-tile" aria-hidden="true">${esc(l.emoji || '📘')}</span><div class="wk-t"><p class="cap">${esc(l.subjectTitle)}</p><h4>บทที่ ${Number(l.lessonNo)} ${esc(l.lessonTitle)}</h4></div><span class="wk-miss" title="ตอบผิดในบทนี้">ผิด ${Number(l.wrong)} ข้อ</span></div><ul class="wk-topics">${topics}</ul><a class="btn btn-block wk-go" href="${lessonLink(l.subjectId, l.lessonNo)}"><span>ทบทวนบทนี้</span>${CHEVRON}</a></article>`;
+    }).join('');
+    return `<section class="wk" aria-label="ส่วนที่ยังพลาดบ่อย">${head}<div class="wk-list">${cards}</div></section>`;
+}
+
+/** ส่วน "ผลการเรียนของฉัน": ความคืบหน้ารวม + ส่วนที่ยังพลาดบ่อย + รายวิชา (ลิงก์ไปหน้าผลการเรียนรายวิชา) + ผลล่าสุด */
 export function progressSectionHtml(subjects, progress) {
     const byId = new Map(subjects.map((s) => [s.id, s]));
     const o = progress.overall;
@@ -78,7 +101,7 @@ export function progressSectionHtml(subjects, progress) {
             const v = subjectCardView(s);
             const hue = /^[a-z]{3,12}$/.test(s.hue || '') ? s.hue : 'emerald';
             const last = s.lastActivityAt ? ` • ทำล่าสุด ${formatThaiDate(s.lastActivityAt)}` : '';
-            return `<a class="mp-row hue-${hue}" href="report.html?s=${encodeURIComponent(s.id)}"><span class="sc-tile" aria-hidden="true">${esc(s.emoji || '📘')}</span><div class="mp-t"><h3>${esc(s.title)}</h3><p class="cap">เรียนจบ ${s.lessonsDone}/${s.lessonsTotal} บท${esc(last)}</p><div class="bar" aria-hidden="true"><i style="width:${v.pct}%"></i></div></div><span class="mp-n">${v.pct}%</span></a>`;
+            return `<a class="mp-row hue-${hue}" href="report.html?s=${encodeURIComponent(s.id)}" data-subject="${esc(s.id)}"${v.pct >= 100 ? ' data-done="1"' : ''}><span class="sc-tile" aria-hidden="true">${esc(s.emoji || '📘')}</span><div class="mp-t"><h3>${esc(s.title)}</h3><p class="cap">เรียนจบ ${s.lessonsDone}/${s.lessonsTotal} บท${esc(last)}</p><div class="bar" aria-hidden="true"><i style="width:${v.pct}%"></i></div></div><span class="mp-n">${v.pct}%</span></a>`;
         });
     const recent = progress.recent.length
         ? `<p class="mp-sub">ผลล่าสุด</p><ul class="mp-recent">${progress.recent.map((r) => recentLine(r, byId)).join('')}</ul>`
@@ -88,6 +111,7 @@ export function progressSectionHtml(subjects, progress) {
           <div class="bar" aria-hidden="true"><i style="width:${o.pct}%"></i></div>
           <p class="cap" style="margin-top:8px">เริ่มเรียนแล้ว ${o.subjectsStarted} วิชา • เรียนครบ ${o.subjectsCompleted} วิชา</p>
         </div>
+        ${weakSectionHtml(progress.weak)}
         ${rows.length ? `<div class="mp-list">${rows.join('')}</div>` : '<p class="note">ยังไม่มีวิชาที่เปิดให้เรียน เมื่อเปิดแล้วความคืบหน้าจะแสดงที่นี่</p>'}
         ${recent}`;
 }
@@ -196,7 +220,7 @@ const clearPending = () => html().removeAttribute('data-study-pending');
 export async function hydrate(root) {
     const scope = root && root.querySelectorAll ? root : document;
     const hasCards = scope.querySelector('a.subject-card-item') || scope.querySelector('#continued-scroll-track') || scope.querySelector('#my-progress') || scope.querySelector('#lb-body');
-    if (!hasCards || isDemo()) return clearPending();
+    if (!hasCards || isDemo()) { clearPending(); settle(scope); return; }
 
     html().setAttribute('data-study-pending', '');
     try {
@@ -209,8 +233,10 @@ export async function hydrate(root) {
     } finally {
         clearPending();
     }
+    settle(scope); // ตัวเลขนับขึ้น แถบใกล้ครบเรืองแสง เนื้อหาที่เพิ่งวาดทยอยโผล่
     // ตารางอันดับแยกจากข้อมูลรายวิชา: โหลดไม่ได้ก็ไม่ทำให้ส่วนอื่นเสีย (และไม่แสดงอันดับตัวอย่างปลอมในโหมดข้อมูลจริง)
     await hydrateRanking(scope, studyApi);
+    settle(scope);
 }
 
 if (typeof document !== 'undefined') {

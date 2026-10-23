@@ -98,6 +98,8 @@
 Get-Content -Raw -Encoding UTF8 docs\examples\study-content.sci-mock.json | Set-Clipboard
 ```
 
+> **มี API สำหรับตัวแก้เนื้อหาแบบฟอร์มแล้ว** ([study-admin-api.md](study-admin-api.md)): Admin Frontend สร้าง/แก้โจทย์ บท วิชาทีละชิ้นได้โดยไม่ต้องเขียนไฟล์ JSON; ไฟล์นำเข้ายังใช้ได้สำหรับร่างจาก AI ทีละมาก ๆ (และส่งออกวิชาเป็นไฟล์เดียวกันได้ด้วย `GET /admin/subjects/:id/export`)
+
 ## 2. ขั้นตอนนำเข้า
 
 ต้องล็อกอินเป็นบัญชีที่ `role = admin` เปิดหน้า Study (เช่น beta-study.headface.app) แล้วเปิด Console ของเบราว์เซอร์

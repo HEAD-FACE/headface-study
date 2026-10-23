@@ -885,6 +885,24 @@ html[data-study-pending] #continued-scroll-track .cc {
 
 /* ───── ส่วน "ผลการเรียนของฉัน" ในหน้า Progress (js/study-hydrate.js) ───── */
 html[data-study-pending] [data-study-stat] { visibility: hidden; animation: study-reveal 0s linear 4s forwards; }
+/* ส่วนที่ยังพลาดบ่อย (หน้าความคืบหน้า) */
+.wk { margin-top: 16px; }
+.wk-h h3 { display: flex; align-items: center; gap: 6px; font-size: 16px; line-height: 24px; font-weight: 800; color: #881337; }
+.wk-h .cap { margin-top: 2px; }
+.wk-list { display: grid; gap: 12px; margin-top: 10px; }
+.wk-card { padding: 14px; background: #fff; border: 2px solid #FECDD3; border-radius: 20px; box-shadow: 0 4px 0 #FECDD3; }
+.wk-top { display: flex; align-items: center; gap: 10px; }
+.wk-t { flex: 1; min-width: 0; }
+.wk-t h4 { font-size: 15px; line-height: 22px; font-weight: 700; color: #0F172A; overflow-wrap: anywhere; }
+.wk-miss { flex: none; padding: 0 10px; min-height: 26px; display: inline-flex; align-items: center; border-radius: 999px; background: #FFE4E6; color: #9F1239; font-size: 12px; font-weight: 800; }
+.wk-topics { display: grid; gap: 10px; margin: 12px 0 0; padding: 0; list-style: none; }
+.wk-row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; font-size: 13px; line-height: 20px; }
+.wk-name { font-weight: 700; color: #0F172A; overflow-wrap: anywhere; }
+.wk-n { flex: none; font-weight: 700; color: #9F1239; }
+.wk-bar { margin-top: 4px; background: #FFE4E6; }
+.wk-go { margin-top: 12px; background: #E11D48; box-shadow: 0 4px 0 #9F1239; }
+.wk-go:active { box-shadow: 0 1px 0 #9F1239; }
+.wk-empty { margin-top: 10px; padding: 14px; background: #F0FDF4; border: 2px dashed #A7F3D0; border-radius: 18px; font-size: 14px; line-height: 22px; color: #065F46; }
 .mp-card { padding: 16px; background: #fff; border: 2px solid #A7F3D0; border-radius: 22px; box-shadow: 0 4px 0 #6EE7B7; }
 .mp-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
 .mp-pct { display: flex; align-items: baseline; gap: 6px; }

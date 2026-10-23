@@ -56,7 +56,7 @@ export function createStudyApi(send) {
         answerQuiz: (attemptId, questionId, answer) => request(`/quiz-attempts/${seg(attemptId)}/answer`, { method: 'POST', body: { questionId, answer, ...(typeof answer === 'string' ? { choiceId: answer } : {}) } }),
         submitQuiz: (attemptId) => request(`/quiz-attempts/${seg(attemptId)}/submit`, { method: 'POST', body: {} }),
         getProgress: () => request('/progress'),
-        getRanking: () => request('/ranking'),
+        getRanking: ({ offset, limit } = {}) => request(`/ranking${offset || limit ? `?${[limit ? `limit=${Number(limit)}` : '', offset ? `offset=${Number(offset)}` : ''].filter(Boolean).join('&')}` : ''}`),
         getSubjectProgress: (subjectId) => request(`/progress/subjects/${seg(subjectId)}`),
         getPractice: (subjectId, no, nodeId) => request(`${lessonPath(subjectId, no, nodeId)}/practice`),
         getSolution: (subjectId, no, questionId, nodeId) => request(`${lessonPath(subjectId, no, nodeId)}/practice/${seg(questionId)}/solution`),

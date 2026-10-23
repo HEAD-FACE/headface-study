@@ -98,6 +98,31 @@ describe('ตารางอันดับ (หน้า Progress)', () => {
         assert.match(R.rankingBodyHtml({ available: false }), /ยังไม่เปิดใช้งาน/);
         assert.match(R.rankingBodyHtml(null), /ยังไม่เปิดใช้งาน/);
     });
+    test('รายชื่อทุกคนถัดจากโพเดียม: คนที่ยังไม่มีดาวแสดงด้วย ไม่มีเลขอันดับ (–) อยู่ท้าย; โพเดียมมีเฉพาะคนมีดาว', () => {
+        const members = {
+            items: [entry(4, 'มาร์ค ม.', 91), entry(5, 'แพรว พ.', 85), entry(null, 'ใหม่ ก.', 0), entry(null, 'พรีม พรีมเมียม', 0, { isMe: true })],
+            count: 9, offset: 0, limit: 25, hasMore: false,
+        };
+        const h = R.rankingBodyHtml({ available: true, total: 5, top: TOP.slice(0, 5), members, me: { ...ME, rank: null, stars: 0 } });
+        assert.deepEqual(numerals(h), ['2', '1', '3'], 'โพเดียมจากคนมีดาวเท่านั้น');
+        assert.deepEqual([...h.matchAll(/class="lb-rank(?: is-none)?"[^>]*>([^<]+)</g)].map((m) => m[1]), ['4', '5', '–', '–']);
+        assert.match(h, /lb-row no-star[\s\S]*?ใหม่ ก\./);
+        assert.match(h, /lb-row is-me no-star[\s\S]*?พรีม พรีมเมียม/, 'ชื่อของฉันแสดงเต็มแม้ยังไม่มีดาว');
+        assert.match(h, /ติดอันดับแล้ว 5 คน • ผู้เรียนทั้งหมด 9 คน/);
+        assert.doesNotMatch(h, /lb-more/, 'หมดหน้าแล้วไม่มีปุ่มดูเพิ่ม');
+    });
+    test('ยังไม่มีใครมีดาว: ข้อความชวน + การ์ดของฉัน + รายชื่อทุกคน (ไม่มีโพเดียม)', () => {
+        const members = { items: [entry(null, 'ก ก.', 0, { isMe: true }), entry(null, 'ข ข.', 0)], count: 2, offset: 0, limit: 25, hasMore: false };
+        const h = R.rankingBodyHtml({ available: true, total: 0, top: [], members, me: { ...DEFAULT(), name: 'ก กก' } });
+        assert.match(h, /ยังไม่มีใครติดอันดับ/);
+        assert.doesNotMatch(h, /class="pod"/);
+        assert.equal((h.match(/class="lb-row/g) || []).length, 2);
+    });
+    test('มีหน้าถัดไป: ปุ่ม "ดูเพิ่มอีก" บอก offset ถัดไป', () => {
+        const members = { items: [entry(4, 'ก', 5)], count: 90, offset: 0, limit: 25, hasMore: true };
+        const h = R.rankingBodyHtml({ available: true, total: 4, top: TOP.slice(0, 3), members, me: ME });
+        assert.match(h, /<button type="button" class="lb-more" data-act="lb-more" data-next="25">ดูเพิ่มอีก<\/button>/);
+    });
     test('ชื่อ/ภาพจากข้อมูลถูก escape และที่อยู่ภาพที่ไม่ปลอดภัยไม่ถูกใช้', () => {
         const bad = [entry(1, '<img src=x onerror=alert(1)>', 5, { avatar: 'javascript:alert(1)' }), entry(2, 'ดี', 4, { avatar: 'data:image/svg+xml;base64,AAAA' }), entry(3, '"><script>', 3)];
         const h = R.rankingBodyHtml({ available: true, total: 3, top: bad, me: { ...ME, name: '<b>ฉัน</b>', avatar: 'http://x/"onerror="y' } }) + R.floatBarHtml({ ...ME, name: '<b>ฉัน</b>' });
@@ -184,6 +209,26 @@ describe('โหลดตารางอันดับ', () => {
         await R.hydrateRanking(scope(h), { getRanking: async () => { throw new Error('x'); } }, noDoc);
         assert.match(h.innerHTML, /โหลดตารางอันดับไม่สำเร็จ/);
         assert.doesNotMatch(h.innerHTML, /อันดับตัวอย่าง/);
+    });
+    test('ปุ่ม "ดูเพิ่มอีก": ดึงหน้าถัดไปมาต่อท้ายรายการ แล้วปุ่มหายเมื่อหมด; โหลดพลาดกดซ้ำได้', async () => {
+        const rows = [];
+        const host = { querySelector: (sel) => (sel === '.lb-list' ? { insertAdjacentHTML: (_, html) => rows.push(html) } : null) };
+        const btn = () => { const b = { disabled: false, removed: false, attrs: { 'data-next': '25' }, getAttribute(k) { return this.attrs[k]; }, setAttribute(k, v) { this.attrs[k] = v; }, remove() { this.removed = true; } }; return b; };
+        const calls = [];
+        const api = { getRanking: async (q) => { calls.push(q); return { members: { items: [entry(null, 'ข ข.', 0)], offset: 25, limit: 25, hasMore: calls.length < 2 } }; } };
+        const b = btn();
+        await R.loadMoreMembers(api, host, b);
+        assert.deepEqual(calls, [{ offset: 25 }]);
+        assert.equal(rows.length, 1);
+        assert.match(rows[0], /lb-row no-star/);
+        assert.deepEqual([b.removed, b.disabled, b.attrs['data-next']], [false, false, '50'], 'ยังมีต่อ: ปุ่มอยู่และชี้ไปหน้าถัดไป');
+        await R.loadMoreMembers(api, host, b);
+        assert.equal(b.removed, true, 'หมดแล้วปุ่มหาย');
+
+        const failing = btn();
+        await R.loadMoreMembers({ getRanking: async () => { throw new Error('x'); } }, host, failing);
+        assert.equal(failing.disabled, false, 'พลาดแล้วกดซ้ำได้');
+        await assert.doesNotReject(R.loadMoreMembers(api, host, null));
     });
     test('ไม่มีที่ให้ใส่ (#lb-body) = ไม่ทำอะไร', async () => {
         let calls = 0;

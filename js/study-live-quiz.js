@@ -229,6 +229,12 @@ export function createQuiz({ subject, lessonNo, node, api, render, applyProgress
                 const pill = $('.xp-pill', root);
                 if (pill && typeof pill.classList !== 'undefined') { pill.classList.remove('bump'); void pill.offsetWidth; pill.classList.add('bump'); }
                 if ($('.passed-now', root)) confetti({ count: 60 });
+                // ตอบถูกติดกัน: ยิ่งยาวยิ่งฉลองแรง (ครั้งที่ 3, 5, 8 และทุก 5 หลังจากนั้น)
+                if (s.streak >= 3) {
+                    const tag = $('.streak', root);
+                    if (tag) { pop(tag, { scale: 1.35, ms: 520 }); floatText(tag, `🔥 ×${s.streak}`, { color: s.streak >= 8 ? '#DC2626' : '#EA580C' }); }
+                    if (s.streak === 5 || s.streak === 8 || (s.streak > 8 && s.streak % 5 === 0)) confetti({ count: 50 + Math.min(60, s.streak * 5) });
+                }
             } else if (fx === 'bad') {
                 shake($('.qcard .is-bad', root) || $('.qcard', root));
             } else if (fx === 'part') {

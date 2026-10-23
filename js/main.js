@@ -309,6 +309,8 @@ function initPageFeatures(container, url = location.href) {
 
   // การ์ดของหน้าหลักทยอยลอยเข้ามาทีละใบ (หน้าเส้นทางเรียนมีแอนิเมชันของตัวเองใน CSS)
   import('./study-fx.js').then((fx) => fx.staggerIn(container.querySelectorAll('.sc, .cc, .card, .exam, .it, .rank'), { delay: 40, ms: 420 })).catch(() => {});
+  // ประกายพื้นหลัง คลื่นสัมผัสปุ่ม แถบใกล้ครบ เนื้อหาโผล่ตอนเลื่อน (js/study-delight.js)
+  import('./study-delight.js').then((d) => d.enhancePage(container)).catch(() => {});
 }
 
 // Floating Feedback Toast for Card Action
