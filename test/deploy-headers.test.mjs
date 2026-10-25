@@ -29,5 +29,5 @@ test('js และ css ให้เบราว์เซอร์ถามเซ
 });
 
 test('ไม่ได้ตั้งค่าให้ไฟล์อื่น (เช่น ภาพใน assets) ไว้โดยไม่จำเป็น', () => {
-    assert.deepEqual(Object.keys(parse(text)).sort(), ['/css/*', '/js/*']);
+    assert.deepEqual(Object.keys(parse(text)).sort(), ['/css/*', '/js/*', '/manifest.webmanifest', '/pwa-worker.js']);
 });

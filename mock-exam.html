@@ -11,6 +11,17 @@
       document.write('<script src="https://' + (m[1] ? 'beta.' : '') + m[2] + '/js/launch.js"><\/script>');
     })();
   </script>
+  <!-- PWA: the HEADFACE Study app (manifest.webmanifest, sw.js, js/pwa.js): "Add to Home Screen" on Android and iOS -->
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#10B981">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Study">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+  <script src="/js/pwa.js" defer></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HEADFACE Study - Mock Exam</title>
 

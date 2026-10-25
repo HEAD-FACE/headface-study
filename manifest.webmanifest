@@ -1,0 +1,24 @@
+{
+  "id": "/",
+  "name": "HEADFACE Study",
+  "short_name": "Study",
+  "description": "เรียน ฝึกทำโจทย์ และสอบจำลองในที่เดียว พื้นที่การเรียนรู้ของ HEADFACE",
+  "lang": "th",
+  "dir": "ltr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#EEF4F8",
+  "theme_color": "#10B981",
+  "categories": ["education"],
+  "icons": [
+    { "src": "/assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/icons/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/assets/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "ความคืบหน้า", "short_name": "ความคืบหน้า", "url": "/progress", "icons": [{ "src": "/assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png" }] },
+    { "name": "ผลการเรียน", "short_name": "ผลการเรียน", "url": "/report", "icons": [{ "src": "/assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png" }] }
+  ]
+}
