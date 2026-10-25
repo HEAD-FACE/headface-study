@@ -2,6 +2,15 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
+  <!-- HEADFACE 4: opening schedule (js/launch.js of the main site). Production stays closed until the Study opening time -->
+  <script>
+    (function () {
+      // study.<site> and beta-study.<site> load js/launch.js of their own main site (no address is written here: see test/env.test.mjs)
+      var m = /^(beta-)?study\.(.+)$/.exec(location.hostname);
+      if (!m) return;
+      document.write('<script src="https://' + (m[1] ? 'beta.' : '') + m[2] + '/js/launch.js"><\/script>');
+    })();
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HEADFACE Study - ผลการเรียน</title>
 
@@ -61,5 +70,7 @@
   <script type="module" src="js/api-client.js"></script>
   <script src="js/main.js"></script>
   <script type="module" src="js/study-flow.js"></script>
+  <!-- LYNX: แชทลอย (โหลดจากเว็บหลัก) -->
+  <script type="module" src="js/lynx-loader.js"></script>
 </body>
 </html>
