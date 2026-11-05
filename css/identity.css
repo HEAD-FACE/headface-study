@@ -1,0 +1,56 @@
+/* HEADFACE STUDY - ปุ่มโปรไฟล์บนแถบหัว ให้เหมือนเว็บหลัก (css/plan-theme.css ของเว็บหลัก)
+   1) วงแหวนสีหมุนรอบรูปตามแพลน: PLUS ม่วง-ฟ้า, MAX ทอง (FREE ไม่มีวงแหวน)
+   2) ป้ายแพลนเล็ก ๆ ข้างชื่อในเมนู 3) ป้ายต้อนรับที่เลื่อนลงจากใต้รูปครั้งเดียวต่อเซสชัน
+   ใช้เฉพาะ transform/opacity และหยุดทั้งหมดเมื่อผู้ใช้ตั้ง "ลดการเคลื่อนไหว" */
+
+:root {
+  --hf-plus-lt-a: #7dd3fc; --hf-plus-lt-b: #c4b5fd; --hf-plus-lt-c: #ffffff;
+  --hf-max-lt-a: #fde68a; --hf-max-lt-b: #fbbf24; --hf-max-lt-c: #fff3bf;
+}
+
+.hf-ring-host { position: relative; display: inline-flex; flex: none; border-radius: 9999px; --hf-ring-offset: 3px; }
+.hf-ring-host > img { position: relative; z-index: 1; }
+
+.hf-ring-host[data-plan="plus"]::before,
+.hf-ring-host[data-plan="max"]::before {
+  content: ""; position: absolute; inset: calc(var(--hf-ring-offset) * -1); border-radius: 50%; z-index: 0; pointer-events: none;
+  will-change: transform; animation: hfRingSpin 8s linear infinite;
+}
+.hf-ring-host[data-plan="plus"]::before { background: conic-gradient(var(--hf-plus-lt-a), var(--hf-plus-lt-b), var(--hf-plus-lt-c), var(--hf-plus-lt-a)); }
+.hf-ring-host[data-plan="max"]::before { background: conic-gradient(var(--hf-max-lt-a), var(--hf-max-lt-b), var(--hf-max-lt-c), var(--hf-max-lt-b), var(--hf-max-lt-a)); animation-duration: 6s; }
+@keyframes hfRingSpin { to { transform: rotate(360deg); } }
+
+/* ป้ายแพลนข้างชื่อในเมนู: เทาเรียบ ไม่ใช้สีแพลน */
+.hf-plan-tag { display: inline-flex; align-items: center; padding: 1px 7px; border: 1px solid #CBD5E1; border-radius: 9999px; background: #fff; color: #475569; font-size: 10px; font-weight: 700; letter-spacing: .12em; line-height: 1.5; }
+.hf-plan-tag[hidden] { display: none; }
+
+/* ป้ายต้อนรับ: เม็ดมืดขอบสีแพลนเลื่อนลงจากใต้รูป มีแสงพาดผ่านหนึ่งครั้ง แล้วเลื่อนกลับ */
+.hf-plan-badge {
+  --hf-badge-drop: 44px; --hf-badge-a: #8fb4ff; --hf-badge-b: #8b5cf6; --hf-badge-ink: #dbe4ff; --hf-badge-bg: #0e1128;
+  position: absolute; left: 50%; top: 50%; z-index: 0; pointer-events: none; display: inline-flex; align-items: center; gap: 7px; overflow: hidden;
+  padding: 6px 11px 6px 10px; border: 1px solid transparent; border-radius: 9999px;
+  background: linear-gradient(var(--hf-badge-bg), var(--hf-badge-bg)) padding-box, linear-gradient(135deg, var(--hf-badge-a), var(--hf-badge-b)) border-box;
+  color: var(--hf-badge-ink); font-size: 10.5px; font-weight: 700; letter-spacing: .22em; line-height: 1; white-space: nowrap;
+  box-shadow: 0 10px 24px -8px rgba(6, 8, 30, .6); opacity: 0; transform: translate(-50%, -50%) scale(.6);
+  animation: hfPlanBadge 3800ms cubic-bezier(.22, 1, .36, 1) both; will-change: transform, opacity;
+}
+.hf-plan-badge[data-plan="max"] { --hf-badge-a: #fde68a; --hf-badge-b: #f59e0b; --hf-badge-ink: #fdeab0; --hf-badge-bg: #1a1206; }
+.hf-plan-badge::before { content: ""; flex: none; width: 6px; height: 6px; border-radius: 1px; background: linear-gradient(135deg, var(--hf-badge-a), var(--hf-badge-b)); box-shadow: 0 0 8px var(--hf-badge-b); transform: rotate(45deg); animation: hfPlanGem 3800ms ease-in-out both; }
+.hf-plan-badge::after { content: ""; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, .26) 50%, transparent 65%); transform: translateX(-120%); animation: hfPlanSweep 3800ms ease-in-out both; }
+@keyframes hfPlanBadge {
+  0% { transform: translate(-50%, -50%) scale(.6); opacity: 0; }
+  13% { transform: translate(-50%, calc(-50% + var(--hf-badge-drop) + 4px)) scale(1.03); opacity: 1; animation-timing-function: ease-in-out; }
+  19% { transform: translate(-50%, calc(-50% + var(--hf-badge-drop))) scale(1); opacity: 1; animation-timing-function: linear; }
+  80% { transform: translate(-50%, calc(-50% + var(--hf-badge-drop))) scale(1); opacity: 1; animation-timing-function: cubic-bezier(.55, 0, .8, .4); }
+  100% { transform: translate(-50%, -50%) scale(.6); opacity: 0; }
+}
+@keyframes hfPlanGem { 0%, 10% { transform: rotate(-135deg) scale(.3); } 22% { transform: rotate(60deg) scale(1.35); } 30%, 100% { transform: rotate(45deg) scale(1); } }
+@keyframes hfPlanSweep { 0%, 16% { transform: translateX(-120%); } 40%, 100% { transform: translateX(120%); } }
+@keyframes hfPlanBadgeFade { 0% { opacity: 0; } 12%, 80% { opacity: 1; } 100% { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .hf-ring-host[data-plan]::before { animation: none !important; }
+  .hf-plan-badge { animation-name: hfPlanBadgeFade; transform: translate(-50%, calc(-50% + var(--hf-badge-drop))); }
+  .hf-plan-badge::before { animation: none; }
+  .hf-plan-badge::after { display: none; }
+}

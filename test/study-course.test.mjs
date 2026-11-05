@@ -398,3 +398,25 @@ describe('initCoursePage', () => {
         assert.equal(typeof ctl.dispose, 'function');
     });
 });
+
+describe('เลื่อนให้การ์ดรายละเอียดไม่จมใต้เมนูล่าง (popoverScrollDelta)', () => {
+    // จอสูง 700 เมนูล่างเริ่มที่ 620 แบนเนอร์หน่วยติดขอบบนจบที่ 80
+    const view = { top: 80, bottom: 620 };
+    test('การ์ดที่พอดีในที่ว่าง = ไม่เลื่อน', () => {
+        assert.equal(C.popoverScrollDelta({ top: 300, height: 180 }, view), 0);
+    });
+    test('วง Mock Exam ท้ายหน้า: การ์ดล้นไปใต้เมนูล่าง → เลื่อนลงเท่าที่ล้น + ช่องว่าง', () => {
+        // ปลายการ์ดอยู่ที่ 560+200 = 760 > 620 → ต้องเลื่อนขึ้น (ค่าบวก) 760+14-620 = 154
+        assert.equal(C.popoverScrollDelta({ top: 560, height: 200 }, view), 154);
+        // หลังเลื่อนแล้วปลายการ์ดต้องไม่ต่ำกว่าขอบบนของเมนู
+        const after = 560 - 154 + 200;
+        assert.ok(after <= view.bottom - 14);
+    });
+    test('การ์ดที่ผลุบอยู่ใต้แบนเนอร์ด้านบน → เลื่อนกลับลง (ค่าลบ)', () => {
+        assert.ok(C.popoverScrollDelta({ top: 40, height: 150 }, view) < 0);
+    });
+    test('การ์ดสูงกว่าที่ว่าง: ให้หัวการ์ดอยู่ใต้แบนเนอร์ (ไม่ตัดหัว)', () => {
+        const d = C.popoverScrollDelta({ top: 400, height: 560 }, view);
+        assert.equal(400 - d, view.top + 14);
+    });
+});

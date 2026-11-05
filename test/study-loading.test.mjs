@@ -44,11 +44,11 @@ describe('HTML ก่อนข้อมูลจริงมา: ไม่มี
             const html = read(`${page}.html`);
             assert.match(html, /id="headerName" class="profile-name ld-e"[^>]*><\/span>/, page);
             assert.match(html, /id="dropdownName" class="menu-n ld-e"[^>]*><\/p>/, page);
-            assert.match(html, /<img id="headerAvatar" class="skl" src="data:image\/gif;base64,/, page);
+            assert.match(html, /<img id="headerAvatar" data-hf-avatar class="skl" src="data:image\/gif;base64,/, page);
         }
         for (const page of ['lesson', 'mock-exam', 'report']) assert.match(read(`${page}.html`), /id="pageTitle" class="[a-z-]+ ld-e"[^>]*><\/h1>/, page);
         assert.match(read('course.html'), /id="cpTitle" class="cp-title ld-e"[^>]*><\/h1>/);
-        assert.match(read('js/main.js'), /headerAvatar\.classList\.remove\('skl'\)/, 'ได้รูปจริงแล้วเลิกเป็น skeleton');
+        assert.match(read('js/study-identity.js'), /classList\.remove\('skl'\)/, 'ได้รูปจริงแล้วเลิกเป็น skeleton');
     });
     test('ทุกหน้าโหลด loading.css; CSS ไม่ซ่อนแล้วโชว์ตัวอย่างหลังหน่วงเวลาอีก', () => {
         for (const page of PAGES) assert.match(read(`${page}.html`), /href="css\/loading\.css"/, page);

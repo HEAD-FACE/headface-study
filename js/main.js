@@ -480,14 +480,8 @@ function renderUserProfileUI(user) {
   const headerStudentId = document.getElementById('headerStudentId');
   if (headerStudentId) headerStudentId.textContent = `เลขประจำตัว: ${studentId}`;
 
-  // 2. อัปเดตรูป Avatar (ดึงจาก user หรือใช้ DiceBear Notionists ตาม student_id)
-  const headerAvatar = document.getElementById('headerAvatar');
-  if (headerAvatar) {
-    const seed = user.student_id || user.first_name || 'Felix';
-    const defaultAvatar = `https://api.dicebear.com/7.x/notionists/svg?seed=${seed}&backgroundColor=e2e8f0`;
-    headerAvatar.src = user.avatar || user.picture || defaultAvatar;
-    headerAvatar.classList.remove('skl'); // ได้รูปจริงแล้ว: เลิกเป็น skeleton (css/loading.css)
-  }
+  // 2. รูปโปรไฟล์ + วงแหวนแพลน: js/study-identity.js โหลดรูปจริงที่ผู้ใช้เลือกจากเซิร์ฟเวอร์เอง
+  //    (ไม่ใช้รูปสุ่ม/รูปสมมติ — ระหว่างรอเป็น skeleton)
 
   // 3. อัปเดตในการ์ด Dropdown
   const dropdownName = document.getElementById('dropdownName');

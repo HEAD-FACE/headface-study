@@ -276,6 +276,7 @@ function fitGreenArea(root) {
 
 /** การ์ดรายละเอียดใต้วงกลม: เปิด = ขยายนุ่ม ๆ ดันวงกลมข้างล่างลง ปิด = หดกลับแล้วถอดออก */
 function closePopovers(root, except = null) {
+    if (typeof document !== 'undefined' && document.body && !except) document.body.classList.remove('cp-pop-open');
     root.querySelectorAll('.cp-pop-wrap').forEach((wrap) => {
         if (wrap === except) return;
         const owner = wrap.previousElementSibling;
@@ -302,10 +303,11 @@ function togglePopover(root, li) {
     wrap.className = 'cp-pop-wrap';
     wrap.appendChild(tpl.content.cloneNode(true));
     li.after(wrap);
+    const finalH = wrap.getBoundingClientRect().height; // วัดก่อนเริ่มแอนิเมชัน (ระหว่างขยาย ความสูงเริ่มที่ 0)
     li.querySelector('.cp-node').setAttribute('aria-expanded', 'true');
     pop(li.querySelector('.cp-svg'), { scale: 1.1, ms: 300 });
     if (!reducedMotion() && typeof wrap.animate === 'function') {
-        const h = wrap.getBoundingClientRect().height;
+        const h = finalH;
         wrap.style.overflow = 'hidden';
         const a = wrap.animate([{ height: '0px', opacity: 0, marginTop: '0px', marginBottom: '0px' }, { height: `${h}px`, opacity: 1, marginTop: '8px', marginBottom: '6px' }], { duration: 300, easing: 'cubic-bezier(.34,1.3,.64,1)' });
         a.onfinish = () => { wrap.style.overflow = ''; };
@@ -313,7 +315,38 @@ function togglePopover(root, li) {
             if (typeof el.animate === 'function') el.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { duration: 280, delay: 90 + i * 55, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'backwards' });
         });
     }
-    if (typeof wrap.scrollIntoView === 'function') setTimeout(() => wrap.scrollIntoView({ block: 'nearest', behavior: reducedMotion() ? 'auto' : 'smooth' }), 60);
+    if (typeof document !== 'undefined' && document.body) document.body.classList.add('cp-pop-open');
+    // รอให้การ์ดขยายจนสุดก่อน: หน้าจึงยาวพอให้เลื่อนได้ถึงตำแหน่งที่ต้องการ (วง Mock Exam อยู่ท้ายหน้า)
+    setTimeout(() => revealPopover(wrap, finalH), reducedMotion() ? 0 : 320);
+}
+
+/**
+ * คำนวณระยะที่ต้องเลื่อนเพื่อให้การ์ดทั้งใบอยู่ในส่วนที่มองเห็นจริง
+ * (เหนือแถบเมนูล่างที่ลอยทับ และใต้แบนเนอร์หน่วยที่ติดขอบบน) — ฟังก์ชันล้วน ทดสอบได้
+ * @param {{top:number,height:number}} card  ตำแหน่ง/ความสูง "สุดท้าย" ของการ์ด (ไม่ใช่ความสูงกลางแอนิเมชัน)
+ * @param {{top:number,bottom:number}} view  ช่วงที่มองเห็นได้ (top = ใต้แบนเนอร์, bottom = เหนือเมนูล่าง)
+ * @param {number} [gap]
+ * @returns {number} บวก = เลื่อนลง, ลบ = เลื่อนขึ้น, 0 = ไม่ต้องเลื่อน
+ */
+export function popoverScrollDelta(card, view, gap = 14) {
+    const room = view.bottom - view.top - gap * 2;
+    if (card.height >= room) return Math.round(card.top - (view.top + gap)); // ใหญ่กว่าที่ว่าง: ให้หัวการ์ดอยู่บนสุด
+    const over = card.top + card.height + gap - view.bottom;
+    if (over > 0) return Math.round(over);
+    const under = view.top + gap - card.top;
+    return under > 0 ? -Math.round(under) : 0;
+}
+
+function revealPopover(wrap, finalHeight) {
+    if (!wrap || !wrap.isConnected || typeof window === 'undefined') return;
+    const nav = document.getElementById('bottom-navbar');
+    const sticky = wrap.closest('.cp-unit')?.querySelector('.cp-banner');
+    const navTop = nav ? nav.getBoundingClientRect().top : window.innerHeight;
+    const sr = sticky ? sticky.getBoundingClientRect() : null;
+    const bannerBottom = sr && sr.top <= 14 ? sr.bottom : 0; // แบนเนอร์บังหน้าจอเฉพาะตอนที่ติดขอบบนอยู่จริง
+    const view = { top: Math.min(bannerBottom, window.innerHeight / 2), bottom: Math.min(navTop, window.innerHeight) };
+    const delta = popoverScrollDelta({ top: wrap.getBoundingClientRect().top, height: finalHeight }, view);
+    if (delta) window.scrollBy({ top: delta, behavior: reducedMotion() ? 'auto' : 'smooth' });
 }
 
 /** วงกลม/ป้าย/แบนเนอร์ค่อย ๆ เด้งเข้ามาเมื่อเลื่อนมาถึง (ไม่มี IntersectionObserver หรือผู้ใช้ปิดแอนิเมชัน = แสดงทันที) */
@@ -484,7 +517,7 @@ export async function initCoursePage(root, { api = studyApi, url = typeof locati
 
     fitGreenArea(root);
     await load();
-    return { dispose() { disposed = true; stopFx(); cleanups.forEach((fn) => fn()); } };
+    return { dispose() { disposed = true; stopFx(); cleanups.forEach((fn) => fn()); if (typeof document !== 'undefined' && document.body) document.body.classList.remove('cp-pop-open'); } };
 }
 
 export { courseUrl };

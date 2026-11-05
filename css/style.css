@@ -166,7 +166,7 @@ body {
   height: 44px;
   flex: none;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, .8);
+  border: 2px solid rgba(255, 255, 255, .45);
   background: #E2E8F0;
   object-fit: cover;
 }
@@ -188,42 +188,51 @@ body {
   cursor: default;
 }
 
-/* Profile Popup Dropdown Card */
+/* Profile Popup Dropdown Card (ทรงเดียวกับเมนูโปรไฟล์ของเว็บหลัก: การ์ดมนมุม 16, ส่วนหัวเทาจาง, รายการมนมุม 12 เว้นขอบใน) */
 .menu {
   position: absolute;
   z-index: 50;
   top: calc(100% + 12px);
   right: 0;
-  width: 240px;
+  width: 224px;
   background: #fff;
   color: #0F172A;
-  border-radius: 20px;
-  border: 1px solid #E2E8F0;
-  box-shadow: 0 12px 32px rgba(15, 23, 42, .18);
+  border-radius: 16px;
+  border: 1px solid #F1F5F9;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, .1);
   overflow: hidden;
   transform-origin: top right;
 }
-.menu-h { padding: 14px 16px; background: #F8FAFC; border-bottom: 1px solid #E2E8F0; }
-.menu-n { margin: 0; font-size: 14px; line-height: 22px; font-weight: 700; color: #0F172A; }
-.menu-s { margin: 0; font-size: 12px; line-height: 18px; color: #475569; }
+.menu-h { padding: 16px; background: rgba(248, 250, 252, .6); border-bottom: 1px solid rgba(241, 245, 249, .8); }
+.menu-nr { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+.menu-n { margin: 0; font-size: 14px; line-height: 22px; font-weight: 600; color: #0F172A; }
+.menu-s { margin: 0; font-size: 12px; line-height: 18px; color: #64748B; }
+.menu-b { padding: 8px; display: flex; flex-direction: column; gap: 4px; }
 .menu-a {
   display: flex;
   align-items: center;
   gap: 10px;
   width: 100%;
-  min-height: 48px;
-  padding: 0 16px;
+  min-height: 44px;
+  padding: 8px 12px;
   border: 0;
+  border-radius: 12px;
   background: transparent;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   color: #334155;
   text-align: left;
+  text-decoration: none;
   cursor: pointer;
+  transition: background-color .15s, color .15s, transform .1s;
 }
-.menu-a:hover { background: #F0FDF4; color: #047857; }
-.menu-a.danger { color: #BE123C; }
-.menu-a.danger:hover { background: #FFF1F2; color: #BE123C; }
+.menu-a svg { color: #94A3B8; transition: color .15s; }
+.menu-a:hover { background: #ECFDF5; color: #047857; }
+.menu-a:hover svg { color: #059669; }
+.menu-a:active { transform: scale(.98); }
+.menu-a.danger { color: #E11D48; }
+.menu-a.danger svg { color: currentColor; }
+.menu-a.danger:hover { background: #FFF1F2; color: #E11D48; }
 
 /* ======================================================== */
 /* 🧱 คอมโพเนนต์ร่วม                                         */
