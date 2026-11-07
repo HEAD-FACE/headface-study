@@ -1,2 +1,3 @@
 # ไฟล์ทำงานของ agent (ไม่ต้องเก็บใน repo)
 .agents/
+.claude/settings.local.json

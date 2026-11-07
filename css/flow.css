@@ -12,6 +12,11 @@
 :where(body.flow) summary::-webkit-details-marker { display: none; }
 body.flow .bar > i { background: var(--bar); }
 
+/* ห้ามหน้าล้นแนวนอนแม้ชั่วคราว: หน้า/ข้อใหม่เลื่อนเข้ามาจากด้านข้าง (translateX 40px) ทำให้เนื้อหากว้างกว่าจอ
+   เบราว์เซอร์มือถือจึงขยาย viewport ออก (zoom out) แล้วแถบปุ่มล่าง (position: fixed) ถูกดันลงไปครึ่งหนึ่งนอกจอ = กดปุ่มท้ายกิจกรรมไม่ได้
+   body { overflow-x: hidden } อย่างเดียวไม่พอสำหรับมือถือ ต้องกันที่ html และตัดที่ตัวหน้า (clip = ตัดโดยไม่สร้างกล่องเลื่อน และไม่ตัดแถบ fixed) */
+html { overflow-x: hidden; }
+.fmain { overflow-x: clip; }
 .fwrap { width: 100%; max-width: 42rem; margin: 0 auto; padding: 0 20px; }
 .fmain { position: relative; z-index: 10; padding-bottom: 120px; }
 .fmain.has-nav { padding-bottom: 112px; }

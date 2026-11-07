@@ -161,3 +161,19 @@ describe('ข้อผิดพลาดและรหัสแปลก ๆ', 
         assert.deepEqual(['content', 'quiz', 'practice', 'x'].map(nodeTypeLabel), ['เนื้อหา', 'Quiz', 'Practice', '']);
     });
 });
+
+describe('on* handler ต้องไม่คืนค่า false (ไม่งั้นลิงก์/การพิมพ์ในหน้ากิจกรรมถูกยกเลิก)', () => {
+    // onclick/onkeydown ที่คืน false = เบราว์เซอร์ยกเลิกการกระทำปกติ: ลิงก์ <a href> "ไปกิจกรรมถัดไป" / "เส้นทางเรียน" กดแล้วไม่ไปไหน
+    for (const [name, make, search] of [['เนื้อหา', contentNode, '?s=sci&l=2&n=sci-n1'], ['Quiz', quizNode, '?s=sci&l=2&n=sci-z1'], ['Practice', practiceNode, '?s=sci&l=2&n=sci-p1']]) {
+        test(`${name}: คลิกที่ไม่ใช่ปุ่มของเรา (เช่น ลิงก์) ไม่ถูกยกเลิก`, async () => {
+            await open(fakeApi(make), search);
+            assert.notEqual(dom.click({}), false);
+            assert.equal(dom.click({}), undefined);
+        });
+    }
+    test('Quiz: ปุ่มคีย์บอร์ดทั่วไป (พิมพ์ตัวเลข) ไม่ถูกยกเลิก', async () => {
+        await open(fakeApi(quizNode), '?s=sci&l=2&n=sci-z1');
+        const key = (k) => dom.content.onkeydown({ key: k, target: { closest: () => null } });
+        for (const k of ['1', 'a', ' ', 'Tab', 'Backspace']) assert.equal(key(k), undefined, k);
+    });
+});

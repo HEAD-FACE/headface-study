@@ -89,10 +89,13 @@ export async function initNode({ api = studyApi } = {}) {
         if (focus) focusView();
     }
 
-    content.onclick = (e) => controller.handleClick(e);
+    // ห้ามคืนค่าจาก on* handler: ใน onclick/onkeydown การคืนค่า false = ยกเลิกการกระทำปกติของเบราว์เซอร์
+    // handleClick คืน false เมื่อ "ไม่ใช่ปุ่มของเรา" (เช่น ลิงก์ <a href> ไปกิจกรรมถัดไป / เส้นทางเรียน / ทบทวนเนื้อหา) → ถ้าคืนต่อ ลิงก์เหล่านั้นจะกดแล้วไม่ไปไหนเลย
+    // (และ handleKey คืน false ทุกปุ่มที่ไม่ใช่ Enter = พิมพ์ในช่องตัวเลขไม่ได้) จึงเรียกแล้วทิ้งค่า
+    content.onclick = (e) => { controller.handleClick(e); };
     // ช่องกรอกตัวเลขของ Quiz: พิมพ์ = เก็บคำตอบ, Enter = ตรวจคำตอบ
-    if (controller.handleInput) content.oninput = (e) => controller.handleInput(e);
-    if (controller.handleKey) content.onkeydown = (e) => controller.handleKey(e);
+    if (controller.handleInput) content.oninput = (e) => { controller.handleInput(e); };
+    if (controller.handleKey) content.onkeydown = (e) => { controller.handleKey(e); };
 
     // ปัดซ้าย/ขวา: ชุดเนื้อหาเปลี่ยนหน้า, ข้อจริง/เท็จของ Quiz เลือกคำตอบ (ปัดขวา = จริง ปัดซ้าย = เท็จ)
     const onSwipe = controller.step ? (dx) => controller.step(dx < 0 ? 1 : -1) : controller.swipe ? (dx) => controller.swipe(dx > 0 ? 'right' : 'left') : null;
