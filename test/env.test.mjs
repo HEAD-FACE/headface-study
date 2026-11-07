@@ -292,6 +292,7 @@ describe('login / profile / cookie ตาม environment', () => {
         withGlobals({ window: fakeWindow('study.headface.app') }, () => {
             assert.equal(env.getLoginPageUrl(), 'https://headface.app/login');
             assert.equal(env.getProfilePageUrl(), 'https://headface.app/profile.html');
+            assert.equal(env.getDashboardUrl(), 'https://headface.app/dashboard');
             assert.equal(env.getCsrfCookieName(), 'hf_csrf');
         });
     });
@@ -300,6 +301,7 @@ describe('login / profile / cookie ตาม environment', () => {
         withGlobals({ window: fakeWindow('beta-study.headface.app') }, () => {
             assert.equal(env.getLoginPageUrl(), 'https://beta.headface.app/login');
             assert.equal(env.getProfilePageUrl(), 'https://beta.headface.app/profile.html');
+            assert.equal(env.getDashboardUrl(), 'https://beta.headface.app/dashboard');
             assert.equal(env.getCsrfCookieName(), 'hf_csrf_beta');
         });
     });
@@ -366,6 +368,7 @@ describe('window.StudyEnv', () => {
         await loadEnvModule({ window });
         assert.equal(typeof window.StudyEnv.getLoginPageUrl, 'function');
         assert.equal(typeof window.StudyEnv.getProfilePageUrl, 'function');
+        assert.equal(typeof window.StudyEnv.getDashboardUrl, 'function');
         assert.equal(window.__ENV__, undefined);
     });
 });

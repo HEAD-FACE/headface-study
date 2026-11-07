@@ -611,6 +611,17 @@ function initProfileLink() {
 }
 
 /**
+ * ปุ่ม "<" ที่แถบล่าง: พากลับ Dashboard ของเว็บหลัก (headface.app/dashboard หรือ beta.headface.app/dashboard ตามโดเมนของหน้านี้)
+ * ปลายทางมาจาก js/env.js ที่เดียว ก่อนตั้งค่าเสร็จลิงก์ยังเป็น "#" จึงกดแล้วไม่พาไปที่ผิด
+ */
+function initDashboardLink() {
+  const back = document.getElementById('navBackDashboard');
+  if (back && window.StudyEnv && typeof window.StudyEnv.getDashboardUrl === 'function') {
+    back.href = window.StudyEnv.getDashboardUrl();
+  }
+}
+
+/**
  * ล้มเหลวแบบปิด (fail closed): เมื่อยังไม่ผ่านการตรวจสิทธิ์ ห้ามปล่อยให้ใช้หน้าได้
  * (guard โหลดไม่ขึ้น, ตรวจเซสชันกับ Backend ไม่ได้ เช่น ติด CORS/เซิร์ฟเวอร์ล่ม, หรือกำลังถูกส่งไปหน้า login)
  * ซ่อนเนื้อหาและบันทึก error เท่านั้น ไม่ redirect เองเพื่อไม่ให้เกิด loop ระหว่าง study กับหน้า login
@@ -626,6 +637,7 @@ function failAuthGuardClosed(reason) {
 async function initAuth() {
   initProfileDropdown();
   initProfileLink();
+  initDashboardLink();
 
   // <script type="module"> ทำงานเสร็จก่อน DOMContentLoaded เสมอ
   // ถ้ายังไม่มี StudyAuth แปลว่า js/auth.js หรือ js/env.js โหลด/ทำงานไม่สำเร็จ

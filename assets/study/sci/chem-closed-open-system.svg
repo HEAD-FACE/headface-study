@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 340" role="img" aria-label="เปรียบเทียบระบบปิดกับระบบเปิด ระบบปิดเป็นขวดที่ปิดจุกสนิท แก๊สอยู่ในขวด มวลก่อนและหลังเท่ากัน ระบบเปิดเป็นขวดเปิดปาก แก๊สลอยออกไป มวลที่อ่านได้หลังเกิดปฏิกิริยาน้อยลง">
+  <rect width="480" height="340" rx="22" fill="#FFFFFF"/>
+  <g font-family="Prompt, 'Noto Sans Thai', 'Leelawadee UI', Tahoma, sans-serif" text-anchor="middle">
+    <path d="M240 20V320" stroke="#E2E8F0" stroke-width="2"/>
+
+    <!-- ระบบปิด -->
+    <text x="120" y="40" font-size="26" font-weight="800" fill="#15803D">ระบบปิด</text>
+    <rect x="102" y="64" width="36" height="14" rx="4" fill="#475569"/>
+    <path d="M108 78V112L66 214Q58 240 84 244H156Q182 240 174 214L132 112V78z" fill="#ECFDF5" stroke="#0F172A" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M78 206Q120 192 162 206L170 218Q176 238 156 240H84Q64 238 70 218z" fill="#86EFAC" opacity=".75"/>
+    <g fill="#16A34A"><circle cx="100" cy="170" r="6"/><circle cx="124" cy="150" r="5"/><circle cx="140" cy="178" r="6"/><circle cx="114" cy="190" r="4"/></g>
+    <text x="120" y="282" font-size="20" font-weight="700" fill="#0F172A">ไม่มีมวลเข้า-ออก</text>
+    <text x="120" y="308" font-size="20" font-weight="800" fill="#15803D">มวลก่อน = มวลหลัง</text>
+
+    <!-- ระบบเปิด -->
+    <text x="360" y="40" font-size="26" font-weight="800" fill="#B45309">ระบบเปิด</text>
+    <path d="M348 78V112L306 214Q298 240 324 244H396Q422 240 414 214L372 112V78z" fill="#FFFBEB" stroke="#0F172A" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M318 206Q360 192 402 206L410 218Q416 238 396 240H324Q304 238 310 218z" fill="#FCD34D" opacity=".75"/>
+    <g fill="#D97706"><circle cx="340" cy="190" r="4"/></g>
+    <g fill="none" stroke="#D97706" stroke-width="3" stroke-linecap="round">
+      <path d="M352 70C346 58 358 50 352 38"/><path d="M362 70C368 58 356 50 364 36"/><path d="M372 70C378 60 368 52 374 42"/>
+    </g>
+    <g fill="#D97706"><circle cx="352" cy="32" r="5"/><circle cx="366" cy="28" r="4"/><circle cx="378" cy="36" r="5"/></g>
+    <text x="360" y="282" font-size="20" font-weight="700" fill="#0F172A">แก๊สหนีออกนอกภาชนะ</text>
+    <text x="360" y="308" font-size="20" font-weight="800" fill="#B45309">มวลที่อ่านได้น้อยลง</text>
+  </g>
+</svg>

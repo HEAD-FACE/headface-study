@@ -109,6 +109,11 @@ export function getProfilePageUrl() {
     return `${getAppBaseUrl()}/profile.html`;
 }
 
+/** หน้า Dashboard ของเว็บหลัก (ปุ่ม "<" ที่แถบล่างพากลับไปที่นี่): headface.app/dashboard หรือ beta.headface.app/dashboard */
+export function getDashboardUrl() {
+    return `${getAppBaseUrl()}/dashboard`;
+}
+
 /** ชื่อ cookie CSRF (อ่านได้ด้วย JS) ของ environment ปัจจุบัน: hf_csrf หรือ hf_csrf_beta */
 export function getCsrfCookieName() {
     return CSRF_COOKIE_BASE_NAME + COOKIE_SUFFIXES[getEnvironmentName()];
@@ -143,6 +148,7 @@ if (typeof window !== 'undefined' && window) {
         getAppBaseUrl,
         getLoginPageUrl,
         getProfilePageUrl,
+        getDashboardUrl,
         getCsrfCookieName
     };
     applyRobotsMeta();

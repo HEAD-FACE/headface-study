@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 520" role="img" aria-label="แผนภาพพลังงาน ด้านบนปฏิกิริยาคายความร้อน ระดับพลังงานของสารตั้งต้นสูงกว่าผลิตภัณฑ์ ด้านล่างปฏิกิริยาดูดความร้อน ระดับพลังงานของสารตั้งต้นต่ำกว่าผลิตภัณฑ์">
+  <defs>
+    <marker id="aR" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#DC2626"/></marker>
+    <marker id="aB" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1D4ED8"/></marker>
+  </defs>
+  <rect width="480" height="520" rx="22" fill="#FFFFFF"/>
+  <g font-family="Prompt, 'Noto Sans Thai', 'Leelawadee UI', Tahoma, sans-serif" text-anchor="middle">
+    <!-- คายความร้อน -->
+    <text x="240" y="38" font-size="26" font-weight="800" fill="#B91C1C">ปฏิกิริยาคายความร้อน</text>
+    <path d="M52 62V222H440" fill="none" stroke="#475569" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="30" y="150" font-size="20" font-weight="700" fill="#475569" transform="rotate(-90 30 150)">พลังงาน</text>
+    <path d="M90 90H200" stroke="#0F172A" stroke-width="6" stroke-linecap="round"/>
+    <text x="145" y="78" font-size="20" font-weight="700" fill="#0F172A">สารตั้งต้น</text>
+    <path d="M310 170H420" stroke="#0F172A" stroke-width="6" stroke-linecap="round"/>
+    <text x="365" y="200" font-size="20" font-weight="700" fill="#0F172A">ผลิตภัณฑ์</text>
+    <path d="M250 94V164" stroke="#DC2626" stroke-width="4" stroke-linecap="round" marker-end="url(#aR)"/>
+    <text x="256" y="136" font-size="19" font-weight="800" fill="#B91C1C" text-anchor="start">ปล่อยพลังงาน</text>
+
+    <path d="M20 260H460" stroke="#E2E8F0" stroke-width="2"/>
+
+    <!-- ดูดความร้อน -->
+    <text x="240" y="298" font-size="26" font-weight="800" fill="#1D4ED8">ปฏิกิริยาดูดความร้อน</text>
+    <path d="M52 322V482H440" fill="none" stroke="#475569" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="30" y="410" font-size="20" font-weight="700" fill="#475569" transform="rotate(-90 30 410)">พลังงาน</text>
+    <path d="M90 430H200" stroke="#0F172A" stroke-width="6" stroke-linecap="round"/>
+    <text x="145" y="458" font-size="20" font-weight="700" fill="#0F172A">สารตั้งต้น</text>
+    <path d="M310 350H420" stroke="#0F172A" stroke-width="6" stroke-linecap="round"/>
+    <text x="365" y="338" font-size="20" font-weight="700" fill="#0F172A">ผลิตภัณฑ์</text>
+    <path d="M250 426V356" stroke="#1D4ED8" stroke-width="4" stroke-linecap="round" marker-end="url(#aB)"/>
+    <text x="256" y="396" font-size="19" font-weight="800" fill="#1D4ED8" text-anchor="start">ดูดพลังงาน</text>
+  </g>
+</svg>

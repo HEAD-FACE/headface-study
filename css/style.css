@@ -781,6 +781,14 @@ body {
 .nav-i.on { color: #065F46; }
 .nav-i.on .nav-pill { background: #D1FAE5; }
 .nav-i.on .nav-l { font-weight: 700; }
+/* ปุ่ม "<" กลับ Dashboard ของเว็บหลัก: ชิดซ้ายสุดของแถบ เล็กกว่าเมนูอื่น และไม่ใช่หน้าที่เปิดอยู่ (ไม่มีสถานะ .on) */
+.nav-back { min-width: 56px; flex: none; color: #64748B; }
+.nav-back .nav-pill { width: 40px; background: #F1F5F9; }
+.nav-back:hover .nav-pill, .nav-back:focus-visible .nav-pill { background: #E2E8F0; color: #0F172A; }
+.nav-back:focus-visible { outline: 2px solid #059669; outline-offset: 2px; border-radius: 12px; }
+.nav-back .nav-l { font-size: 11px; }
+/* จอแคบ (≤ 380px): เมนูหลัก 3 อันหดลงเพื่อให้แถบไม่ล้นจอเมื่อมีปุ่ม "<" เพิ่ม */
+@media (max-width: 380px) { .nav-in .nav-i:not(.nav-back) { min-width: 0; flex: 1 1 0; } }
 /* บังคับให้ลูกๆ ของเมนู Nav ทะลุการคลิก */
 nav a * { pointer-events: none !important; }
 
