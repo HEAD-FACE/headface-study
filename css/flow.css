@@ -16,6 +16,8 @@ body.flow .bar > i { background: var(--bar); }
    เบราว์เซอร์มือถือจึงขยาย viewport ออก (zoom out) แล้วแถบปุ่มล่าง (position: fixed) ถูกดันลงไปครึ่งหนึ่งนอกจอ = กดปุ่มท้ายกิจกรรมไม่ได้
    body { overflow-x: hidden } อย่างเดียวไม่พอสำหรับมือถือ ต้องกันที่ html และตัดที่ตัวหน้า (clip = ตัดโดยไม่สร้างกล่องเลื่อน และไม่ตัดแถบ fixed) */
 html { overflow-x: hidden; }
+/* html กันล้นแนวนอนแล้ว: body ต้องไม่มี overflow ของตัวเอง (style.css ตั้ง overflow-x: hidden) ไม่งั้น body กลายเป็นกล่องเลื่อนและ position: sticky ของแถบหัวไม่เกาะจอ */
+body.flow { overflow-x: visible; }
 .fmain { overflow-x: clip; }
 .fwrap { width: 100%; max-width: 42rem; margin: 0 auto; padding: 0 20px; }
 .fmain { position: relative; z-index: 10; padding-bottom: 120px; }
@@ -133,13 +135,21 @@ a.ls:hover { background: #F8FAFC; }
 .mock-btn { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; border-radius: 16px; background: #C2410C; color: #fff; font-size: 15px; font-weight: 700; box-shadow: 0 4px 0 #7C2D12; transition: transform .1s; }
 .mock-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #7C2D12; }
 
-/* ───────── แถบหัวของหน้าบทเรียน / ข้อสอบ ───────── */
-.fbar { position: sticky; top: 0; z-index: 40; background: rgba(255, 255, 255, .96); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border-bottom: 1.5px solid #E2E8F0; }
-.fbar-in { display: flex; align-items: center; gap: 8px; max-width: 42rem; margin: 0 auto; min-height: 60px; padding: 6px 12px 6px 8px; }
-.fback { width: 44px; height: 44px; flex: none; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: #F1F5F9; color: #334155; }
+/* ───────── แถบหัวลอย (บทเรียน / Quiz / ข้อสอบ / AI Tutor) ─────────
+   เป็น "เม็ดยา" ลอยเหนือเนื้อหา ไม่ติดขอบจอ: เนื้อหาเลื่อนลอดใต้แถบ (เบลอแบบกระจกฝ้า) ขอบล่างหนาแบบปุ่มเกม
+   ปุ่มย้อนกลับเป็นปุ่มสีไล่เฉดกดแล้วยุบ; ฉากจางด้านหลังกันตัวอักษรของเนื้อหาชนกับแถบ */
+.fbar { position: sticky; top: 0; z-index: 40; padding: calc(10px + env(safe-area-inset-top, 0px)) 12px 0; pointer-events: none; }
+.fbar::before { content: ""; position: absolute; left: 0; right: 0; top: 0; bottom: -16px; z-index: -1; background: linear-gradient(180deg, #EEF4F8 55%, rgba(238, 244, 248, 0)); pointer-events: none; }
+.fbar-in { pointer-events: auto; display: flex; align-items: center; gap: 10px; max-width: 40rem; min-height: 60px; margin: 0 auto; padding: 6px 10px 6px 6px; border-radius: 26px; background: rgba(255, 255, 255, .84); -webkit-backdrop-filter: blur(18px) saturate(1.5); backdrop-filter: blur(18px) saturate(1.5); border: 2px solid rgba(255, 255, 255, .95); box-shadow: 0 4px 0 var(--edge, #CBD5E1), 0 12px 28px rgba(15, 23, 42, .10); }
+.fback { width: 46px; height: 46px; flex: none; display: inline-flex; align-items: center; justify-content: center; border-radius: 18px; background: linear-gradient(180deg, var(--bar, #10B981), var(--strong, #047857)); color: #fff; box-shadow: 0 3px 0 rgba(2, 44, 34, .32); transition: transform .1s, box-shadow .1s; }
+.fback:active { transform: translateY(3px); box-shadow: 0 0 0 rgba(2, 44, 34, .32); }
 .fbar-t { min-width: 0; flex: 1; }
-.fbar-e { font-size: 12px; line-height: 18px; font-weight: 700; color: var(--strong); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.fbar-h { font-size: 16px; line-height: 24px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fbar-e { font-size: 12px; line-height: 16px; font-weight: 800; letter-spacing: .02em; color: var(--strong, #047857); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fbar-e:not(:empty)::before { content: ""; display: inline-block; width: 7px; height: 7px; margin-right: 7px; vertical-align: 1px; border-radius: 50%; background: var(--bar, #10B981); box-shadow: 0 0 0 3px var(--chip, #D1FAE5); }
+.fbar-h { font-size: 16px; line-height: 22px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#barRight { flex: none; display: flex; align-items: center; gap: 6px; }
+#barRight:empty { display: none; }
+@media (max-width: 360px) { .fbar { padding-left: 8px; padding-right: 8px; } .fbar-in { gap: 8px; } }
 
 /* แท็บ เนื้อหา / Quiz / Practice (แสดงสถานะของแต่ละกิจกรรมแยกกัน) */
 .tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; margin-top: 14px; background: #fff; border: 2px solid #E2E8F0; border-radius: 18px; box-shadow: 0 3px 0 #CBD5E1; }
@@ -433,8 +443,6 @@ a.ls:hover { background: #F8FAFC; }
 .fb.bad { background: linear-gradient(135deg, #FFF1F2, #FFE4E6); }
 .result .ring { animation: ringIn .6s cubic-bezier(.34, 1.56, .64, 1) both; }
 @keyframes ringIn { from { opacity: 0; transform: scale(.6) rotate(-30deg); } to { opacity: 1; transform: none; } }
-.fbar { background: linear-gradient(180deg, rgba(255, 255, 255, .98), rgba(255, 255, 255, .94)); border-bottom-color: var(--bd, #E2E8F0); }
-.fbar-e { color: var(--strong, #047857); }
 body.flow .qbar > i, body.flow .bar > i { background: linear-gradient(90deg, var(--bar), var(--strong)); }
 
 @media (prefers-reduced-motion: reduce) {

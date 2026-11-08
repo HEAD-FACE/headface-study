@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { fmt, formatClock, readContext, backUrl, stateLabel, blockedReason, contextChip, renderLobby, renderLocked, renderLive, renderDock, renderSummary, renderMessage } from '../js/tutor-page.js';
+import { fmt, formatClock, readContext, backUrl, stateLabel, blockedReason, contextChip, renderLobby, renderLocked, renderLive, renderDock, renderSummary, renderMessage, textChange } from '../js/tutor-page.js';
 import { entryView, tutorHref, applyEntries, initTutorEntry } from '../js/tutor-entry.js';
 import { createStudyApi } from '../js/study-api.js';
 
@@ -134,9 +134,12 @@ describe('หน้าล็อก', () => {
 describe('หน้าระหว่างคุย', () => {
     test('โครงหน้า: ลูกแก้ว ป้ายสถานะแบบ live region รายการบทสนทนา และช่องแจ้งเตือน', () => {
         const html = renderLive({ modeLabel: 'Live Extended', ctx: { subject: 'วิทยาศาสตร์', lesson: 'บท 3' } });
-        assert.match(html, /class="tt-orb " data-state="starting"/);
+        assert.match(html, /class="tt-orb" data-state="starting"/);
+        assert.match(html, /<span class="body"><i><\/i><i><\/i><i><\/i><i><\/i><\/span>/, 'ลูกแก้วเป็นก้อนของเหลว 4 ชั้น');
         assert.match(html, /id="stateLabel"[^>]*aria-live="polite"/);
         assert.match(html, /<ol id="log"[^>]*aria-label="บทสนทนา"/);
+        assert.match(html, /id="latestBtn"[^>]*data-act="latest"[^>]*hidden/);
+        assert.match(html, /id="upHint"[^>]*data-act="history"[^>]*hidden/);
         assert.match(html, /id="banner"[^>]*role="status"[^>]*hidden/);
         assert.match(html, /Live Extended/);
         assert.match(html, /<video id="camVideo"[^>]*playsinline[^>]*muted/);
@@ -154,13 +157,23 @@ describe('หน้าระหว่างคุย', () => {
         assert.match(html, /id="textInput"[^>]*maxlength="1000"/);
     });
 
-    test('ฟองข้อความ: ฝั่งผู้ใช้/AI, ยังพูดไม่จบ = partial, พิมพ์เอง = typed, escape ข้อความ', () => {
+    test('บรรทัดคำพูด (ไม่มีฟองแชท): ฝั่งผู้ใช้/AI, ยังพูดไม่จบ = partial, พิมพ์เอง = typed, escape ข้อความ', () => {
         const u = renderMessage({ id: 'c1', role: 'user', text: 'สวัสดี', final: false });
-        assert.match(u, /class="tt-msg user partial"/);
+        assert.match(u, /class="tt-line you partial"/);
         const a = renderMessage({ id: 'c2', role: 'ai', text: '<b>ครับ</b>', final: true });
-        assert.match(a, /class="tt-msg ai"/);
+        assert.match(a, /class="tt-line ai"/);
+        assert.doesNotMatch(read('css/tutor.css'), /\.tt-msg/, 'ไม่มีฟองแชทเหลืออยู่');
         assert.doesNotMatch(a, /<b>ครับ/);
         assert.match(renderMessage({ id: 'c3', role: 'user', text: 'x', final: true, typed: true }), /typed/);
+    });
+
+    test('คำบรรยายที่ต่อท้ายเข้ามา: ต่อท้าย = ใส่เฉพาะส่วนใหม่, ปิดบรรทัดตัดช่องว่างท้าย = ไม่เปลี่ยน, ข้อความอื่น = เขียนใหม่', () => {
+        assert.deepEqual(textChange('', 'สวัสดี'), { kind: 'replace', add: 'สวัสดี' });
+        assert.deepEqual(textChange('สวัสดี', 'สวัสดีครับ'), { kind: 'append', add: 'ครับ' });
+        assert.deepEqual(textChange('สวัสดีครับ ', 'สวัสดีครับ'), { kind: 'same', add: '' });
+        assert.deepEqual(textChange('abc', 'abc'), { kind: 'same', add: '' });
+        assert.deepEqual(textChange('abc', 'xyz'), { kind: 'replace', add: 'xyz' });
+        assert.equal(textChange(undefined, null).kind, 'same');
     });
 
     test('สรุปหลังจบ: นาที เครดิตที่ใช้ เครดิตที่เหลือ; ไม่มีสรุปก็ไม่แสดงตัวเลขเดา; เหตุผลที่หยุดเป็นข้อความไทย', () => {
@@ -299,7 +312,9 @@ describe('ไฟล์ของหน้า', () => {
         const css = read('css/tutor.css');
         assert.match(css, /prefers-reduced-motion: reduce/);
         assert.match(css, /safe-area-inset-bottom/);
-        assert.match(css, /\.tt-b\s*\{[^}]*min-height:\s*58px/);
+        assert.match(css, /\.tt-b\s*\{[^}]*width:\s*48px;\s*height:\s*48px/, 'ปุ่มวงกลมไอคอนล้วน >= 44px');
+        assert.match(css, /\.tt-b\.tt-mic\s*\{[^}]*width:\s*66px/);
+        assert.match(css, /\.tt-turn:last-child\s*\{[^}]*min-height:\s*100%/, 'รอบล่าสุดเต็มพื้นที่ฟีด: เห็นแต่ตอนนี้ ประวัติอยู่เหนือขึ้นไป');
         assert.match(css, /\.tt-text input\s*\{[^}]*font-size:\s*16px/, 'ช่องพิมพ์ 16px กัน iOS ซูมเอง');
     });
 });

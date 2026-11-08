@@ -29,6 +29,9 @@ export const ICONS = {
     check: (s) => svg('<path d="M5 12l5 5l10 -10"/>', s, 3),
     spark: (s) => svg('<path d="M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2m0 -12a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2m-7 12a6 6 0 0 1 6 -6a6 6 0 0 1 -6 -6a6 6 0 0 1 -6 6a6 6 0 0 1 6 6"/>', s),
     clock: (s) => svg('<path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"/><path d="M12 7v5l3 3"/>', s),
+    bolt: (s) => svg('<path d="M13 3l0 7l6 0l-8 11l0 -7l-6 0l8 -11"/>', s),
+    arrowDown: (s) => svg('<path d="M12 5l0 14"/><path d="M18 13l-6 6l-6 -6"/>', s, 2.5),
+    arrowUp: (s) => svg('<path d="M12 19l0 -14"/><path d="M18 11l-6 -6l-6 6"/>', s, 2.5),
     info: (s) => svg('<path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"/><path d="M12 9h.01"/><path d="M11 12h1v4h1"/>', s)
 };
 
@@ -77,7 +80,20 @@ export function blockedReason(code) {
 }
 
 // ───────────── HTML ─────────────
-const orb = (state, cls = '') => `<div class="tt-orb ${cls}" data-state="${esc(state)}" aria-hidden="true"><i></i><i></i><i></i></div>`;
+const orb = (state, cls = '') => `<div class="tt-orb${cls ? ` ${cls}` : ''}" data-state="${esc(state)}" aria-hidden="true"><span class="glow"></span><span class="body"><i></i><i></i><i></i><i></i></span><span class="shine"></span></div>`;
+
+/**
+ * ข้อความของบรรทัดคำพูดเปลี่ยนจาก prev เป็น next อย่างไร: ต่อท้าย (ใส่เฉพาะส่วนที่เพิ่ม ให้คำใหม่ค่อย ๆ ปรากฏ) / เหมือนเดิม / เขียนใหม่
+ * คำบรรยายจาก Google มาเป็นช่วง ๆ ต่อท้ายกันเสมอ; ตอนปิดบรรทัดข้อความถูกตัดช่องว่างท้าย (= เหมือนเดิม)
+ */
+export function textChange(prev, next) {
+    const a = String(prev ?? '');
+    const b = String(next ?? '');
+    if (a === b) return { kind: 'same', add: '' };
+    if (a && b.startsWith(a)) return { kind: 'append', add: b.slice(a.length) };
+    if (a && a.trim() === b) return { kind: 'same', add: '' };
+    return { kind: 'replace', add: b };
+}
 
 export function contextChip(ctx) {
     if (!ctx || (!ctx.subject && !ctx.lesson)) return '';
@@ -91,30 +107,37 @@ export function renderLobby({ status, ctx, error = '' }) {
     const left = conv.limit === null ? null : Math.max(0, conv.limit - conv.used);
     return `
       ${error ? `<p class="tt-banner error" role="alert">${esc(error)}</p>` : ''}
-      <section class="tt-card tt-hero">
+      <section class="tt-hero">
         ${orb('idle')}
         <h2 class="tt-h">คุยกับ AI Tutor</h2>
-        <p class="tt-p">ถามด้วยเสียงได้เหมือนคุยกับติวเตอร์ เปิดกล้องให้ดูโจทย์ หรือส่งรูปและไฟล์ให้ช่วยอธิบาย</p>
+        <p class="tt-p">พูดคุย โชว์โจทย์ให้ดู หรือส่งรูปและไฟล์ให้ช่วยอธิบาย</p>
         ${contextChip(ctx)}
       </section>
-      <form id="startForm" class="tt-card" style="display:grid;gap:16px" novalidate>
+      <form id="startForm" class="tt-start" novalidate>
         <fieldset class="tt-modes" role="radiogroup">
-          <legend>เลือกโหมด</legend>
-          <label class="tt-mode"><input type="radio" name="mode" value="live" checked><span class="dot" aria-hidden="true"></span><span><b>Live</b><small>ตอบไว คุยลื่น เหมาะกับถามทั่วไปและทบทวนบทเรียน</small></span></label>
-          <label class="tt-mode"><input type="radio" name="mode" value="extended"><span class="dot" aria-hidden="true"></span><span><b>Live Extended<span class="tag">คิดลึก</span></b><small>ให้ AI คิดมากขึ้นก่อนตอบ เหมาะกับโจทย์ยาก อาจช้ากว่าและใช้เครดิตมากกว่าเล็กน้อย</small></span></label>
+          <legend class="sr-only">เลือกโหมด</legend>
+          <label class="tt-mode"><input type="radio" name="mode" value="live" checked><span class="in">${ICONS.bolt(24)}<b>Live</b><small>ตอบไว คุยลื่น</small></span></label>
+          <label class="tt-mode"><input type="radio" name="mode" value="extended"><span class="in">${ICONS.spark(24)}<b>Live Extended</b><small>คิดลึก โจทย์ยาก</small></span></label>
         </fieldset>
-        <div class="tt-switches">
-          <label class="tt-switch"><span><b>ใช้ไมค์</b><small>พูดคุยด้วยเสียง (ปิดทีหลังแล้วพิมพ์แทนได้)</small></span><input type="checkbox" name="mic" role="switch" checked><i class="sw" aria-hidden="true"></i></label>
-          <label class="tt-switch"><span><b>เปิดกล้องตั้งแต่เริ่ม</b><small>ให้ AI เห็นโจทย์หรือสมุดของคุณ (เปิดทีหลังได้)</small></span><input type="checkbox" name="camera" role="switch"><i class="sw" aria-hidden="true"></i></label>
+        <div class="tt-opts">
+          <label class="tt-opt"><input type="checkbox" name="mic" role="switch" checked><span class="in">${ICONS.mic(22)}<b>ไมค์</b></span></label>
+          <label class="tt-opt"><input type="checkbox" name="camera" role="switch"><span class="in">${ICONS.camera(22)}<b>กล้อง</b></span></label>
         </div>
-        <div class="tt-facts">
-          <div class="tt-fact"><span>เครดิตวันนี้</span><b>${fmt(c.available)} <small>/ ${fmt(c.dailyLimit)}</small></b></div>
-          <div class="tt-fact"><span>ครั้งที่เหลือวันนี้</span><b>${left === null ? 'ไม่จำกัด' : `${fmt(left)} <small>/ ${fmt(conv.limit)}</small>`}</b></div>
-          <div class="tt-fact"><span>ใช้เครดิตโดยประมาณ</span><b>~${fmt(c.perMinuteGuide)} <small>/นาทีที่คุยต่อเนื่อง</small></b></div>
-          <div class="tt-fact"><span>คุยได้ครั้งละ</span><b>${fmt(status.limits.maxSessionMin)} <small>นาที</small></b></div>
-        </div>
-        <button id="startBtn" type="submit" class="btn btn-block btn-lg" style="margin-top:0">${ICONS.mic(20)} เริ่มคุยกับ AI Tutor</button>
-        <p class="tt-privacy">เครดิตหักตามจำนวน token ที่ใช้จริง (อัตราสูงกว่าแชท LYNX เล็กน้อย) จากกระเป๋าเครดิต LYNX ใบเดียวกัน<br>เสียง ภาพ และไฟล์ที่ส่งจะถูกส่งให้ Google Gemini ประมวลผล HEADFACE ไม่เก็บบทสนทนาไว้ — อย่าส่งข้อมูลส่วนตัว เช่น เลขบัตร รหัสผ่าน</p>
+        <button id="startBtn" type="submit" class="btn btn-block btn-lg" style="margin-top:0">${ICONS.mic(22)} เริ่มคุยเลย</button>
+        <p class="tt-meta"><span>${ICONS.bolt(14)}เครดิตวันนี้ <b>${fmt(c.available)}</b></span><span>${left === null ? 'คุยได้ไม่จำกัดครั้ง' : `คุยได้อีก <b>${fmt(left)}</b> ครั้งวันนี้`}</span></p>
+        <p class="tt-privacy">เสียง ภาพ และไฟล์ที่ส่งจะถูกส่งให้ Google Gemini ประมวลผล — อย่าส่งข้อมูลส่วนตัว</p>
+        <details class="tt-info">
+          <summary>รายละเอียดเครดิตและความเป็นส่วนตัว</summary>
+          <div class="tt-info-b">
+            <div class="tt-facts">
+              <div class="tt-fact"><span>เครดิตวันนี้</span><b>${fmt(c.available)} <small>/ ${fmt(c.dailyLimit)}</small></b></div>
+              <div class="tt-fact"><span>ครั้งที่เหลือวันนี้</span><b>${left === null ? 'ไม่จำกัด' : `${fmt(left)} <small>/ ${fmt(conv.limit)}</small>`}</b></div>
+              <div class="tt-fact"><span>ใช้เครดิตโดยประมาณ</span><b>~${fmt(c.perMinuteGuide)} <small>/นาทีที่คุยต่อเนื่อง</small></b></div>
+              <div class="tt-fact"><span>คุยได้ครั้งละ</span><b>${fmt(status.limits.maxSessionMin)} <small>นาที</small></b></div>
+            </div>
+            <p class="tt-privacy">เครดิตหักตามจำนวน token ที่ใช้จริง (อัตราสูงกว่าแชท LYNX เล็กน้อย) จากกระเป๋าเครดิต LYNX ใบเดียวกัน<br>เสียง ภาพ และไฟล์ที่ส่งจะถูกส่งให้ Google Gemini ประมวลผล HEADFACE ไม่เก็บบทสนทนาไว้ — อย่าส่งข้อมูลส่วนตัว เช่น เลขบัตร รหัสผ่าน</p>
+          </div>
+        </details>
       </form>`;
 }
 
@@ -153,18 +176,20 @@ export function renderLocked(reason, { status = null, message = '' } = {}) {
 
 export function renderLive({ modeLabel, ctx }) {
     return `
-      <div class="tt-stage">
+      <div id="stage" class="tt-stage">
         <div class="tt-top"><span class="chip chip-g">${esc(modeLabel)}</span>${contextChipShort(ctx)}</div>
-        <div id="stageRow" class="tt-stage-row">
-          <div class="tt-orb-box">
-            ${orb('starting')}
-            <p id="stateLabel" class="tt-state" role="status" aria-live="polite">กำลังเริ่ม…</p>
-            <p id="meter" class="tt-meter"></p>
-          </div>
-          <div id="camBox" class="tt-cam mirror" hidden><video id="camVideo" playsinline muted autoplay aria-label="ภาพจากกล้องของคุณ"></video><button type="button" data-act="flip" aria-label="สลับกล้องหน้า/หลัง">${ICONS.flip(22)}</button></div>
-        </div>
         <p id="banner" class="tt-banner info" role="status" hidden></p>
-        <ol id="log" class="tt-log" aria-label="บทสนทนา"><li id="logHint" class="tt-hint">พูดได้เลย หรือพิมพ์ข้อความ — คำพูดของทั้งสองฝ่ายจะขึ้นที่นี่</li></ol>
+        <div id="camBox" class="tt-cam mirror" hidden><video id="camVideo" playsinline muted autoplay aria-label="ภาพจากกล้องของคุณ"></video><button type="button" data-act="flip" aria-label="สลับกล้องหน้า/หลัง">${ICONS.flip(22)}</button></div>
+        <div class="tt-orb-box">
+          ${orb('starting')}
+          <p id="stateLabel" class="tt-state" role="status" aria-live="polite">กำลังเริ่ม…</p>
+          <p id="meter" class="tt-meter"></p>
+        </div>
+        <div class="tt-feedwrap">
+          <ol id="log" class="tt-feed" aria-label="บทสนทนา" tabindex="0"><li id="logHint" class="tt-hint">พูดได้เลย หรือพิมพ์ข้อความ — คำพูดจะขึ้นตรงนี้</li></ol>
+          <button type="button" id="upHint" class="tt-up" data-act="history" aria-label="ดูประวัติการคุยก่อนหน้า" hidden>${ICONS.arrowUp(14)}<span>เลื่อนขึ้นดูประวัติ</span></button>
+          <button type="button" id="latestBtn" class="tt-latest" data-act="latest" aria-label="ไปที่ข้อความล่าสุด" hidden>${ICONS.arrowDown(18)}<span>ล่าสุด</span></button>
+        </div>
       </div>`;
 }
 
@@ -175,11 +200,11 @@ export function renderDock() {
       <div class="tt-dock-in">
         <form id="textForm" class="tt-text" hidden><input id="textInput" type="text" maxlength="1000" autocomplete="off" enterkeyhint="send" placeholder="พิมพ์ข้อความถึง AI Tutor…" aria-label="ข้อความถึง AI Tutor"><button type="submit" aria-label="ส่งข้อความ">${ICONS.send(20)}</button></form>
         <div class="tt-btns">
-          <button type="button" class="tt-b" data-act="attach" aria-label="แนบรูปหรือไฟล์">${ICONS.clip(22)}<span>แนบ</span></button>
-          <button type="button" class="tt-b" data-act="camera" aria-pressed="false" aria-label="เปิดหรือปิดกล้อง">${ICONS.camera(22)}<span>กล้อง</span></button>
-          <button type="button" class="tt-b tt-mic" data-act="mic" aria-pressed="true" aria-label="ปิดไมค์">${ICONS.mic(28)}<span>ไมค์</span></button>
-          <button type="button" class="tt-b" data-act="keyboard" aria-pressed="false" aria-label="พิมพ์ข้อความ">${ICONS.keyboard(22)}<span>พิมพ์</span></button>
-          <button type="button" class="tt-b tt-end" data-act="end" aria-label="จบการคุย">${ICONS.stop(22)}<span>จบ</span></button>
+          <button type="button" class="tt-b" data-act="attach" aria-label="แนบรูปหรือไฟล์" title="แนบรูปหรือไฟล์">${ICONS.clip(22)}</button>
+          <button type="button" class="tt-b" data-act="camera" aria-pressed="false" aria-label="เปิดหรือปิดกล้อง" title="กล้อง">${ICONS.camera(22)}</button>
+          <button type="button" class="tt-b tt-mic" data-act="mic" aria-pressed="true" aria-label="ปิดไมค์" title="ไมค์">${ICONS.mic(28)}</button>
+          <button type="button" class="tt-b" data-act="keyboard" aria-pressed="false" aria-label="พิมพ์ข้อความ" title="พิมพ์ข้อความ">${ICONS.keyboard(22)}</button>
+          <button type="button" class="tt-b tt-end" data-act="end" aria-label="จบการคุย" title="จบการคุย">${ICONS.stop(22)}</button>
         </div>
         <input id="fileInput" type="file" hidden accept="image/*,.pdf,.txt,.md,.csv,.json,application/pdf,text/*">
       </div>`;
@@ -202,8 +227,10 @@ export function renderSummary({ summary, credits, reason }) {
       </section>`;
 }
 
+/** บรรทัดคำพูด 1 บรรทัด (ไม่มีฟองแชท): you = สิ่งที่นักเรียนพูด/พิมพ์ (เล็ก ลอย), ai = คำตอบ (ใหญ่) */
 export function renderMessage({ id, role, text, final, typed }) {
-    return `<li class="tt-msg ${role === 'user' ? 'user' : 'ai'}${final ? '' : ' partial'}${typed ? ' typed' : ''}" data-id="${esc(id)}"><span class="sr-only">${role === 'user' ? 'คุณ: ' : 'AI Tutor: '}</span>${esc(text)}</li>`;
+    const you = role === 'user';
+    return `<p class="tt-line ${you ? 'you' : 'ai'}${final ? '' : ' partial'}${typed ? ' typed' : ''}" data-id="${esc(id)}"><span class="sr-only">${you ? 'คุณ: ' : 'AI Tutor: '}</span>${you && typed ? `<span class="tt-kb">${ICONS.keyboard(14)}</span>` : ''}<span class="tt-t">${esc(text)}</span></p>`;
 }
 
 // ───────────── ผูกกับหน้าจริง ─────────────
@@ -233,6 +260,9 @@ export async function mountTutorPage({
     let wakeLock = null;
     let sessionMode = 'live';
     let mutedUi = false;
+    let turn = null;      // รอบล่าสุดในฟีด (li.tt-turn)
+    let pinned = true;    // ฟีดอยู่ที่ล่างสุด = ตามข้อความล่าสุดอัตโนมัติ; เลื่อนขึ้นไปดูประวัติแล้ว = หยุดตาม
+    let autoUntil = 0;    // ช่วงที่หน้าเลื่อนเอง (smooth) ไม่นับเป็นผู้ใช้เลื่อน
 
     // ───── เครดิตมุมขวาบน ─────
     function showCredits(available) {
@@ -246,8 +276,10 @@ export async function mountTutorPage({
     const setView = (html, { liveMode = false } = {}) => {
         content.innerHTML = html;
         view.classList.toggle('is-live', liveMode);
+        doc.body.classList.toggle('tt-live', liveMode);
         if (!liveMode) view.classList.remove('has-text');
         $('#dock')?.remove();
+        turn = null; pinned = true;
     };
 
     // ───── โหลดสถานะ ─────
@@ -286,24 +318,86 @@ export async function mountTutorPage({
         el.hidden = !message;
     };
 
-    function addNote(text) {
+    // ───── ฟีดคำพูด: 1 รอบ = สิ่งที่เราพูด + คำตอบของ AI; รอบล่าสุดเต็มจอ รอบก่อน ๆ ย่อไว้ด้านบน ─────
+    const reduceMotion = () => Boolean(win.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
+
+    function updateFeedHints() {
         const log = $('#log');
         if (!log) return;
+        const turns = log.querySelectorAll('.tt-turn').length;
+        const latest = $('#latestBtn');
+        const up = $('#upHint');
+        if (latest) latest.hidden = pinned || !turns;
+        if (up) up.hidden = !(pinned && turns > 1);
+    }
+
+    function followFeed(smooth) {
+        const log = $('#log');
+        if (!log) return;
+        if (pinned) {
+            if (smooth && !reduceMotion()) { autoUntil = Date.now() + 700; log.scrollTo?.({ top: log.scrollHeight, behavior: 'smooth' }); }
+            else log.scrollTop = log.scrollHeight;
+        }
+        updateFeedHints();
+    }
+
+    function onFeedScroll() {
+        if (Date.now() < autoUntil) return;
+        const log = $('#log');
+        if (!log) return;
+        pinned = log.scrollHeight - log.scrollTop - log.clientHeight < 72;
+        updateFeedHints();
+    }
+
+    function newTurn() {
+        const log = $('#log');
         $('#logHint')?.remove();
-        log.insertAdjacentHTML('beforeend', `<li class="tt-note">${esc(text)}</li>`);
-        log.lastElementChild.scrollIntoView?.({ block: 'end', behavior: 'smooth' });
+        log.querySelectorAll('.tt-turn:not(.past)').forEach((t) => t.classList.add('past'));
+        log.insertAdjacentHTML('beforeend', '<li class="tt-turn"></li>');
+        turn = log.lastElementChild;
+        return turn;
+    }
+
+    function addNote(text) {
+        if (!$('#log')) return;
+        newTurn().insertAdjacentHTML('beforeend', `<p class="tt-note">${esc(text)}</p>`);
+        followFeed(true);
+    }
+
+    /** ปรับข้อความของบรรทัดเดิมในที่เดิม (ไม่สร้างใหม่ ไม่เล่นแอนิเมชันซ้ำ) คำที่เพิ่มเข้ามาใหม่ค่อย ๆ ปรากฏ */
+    function applyLine(line, c) {
+        const t = line.querySelector('.tt-t');
+        const change = textChange(line._txt ?? t.textContent, c.text);
+        if (change.kind === 'append') t.insertAdjacentHTML('beforeend', `<span class="w">${esc(change.add)}</span>`);
+        else if (change.kind === 'replace') t.textContent = c.text;
+        if (change.kind !== 'same') line._txt = c.text;
+        line.classList.toggle('partial', !c.final);
     }
 
     function upsertMessage(c) {
         const log = $('#log');
         if (!log) return;
-        const existing = log.querySelector(`[data-id="${CSS.escape(c.id)}"]`);
-        if (c.empty) { existing?.remove(); return; }
-        $('#logHint')?.remove();
-        const html = renderMessage(c);
-        if (existing) existing.outerHTML = html;
-        else log.insertAdjacentHTML('beforeend', html);
-        log.lastElementChild.scrollIntoView?.({ block: 'end', behavior: 'smooth' });
+        let line = log.querySelector(`[data-id="${CSS.escape(c.id)}"]`);
+        if (c.empty) {
+            const owner = line?.parentElement;
+            line?.remove();
+            if (owner && !owner.children.length) { owner.remove(); turn = log.querySelector('.tt-turn:last-child'); turn?.classList.remove('past'); }
+            followFeed(false);
+            return;
+        }
+        let fresh = false;
+        if (line) applyLine(line, c);
+        else {
+            const you = c.role === 'user';
+            let t = turn && log.contains(turn) ? turn : null;
+            // คำพูดของเราขึ้นรอบใหม่เสมอ; คำตอบของ AI ต่อท้ายรอบเดิมถ้ายังไม่มีคำตอบ ไม่งั้นขึ้นรอบใหม่
+            if (you || !t || t.querySelector('.tt-line.ai')) { t = newTurn(); fresh = true; }
+            t.insertAdjacentHTML('beforeend', renderMessage(c));
+            line = t.lastElementChild;
+            line._txt = c.text;
+            if (!you) t.classList.add('has-ai');
+        }
+        followFeed(fresh);
     }
 
     function setOrb(state) {
@@ -364,14 +458,14 @@ export async function mountTutorPage({
             if (!btn) return;
             btn.setAttribute('aria-pressed', String(on));
             btn.setAttribute('aria-label', on ? 'ปิดไมค์' : 'เปิดไมค์');
-            btn.innerHTML = `${on ? ICONS.mic(28) : ICONS.micOff(28)}<span>${on ? 'ไมค์' : 'ปิดอยู่'}</span>`;
+            btn.innerHTML = on ? ICONS.mic(28) : ICONS.micOff(28);
             btn.disabled = Boolean(failed);
             if (live.state === 'listening') setOrb('listening');
         });
         live.on('camera', ({ on, facing: f }) => {
             const box = $('#camBox');
             if (box) { box.hidden = !on; box.classList.toggle('mirror', f !== 'environment'); }
-            $('#stageRow')?.classList.toggle('with-cam', on);
+            $('#stage')?.classList.toggle('with-cam', on);
             $('[data-act="camera"]')?.setAttribute('aria-pressed', String(on));
         });
         live.on('ended', ({ summary, reason }) => {
@@ -406,6 +500,7 @@ export async function mountTutorPage({
         dock.hidden = false;
         dock.innerHTML = renderDock();
         media.attachVideo?.($('#camVideo'));
+        $('#log')?.addEventListener('scroll', onFeedScroll, { passive: true });
         bindLive(); // ปุ่มไมค์จะถูกตั้งตามจริงโดยเหตุการณ์ 'mic' ที่ live.start ส่งหลังขออนุญาตไมค์
         try {
             await live.start({ mode: sessionMode, subjectId: ctx.subjectId, lessonNo: ctx.lessonNo, mic: wantMic, camera: wantCam });
@@ -433,6 +528,19 @@ export async function mountTutorPage({
                 $('[data-act="keyboard"]').setAttribute('aria-pressed', String(open));
                 view.classList.toggle('has-text', open);
                 if (open) $('#textInput').focus();
+                return undefined;
+            }
+            case 'latest': {
+                pinned = true;
+                const log = $('#log');
+                if (log) { autoUntil = Date.now() + 700; log.scrollTo?.({ top: log.scrollHeight, behavior: reduceMotion() ? 'auto' : 'smooth' }); }
+                updateFeedHints();
+                return undefined;
+            }
+            case 'history': {
+                const log = $('#log');
+                if (log) { pinned = false; log.scrollBy?.({ top: -Math.round(log.clientHeight * 0.85), behavior: reduceMotion() ? 'auto' : 'smooth' }); }
+                updateFeedHints();
                 return undefined;
             }
             case 'attach': return $('#fileInput').click();
