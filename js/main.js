@@ -13,9 +13,9 @@ const HEADER_HEIGHTS = {
 // แท็บเมนูล่างที่ต้องไฮไลต์ของแต่ละหน้า (หน้าเส้นทางเรียนอยู่ใต้แท็บ "รายวิชา")
 const NAV_FOR_NAMESPACE = { course: 'subject' };
 
-// หน้ากิจกรรม (lesson) / Mock Exam / ผลการเรียน เป็นหน้าอิสระแบบเต็มจอที่ไม่ใช้ Barba — ให้เบราว์เซอร์เปิดหน้าตามปกติ
+// หน้ากิจกรรม (lesson) / Mock Exam / ผลการเรียน / คุยกับ AI Tutor (tutor) เป็นหน้าอิสระแบบเต็มจอที่ไม่ใช้ Barba — ให้เบราว์เซอร์เปิดหน้าตามปกติ
 // หน้าเส้นทางเรียนของวิชา (course) ใช้ Barba ร่วมกับหน้าหลัก: พื้นที่สีเขียวด้านบนจึงต่อเนื่องไปด้วยกัน
-const FLOW_PAGE_PATTERN = /\/(lesson|mock-exam|report)\.html(?:[?#]|$)/;
+const FLOW_PAGE_PATTERN = /\/(lesson|mock-exam|report|tutor)\.html(?:[?#]|$)/;
 
 // 🖼️ Function จัดการ Fallback และตรวจจับภาพพื้นหลังการ์ดรายวิชาใน assets/ อัตโนมัติ (เน้น .webp)
 window.handleCardImgError = function(img, id, altName) {

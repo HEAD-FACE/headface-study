@@ -24,10 +24,10 @@ const FALLBACK_MESSAGE = 'เกิดข้อผิดพลาด กรุ�
 
 /** @param {(path: string, options?: object) => Promise<Response>} send ส่งคำขอไปที่ path (ขึ้นต้นด้วย /api/study/...) */
 export function createStudyApi(send) {
-    async function request(path, { method = 'GET', body } = {}) {
+    async function request(path, { method = 'GET', body, keepalive = false } = {}) {
         let response;
         try {
-            response = await send(`/api/study${path}`, { method, ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
+            response = await send(`/api/study${path}`, { method, ...(body === undefined ? {} : { body: JSON.stringify(body) }), ...(keepalive ? { keepalive: true } : {}) });
         } catch (err) {
             if (err && err.message === 'UNAUTHORIZED') throw new StudyApiError('UNAUTHORIZED', 401, 'กรุณาเข้าสู่ระบบอีกครั้ง');
             throw new StudyApiError('NETWORK', 0, NETWORK_MESSAGE);
@@ -73,6 +73,12 @@ export function createStudyApi(send) {
         getMockAttempt: (attemptId) => request(`/mock-attempts/${seg(attemptId)}`),
         saveMockAnswers: (attemptId, state) => request(`/mock-attempts/${seg(attemptId)}/answers`, { method: 'PUT', body: state }),
         submitMock: (attemptId, state = {}) => request(`/mock-attempts/${seg(attemptId)}/submit`, { method: 'POST', body: state }),
+        // AI Tutor (docs/study-api-contract.md ข้อ 2.16): สถานะ/สิทธิ์ · เริ่มคุย (ได้ token ของ Google) · รายงาน token ของแต่ละรอบเพื่อหักเครดิต · จบ
+        getTutor: () => request('/tutor'),
+        startTutor: (body = {}) => request('/tutor/sessions', { method: 'POST', body }),
+        reportTutor: (sessionId, turns = []) => request(`/tutor/sessions/${seg(sessionId)}/usage`, { method: 'POST', body: { turns } }),
+        // keepalive: ยังส่งได้แม้หน้ากำลังถูกปิด (pagehide)
+        endTutor: (sessionId, body = {}, { keepalive = false } = {}) => request(`/tutor/sessions/${seg(sessionId)}/end`, { method: 'POST', body, keepalive }),
     };
 }
 

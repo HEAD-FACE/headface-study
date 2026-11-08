@@ -17,6 +17,8 @@
 
 **v2.5 (2026-10-21): Admin API สำหรับตัวแก้เนื้อหา (Admin Frontend)** — สร้าง/แก้วิชา หน่วย บท โจทย์ทุกรูปแบบ และ Mock ทีละชิ้นด้วยฟอร์ม พร้อมตรวจสด ตัวอย่างโจทย์ ประวัติ/กู้คืน คลังโจทย์ และ schema สำหรับสร้างฟอร์ม โดยไม่ต้องส่งไฟล์ JSON ทั้งวิชา — เอกสารแยกที่ [study-admin-api.md](study-admin-api.md) (ไม่มี migration เพิ่ม; ใช้ตัวตรวจ/นำเข้าเดิม) — วิชา 10 วิชาของเว็บ (`sci mat tha eng soc his phy inf chn iel`) เป็น "ช่อง" ที่แสดงใน `GET /admin/subjects` เสมอแม้ยังไม่มีเนื้อหา และเริ่มได้ด้วย `POST /admin/subjects/:id/start` หรือบันทึกลงไปเลย; วิชาที่เพิ่มเองมีเลขต่อจาก 10 (หัวข้อ 3.0 ของเอกสารนั้น)
 
+
+**v2.8 (2026-11-08): AI Tutor** — คุยกับ AI ด้วยเสียง/กล้อง/ไฟล์ (Gemini 3.8 Live และ Live Extended Thinking) หักเครดิตตาม token ของกระเป๋า LYNX เดียวกัน ดู **ข้อ 2.16** (migration 0040, สวิตช์ `STUDY_TUTOR`)
 ---
 
 ## 0. ข้อกำหนดทั่วไป
@@ -684,6 +686,44 @@ Streak เก็บที่ตาราง `study_streaks` (แถวเดี�
 ช่องข้อมูลของหน้าที่ดึงจาก API ใช้ได้ **เฉพาะ 3 แบบ** (css/loading.css): skeleton (`.skl`, `.ld-e:empty`, `.bar.ld`), วงกลมหมุน (`.spin`), เส้นวิ่งไปมา (`.ldbar`) — และ **HTML ต้องไม่มีข้อมูลเสมือนใด ๆ** (ตัวเลข ชื่อ รูป การ์ดบทเรียน/ข้อสอบตัวอย่าง) มีเทสต์ตรวจ (`test/study-loading.test.mjs`); โหลดไม่ได้ → ช่องเป็น "—" + แถบแจ้ง "โหลดข้อมูลไม่สำเร็จ" พร้อมปุ่มลองใหม่ ไม่เอาค่าตัวอย่างมาแทน; ผู้ใช้ตั้งลดการเคลื่อนไหว = หยุดวิ่ง/หมุน
 - การ์ด "สอบใกล้ถึง" ของหน้าแรกกลับมาแล้วด้วยข้อมูลจริง (`exam` ข้างบน) — ค่าตัวอย่างเดิม (กลางภาค คณิต ม.5 ฯลฯ) ไม่กลับมา
 - โหมด `?demo=1` ไม่มีผลกับหน้า Home / Subjects / Progress อีกแล้ว (หน้าพวกนี้ใช้ข้อมูลจริงเสมอ)
+
+### 2.16 AI Tutor — คุยด้วยเสียง/กล้อง/ไฟล์กับ Gemini 3.8 Live (v2.8, migration 0040)
+
+**แนวคิด:** เสียงเป็น WebSocket ที่เปิดค้างตลอดการคุย จึงไม่ผ่าน Worker — หน้าเว็บคุยกับ Google โดยตรงด้วย **token ใช้ครั้งเดียว** ที่ Backend ขอจาก Google (`POST /v1beta/auth_tokens`)
+ผูกกับโมเดลและคำสั่งของ Tutor (`liveConnectConstraints`) คีย์ API ไม่ออกจาก Worker เลย Backend ตรวจแพลนและเครดิตก่อนให้ token และหักเครดิตตามจำนวน token ที่หน้าเว็บรายงานกลับมา
+
+| | |
+|---|---|
+| โมเดลหลัก (โหมด `live`) | `gemini-3.8-live` — ไม่ตั้งระดับการคิด |
+| โหมด Extended (`extended`) | `gemini-3.8-live-extended-thinking` — `thinkingLevel` MEDIUM; ราคาต่อ token เท่ากับโมเดลหลักตามหน้าราคาของ Google |
+| สิทธิ์ | `study.ai_tutor`: FREE ปิด, PLUS 5 ครั้ง/วัน, MAX 10 ครั้ง/วัน (ค่าใน `featureRegistry.js`); "ครั้ง" นับเมื่อรอบแรกถูกหักเครดิต — เริ่มแล้วต่อไม่ติดไม่เสียสิทธิ์ |
+| สวิตช์ | ปิดจนกว่า Worker ตั้ง `STUDY_TUTOR="on"` (Preview เปิดแล้วใน `wrangler.jsonc`, Production ไม่มีบรรทัดนี้) |
+| คีย์ | `GEMINI_LIVE_API_KEY` ก่อน ไม่มีใช้ `GEMINI_API_KEY` (แนะนำแยกคีย์แบบจ่ายเงิน: ดูหมายเหตุความเป็นส่วนตัวท้ายข้อ) |
+| ความยาว | ครั้งละไม่เกิน 30 นาที; อัตโนมัติต่อสายใหม่ด้วย session resumption; บีบบริบท (sliding window) เพื่อให้คุยพร้อมกล้องได้เกิน 2 นาที |
+
+**เครดิต** (กระเป๋าเดียวกับ LYNX: `lynx_wallet_periods`, ธุรกรรม `source = "study_tutor"`, สรุปที่ `raw_ai_usage` `product = "study_tutor"` 1 แถวต่อการคุย):
+`เครดิตของรอบ = (prompt × 0.15 + (response + thoughts) × 0.60) × 1.25` ปัดขึ้น — น้ำหนัก 0.15/0.60 คือของแชท LYNX (`CREDIT_WEIGHTS`) คูณ 1.25 (`TUTOR_CREDIT_MULTIPLIER` ปรับได้ 1–5)
+- "รอบ" = ตัวเลข `usageMetadata` ที่ Google ส่งมากับ `turnComplete`; `prompt` เป็นบริบททั้งก้อนของรอบนั้น (Gemini Live คิดบริบทใหม่ทุกรอบ — ข้อมูลจากชุมชนผู้ใช้ Google ยังไม่ใช่เอกสารทางการ **ต้องเทียบกับบิลจริงบน Preview**)
+- ป้องกันตัวเลขที่หน้าเว็บส่งมา: เลขรอบ (`seq`) ต้องเพิ่มขึ้นเสมอ (ส่งซ้ำไม่หักซ้ำ), ต่อรอบไม่เกิน 4,000 เครดิต, ต่อรายงานไม่เกิน 12,000, ขั้นต่ำ **120 เครดิต/นาที** ที่เปิดคุยอยู่ (20 วินาทีแรกฟรี), เปิดได้ทีละ 1 การคุย, เริ่มได้ไม่เกิน 20 ครั้ง/ชั่วโมง, token ของ Google หมดอายุ 34 นาที
+- เริ่มได้เมื่อเหลืออย่างน้อย 1,500 เครดิต; หยุดเมื่อเหลือน้อยกว่า 150 หรือครบ 30 นาที (`stop: true`)
+- การคุยที่หน้าเว็บหายไป (ปิดแท็บ) ถูกปิดโดย cron ทุก 5 นาที (หรือตอนเริ่มครั้งใหม่) และคิดขั้นต่ำตามเวลาที่หน้ายังรายงาน
+
+**Endpoint** (cookie + CSRF ตามปกติ, ข้อความผิดพลาดเป็นภาษาไทย):
+
+| | |
+|---|---|
+| `GET /tutor` | `{ open, allowed, canStart, blocked: null\|"closed"\|"plan"\|"quota"\|"credits", conversations: {limit, used, period}, modes: [{id,label}], credits: {available, dailyLimit, usedToday, minToStart, perMinuteGuide, multiplier}, limits: {maxSessionMin, heartbeatMs} }` |
+| `POST /tutor/sessions` | body `{ mode?: "live"\|"extended", subjectId?, lessonNo? }` → 201 `{ session: {id, mode, label, startedAt, maxSessionMs, heartbeatMs, expiresAt}, connection: {token, wsUrl, locked, setup, newSessionBy}, context: {subject, lesson}, credits }`. หน้าเว็บเปิด `wsUrl?access_token=<token>` แล้วส่ง `{ setup }` ตามที่ได้ (ถ้า `locked:false` Google ไม่รับ constraint: token ธรรมดา ใช้ `setup` เดิม). ข้อผิดพลาด: 403 `FEATURE_FORBIDDEN` (FREE), 429 `FEATURE_QUOTA_EXCEEDED`, 429 `INSUFFICIENT_CREDITS` (+`credits`), 429 `RATE_LIMITED`, 503 `TUTOR_DISABLED` / `TUTOR_NOT_CONFIGURED`, 502 `TUTOR_UNAVAILABLE`, 409 `TUTOR_SESSION_OPEN` |
+| `POST /tutor/sessions/:id/usage` | body `{ turns: [{seq, prompt, response, thoughts}] }` (ว่าง = heartbeat ทุก 15 วินาที) → `{ session, ackSeq, charged, credits: {available, dailyLimit, usedToday}, stop, reason: null\|"credits"\|"time"\|"disabled"\|"ended", remainingMs }` — รอบที่ `seq ≤ ackSeq` หน้าเว็บทิ้งได้ |
+| `POST /tutor/sessions/:id/end` | body `{ turns?, reason?: "client"\|"credits"\|"time"\|"error"\|"connect_failed" }` → `{ session: {status, creditsCharged, durationSec, turns, tokens}, ackSeq, credits }` (เรียกซ้ำได้) |
+
+`GET /me` เพิ่ม `tutor: { open }` ให้หน้าเว็บรู้ว่าจะแสดงปุ่ม "คุยกับ AI Tutor" หรือไม่ (แพลนดูที่ `entitlements.aiTutor`)
+
+**หน้าเว็บ:** `tutor.html` (+ `js/tutor-*.js`, `css/tutor.css`) — หน้าอิสระแบบ lesson/mock ไม่มีแถบล่างและไม่โหลดแชทลอย LYNX; ปุ่มทางเข้า: การ์ดในหน้าแรก และชิป "AI Tutor" ที่หัวหน้าบทเรียน (พา `s` `l` ไปด้วยให้ Tutor รู้ว่ากำลังเรียนบทไหน) — **ไม่มีใน Mock Exam**
+- ไมค์: PCM 16 kHz; ลำโพง: PCM 24 kHz; กล้อง: ส่งเฟรมย่อ JPEG เมื่อภาพเปลี่ยนเท่านั้น (ทุกเฟรมอยู่ในบริบทและถูกคิดเครดิตซ้ำทุกรอบ); แนบ: รูป (ย่อเป็น JPEG), PDF (ดึงข้อความด้วย pdf.js ในเบราว์เซอร์), ไฟล์ข้อความ (ตัดไม่เกิน 8,000 ตัวอักษร)
+- เนื้อหาบทสนทนาไม่ถูกเก็บที่ใดเลย (ไม่ลง DB ไม่ลงเบราว์เซอร์)
+
+**หมายเหตุความเป็นส่วนตัว:** เสียง ภาพ และไฟล์ของนักเรียนถูกส่งให้ Google Gemini ถ้าใช้คีย์ระดับฟรีของ Google AI Studio ข้อมูลอาจถูก Google นำไปปรับปรุงผลิตภัณฑ์ — ควรใช้คีย์ของโปรเจกต์ที่เปิดบิล (`GEMINI_LIVE_API_KEY`) ก่อนเปิดให้นักเรียนจริง
 
 ---
 

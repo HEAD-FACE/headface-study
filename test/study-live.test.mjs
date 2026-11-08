@@ -273,7 +273,7 @@ describe('การเชื่อมหน้า', () => {
         const m = /const FLOW_PAGE_PATTERN = (\/.*\/);/.exec(main);
         assert.ok(m, 'พบ FLOW_PAGE_PATTERN');
         const re = eval(m[1]); // eslint-disable-line no-eval
-        for (const page of ['lesson', 'mock-exam', 'report']) assert.equal(re.test(`/${page}.html?s=sci`), true, page);
+        for (const page of ['lesson', 'mock-exam', 'report', 'tutor']) assert.equal(re.test(`/${page}.html?s=sci`), true, page);
         for (const page of ['index', 'subject', 'progress']) assert.equal(re.test(`/${page}.html`), false, page);
         assert.equal(re.test('/course.html?s=sci'), false, 'course.html');
     });

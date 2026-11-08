@@ -928,3 +928,17 @@ nav a * { pointer-events: none !important; }
 .mp-row .bar > i { background: var(--bar); }
 .mp-row .mp-n { flex: none; font-size: 16px; font-weight: 800; color: var(--strong); font-variant-numeric: tabular-nums; }
 [hidden] { display: none !important; }
+
+/* ===== ปุ่มคุยกับ AI Tutor (หน้าแรก = .tcta, หัวหน้าบทเรียน = .tt-chip) — ซ่อนจนกว่า js/tutor-entry.js จะเปิดให้เห็น ===== */
+.tcta { display: flex; align-items: center; gap: 14px; min-height: 76px; padding: 12px 14px; background: #fff; border: 2px solid #A7F3D0; border-radius: 20px; box-shadow: 0 4px 0 #A7F3D0; color: #0F172A; text-decoration: none; transition: transform .1s; }
+.tcta:active { transform: translateY(3px); box-shadow: 0 1px 0 #A7F3D0; }
+.tcta-orb { flex: none; width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; background: radial-gradient(circle at 35% 30%, #A7F3D0 0, #34D399 36%, #059669 72%, #047857 100%); box-shadow: 0 6px 14px rgba(5, 150, 105, .3), inset 0 -4px 8px rgba(2, 44, 34, .25); }
+.tcta-t { flex: 1; min-width: 0; }
+.tcta-t b { display: block; font-size: 16px; line-height: 24px; font-weight: 700; }
+.tcta-t span { display: block; font-size: 13px; line-height: 20px; color: #475569; }
+.tcta-tag { flex: none; padding: 2px 10px; border-radius: 999px; background: #EDE9FE; color: #5B21B6; font-size: 12px; line-height: 18px; font-weight: 700; white-space: nowrap; }
+.tcta[hidden], .tcta-tag[hidden], .tt-chip[hidden], .tt-chip-lock[hidden], [data-tutor-entry-section][hidden] { display: none !important; }
+.tt-chip { flex: none; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 12px; border-radius: 999px; background: #ECFDF5; border: 1.5px solid #A7F3D0; color: #065F46; font-size: 13px; line-height: 20px; font-weight: 700; white-space: nowrap; text-decoration: none; }
+.tt-chip:active { background: #D1FAE5; }
+.tt-chip-lock { padding: 0 6px; border-radius: 8px; background: #EDE9FE; color: #5B21B6; font-size: 12px; font-style: normal; font-weight: 700; }
+@media (max-width: 360px) { .tt-chip span { display: none; } .tt-chip { padding: 0 11px; } .tt-chip-lock { display: none; } }

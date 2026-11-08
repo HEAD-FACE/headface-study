@@ -228,6 +228,16 @@
       </section>
 
       <!-- ============================================== -->
+      <!-- คุยกับ AI Tutor: ซ่อนไว้จนกว่า GET /me จะบอกว่าเปิดใช้ในสภาพแวดล้อมนี้ (js/tutor-entry.js) -->
+      <section class="pad sec" style="margin-top:14px" aria-label="AI Tutor" data-tutor-entry-section hidden>
+        <a class="tcta" href="tutor.html" data-tutor-entry>
+          <span class="tcta-orb" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5a3 3 0 0 1 3 -3a3 3 0 0 1 3 3v5a3 3 0 0 1 -3 3a3 3 0 0 1 -3 -3z"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M8 21h8"/><path d="M12 17v4"/></svg></span>
+          <span class="tcta-t"><b>คุยกับ AI Tutor</b><span>ถามด้วยเสียง เปิดกล้องให้ดูโจทย์ หรือส่งรูป/ไฟล์ให้ช่วยอธิบาย</span></span>
+          <span class="tcta-tag" data-tutor-locked hidden>PLUS · MAX</span>
+        </a>
+      </section>
+
+      <!-- ============================================== -->
       <!-- ส่วนรายวิชาหลัก (6 รายวิชา) -->
       <!-- ============================================== -->
       <section class="pad sec" style="margin-top:14px" aria-labelledby="h-subj">
@@ -463,6 +473,7 @@
   <script type="module" src="js/api-client.js"></script>
   <script type="module" src="js/study-hydrate.js"></script>
   <script type="module" src="js/study-identity-boot.js"></script>
+  <script type="module" src="js/tutor-entry.js"></script>
   <script src="js/main.js"></script>
   <!-- LYNX: แชทลอย (โหลดจากเว็บหลัก) -->
   <script type="module" src="js/lynx-loader.js"></script>

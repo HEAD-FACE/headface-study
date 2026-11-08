@@ -48,6 +48,8 @@
         <p id="eyebrow" class="fbar-e"></p>
         <h1 id="pageTitle" class="fbar-h ld-e" style="--w:9em"></h1>
       </div>
+      <!-- คุยกับ AI Tutor เรื่องบทนี้: ซ่อนไว้จนกว่า GET /me จะบอกว่าเปิดใช้ในสภาพแวดล้อมนี้ (js/tutor-entry.js) -->
+      <a class="tt-chip" data-tutor-entry data-tutor-context href="tutor.html" hidden aria-label="คุยกับ AI Tutor เรื่องบทนี้"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5a3 3 0 0 1 3 -3a3 3 0 0 1 3 3v5a3 3 0 0 1 -3 3a3 3 0 0 1 -3 -3z"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M8 21h8"/><path d="M12 17v4"/></svg><span>AI Tutor</span><i class="tt-chip-lock" data-tutor-locked hidden>PLUS</i></a>
       <div id="barRight"></div>
     </div>
   </header>
@@ -61,6 +63,7 @@
   <script type="module" src="js/api-client.js"></script>
   <script src="js/main.js"></script>
   <script type="module" src="js/study-flow.js"></script>
+  <script type="module" src="js/tutor-entry.js"></script>
   <!-- LYNX: แชทลอย (โหลดจากเว็บหลัก) -->
   <script type="module" src="js/lynx-loader.js"></script>
 </body>
