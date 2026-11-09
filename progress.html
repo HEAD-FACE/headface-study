@@ -22,6 +22,8 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
   <script src="/js/pwa.js" defer></script>
+  <!-- ธีมสว่าง/มืด: ตั้ง data-theme ที่ <html> ก่อนวาดหน้า (ตรงกับเว็บหลัก) -->
+  <script src="/js/theme.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>HEADFACE Study - ความคืบหน้า & Leaderboard</title>
   
@@ -84,6 +86,8 @@
   <!-- Instant Preload for Smooth Barba Transitions -->
   <link rel="prefetch" href="index.html">
   <link rel="prefetch" href="subject.html">
+  <link rel="stylesheet" href="css/settings.css">
+  <link rel="stylesheet" href="css/dark.css">
 </head>
 <body class="bg-[#EEF4F8] text-slate-800 antialiased selection:bg-mint-200">
 
@@ -109,7 +113,7 @@
       <!-- ขวา: ไอคอนตั้งค่า และ โปรไฟล์ (อยู่ในแนวเดียวกับชื่อหน้า และอยู่นิ่งไม่ขยับ) -->
       <div class="hdr-act">
         <!-- ปุ่มการตั้งค่า (Settings) -->
-        <button type="button" class="icon-btn" title="การตั้งค่า" aria-label="การตั้งค่า">
+        <button type="button" class="icon-btn" title="การตั้งค่า" aria-label="การตั้งค่า" aria-haspopup="dialog" data-settings-open>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14.647 4.081a.724 .724 0 0 0 1.08 .448c2.439 -1.485 5.23 1.305 3.745 3.744a.724 .724 0 0 0 .447 1.08c2.775 .673 2.775 4.62 0 5.294a.724 .724 0 0 0 -.448 1.08c1.485 2.439 -1.305 5.23 -3.744 3.745a.724 .724 0 0 0 -1.08 .447c-.673 2.775 -4.62 2.775 -5.294 0a.724 .724 0 0 0 -1.08 -.448c-2.439 1.485 -5.23 -1.305 -3.745 -3.744a.724 .724 0 0 0 -.447 -1.08c-2.775 -.673 -2.775 -4.62 0 -5.294a.724 .724 0 0 0 .448 -1.08c-1.485 -2.439 1.305 -5.23 3.744 -3.745a.722 .722 0 0 0 1.08 -.447c.673 -2.775 4.62 -2.775 5.294 0zm-2.647 4.919a3 3 0 1 0 0 6a3 3 0 0 0 0 -6" /></svg>
         </button>
 
@@ -270,6 +274,7 @@
   <script type="module" src="js/api-client.js"></script>
   <script type="module" src="js/study-hydrate.js"></script>
   <script type="module" src="js/study-identity-boot.js"></script>
+  <script type="module" src="js/study-settings.js"></script>
   <script src="js/main.js"></script>
   <!-- LYNX: แชทลอย (โหลดจากเว็บหลัก) -->
   <script type="module" src="js/lynx-loader.js"></script>

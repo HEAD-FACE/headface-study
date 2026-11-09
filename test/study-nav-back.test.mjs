@@ -36,9 +36,11 @@ describe('ปุ่มกลับ Dashboard ที่แถบล่าง', ()
         assert.match(authInit.slice(0, 400), /initDashboardLink\(\);/, 'ต้องถูกเรียกใน initAuth');
     });
 
-    test('CSS: ปุ่มเล็กกว่าเมนูอื่น และจอแคบไม่ล้น', () => {
+    test('CSS: 4 ช่องกว้างเท่ากัน ปุ่มกลับขนาดเท่าเมนูอื่น (ไม่เบียดชิดขอบ) และมีเส้นคั่นจากเมนูของ Study', () => {
         const css = read('css/style.css');
-        assert.match(css, /\.nav-back\s*\{[^}]*min-width:\s*56px/);
-        assert.match(css, /@media \(max-width: 380px\)[^{]*\{\s*\.nav-in \.nav-i:not\(\.nav-back\)/);
+        assert.match(css, /\.nav-in\s*\{[^}]*grid-template-columns:\s*repeat\(4, minmax\(0, 1fr\)\)/);
+        assert.doesNotMatch(css, /\.nav-back\s+\.nav-pill\s*\{[^}]*width:/, 'ไอคอนต้องกว้างเท่าเมนูอื่น');
+        assert.doesNotMatch(css, /\.nav-back\s*\{[^}]*min-width/);
+        assert.match(css, /\.nav-back::after/);
     });
 });

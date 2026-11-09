@@ -1,0 +1,31 @@
+/* ปรับธีมมืดเฉพาะจุดที่การแปลงอัตโนมัติ (scripts/gen-dark-css.mjs) ทำไม่ได้หรือไม่พอ — ต่อท้าย css/dark.css ตามลำดับนี้ */
+
+html[data-theme="dark"] { color-scheme: dark; background: #0B1220; }
+
+/* หน้าที่ใช้ Tailwind: พื้นและตัวอักษรของ wrapper มาจากคลาสใน HTML (bg-[#EEF4F8], text-slate-800) */
+html[data-theme="dark"] body,
+html[data-theme="dark"] [class~="bg-[#EEF4F8]"] { background-color: #0B1220; color: #F1F5F9; }
+html[data-theme="dark"] .text-slate-800 { color: #F1F5F9; }
+
+/* ภาพประกอบ SVG ของเนื้อหา (ฉากหลังโปร่งใส ตัวเส้นเข้ม) ต้องวางบนพื้นสว่างเพื่อให้ยังอ่านออก */
+html[data-theme="dark"] .rfig.has-media,
+html[data-theme="dark"] .rfig img,
+html[data-theme="dark"] .choice-img { background-color: #F8FAFC; }
+
+/* โครงเปล่าตอนรอข้อมูล: แถบแสงวิ่งต้อง "สว่างกว่า" พื้นเล็กน้อย (การแปลงอัตโนมัติสลับเป็นเข้มกว่า) */
+html[data-theme="dark"] { --skl-a: #1E293B; --skl-b: #2B3A52; }
+
+/* คำพูดของเราลอยอยู่: เงาเรืองสีขาวของธีมสว่างกลายเป็นรัศมีขาวบนพื้นมืด จึงเอาออก */
+html[data-theme="dark"] .tt-line.you { text-shadow: none; }
+
+/* สีที่เขียนเป็น style="..." ในไฟล์ JS/HTML (การแปลงอัตโนมัติอ่านเฉพาะไฟล์ .css) — ต้อง !important เพราะ inline ชนะทุกอย่าง */
+html[data-theme="dark"] [style*="color:#475569"] { color: #A7B3C6 !important; }
+html[data-theme="dark"] [style*="color:#047857"] { color: #6EE7B7 !important; }
+html[data-theme="dark"] [style*="color:#B45309"] { color: #FBBF24 !important; }
+html[data-theme="dark"] [style*="color:#C2410C"] { color: #FB923C !important; }
+html[data-theme="dark"] [style*="color:#0369A1"] { color: #7DD3FC !important; }
+html[data-theme="dark"] [style*="background:#fff;"] { background: #1A2132 !important; }
+html[data-theme="dark"] .demo-note[style*="background:#FFF1F2"] { background: #3B1219 !important; color: #FDA4AF !important; }
+
+/* ปุ่มที่เลือกอยู่ในตัวเลือกธีมของหน้าต่างตั้งค่า: ต้องเด่นกว่ารางเล็กน้อยในธีมมืด */
+html[data-theme="dark"] .st-seg button[aria-checked="true"] { background: #2A3A55; color: #6EE7B7; box-shadow: none; }

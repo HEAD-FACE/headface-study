@@ -341,11 +341,15 @@ export async function mountTutorPage({
         updateFeedHints();
     }
 
+    // ผู้ใช้เลื่อน "ขึ้น" = หยุดตาม; ถึงล่างสุด = ตามต่อ (การเลื่อนลงอัตโนมัติไม่ทำให้หยุดตามแม้เครื่องช้า)
+    let lastTop = 0;
     function onFeedScroll() {
-        if (Date.now() < autoUntil) return;
         const log = $('#log');
         if (!log) return;
-        pinned = log.scrollHeight - log.scrollTop - log.clientHeight < 72;
+        const top = log.scrollTop;
+        if (log.scrollHeight - top - log.clientHeight < 72) pinned = true;
+        else if (top < lastTop - 2) pinned = false;
+        lastTop = top;
         updateFeedHints();
     }
 
@@ -500,7 +504,10 @@ export async function mountTutorPage({
         dock.hidden = false;
         dock.innerHTML = renderDock();
         media.attachVideo?.($('#camVideo'));
-        $('#log')?.addEventListener('scroll', onFeedScroll, { passive: true });
+        const feed = $('#log');
+        feed?.addEventListener('scroll', onFeedScroll, { passive: true });
+        // ช่องพิมพ์เปิด/ปิด หรือหมุนจอ: ขนาดฟีดเปลี่ยน ถ้ากำลังตามข้อความล่าสุดอยู่ให้อยู่ล่างสุดต่อ
+        if (typeof win.ResizeObserver === 'function' && feed) new win.ResizeObserver(() => { if (pinned) followFeed(false); }).observe(feed);
         bindLive(); // ปุ่มไมค์จะถูกตั้งตามจริงโดยเหตุการณ์ 'mic' ที่ live.start ส่งหลังขออนุญาตไมค์
         try {
             await live.start({ mode: sessionMode, subjectId: ctx.subjectId, lessonNo: ctx.lessonNo, mic: wantMic, camera: wantCam });

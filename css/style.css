@@ -773,22 +773,21 @@ body {
   border-radius: 24px 24px 0 0;
   box-shadow: 0 -6px 24px rgba(15, 23, 42, .08);
 }
-.nav-in { display: flex; align-items: center; justify-content: space-around; max-width: 28rem; margin: 0 auto; }
-.nav-i { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 88px; min-height: 56px; color: #475569; }
+/* 4 ช่องกว้างเท่ากัน (ปุ่มกลับ Dashboard + 3 เมนูของ Study): ไอคอน/ป้ายอยู่กึ่งกลางช่องของตัวเอง ระยะห่างสม่ำเสมอทุกขนาดจอ */
+.nav-in { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: start; max-width: 28rem; margin: 0 auto; }
+.nav-i { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 0; min-height: 56px; color: #475569; }
 .nav-i:active { transform: scale(.96); }
 .nav-pill { width: 56px; height: 32px; border-radius: 16px; display: flex; align-items: center; justify-content: center; transition: background-color .15s; }
-.nav-l { font-size: 12px; line-height: 18px; font-weight: 600; }
+.nav-l { max-width: 100%; font-size: 12px; line-height: 18px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .nav-i.on { color: #065F46; }
 .nav-i.on .nav-pill { background: #D1FAE5; }
 .nav-i.on .nav-l { font-weight: 700; }
-/* ปุ่ม "<" กลับ Dashboard ของเว็บหลัก: ชิดซ้ายสุดของแถบ เล็กกว่าเมนูอื่น และไม่ใช่หน้าที่เปิดอยู่ (ไม่มีสถานะ .on) */
-.nav-back { min-width: 56px; flex: none; color: #64748B; }
-.nav-back .nav-pill { width: 40px; background: #F1F5F9; }
+/* ปุ่ม "<" กลับ Dashboard ของเว็บหลัก: ขนาดเท่าเมนูอื่น (ไม่เล็กกว่า ไม่ชิดขอบ) สีเทาเพราะไม่ใช่หน้าของ Study และมีเส้นบางคั่นจากเมนูของ Study */
+.nav-back { color: #64748B; }
+.nav-back .nav-pill { background: #F1F5F9; }
+.nav-back::after { content: ""; position: absolute; right: 0; top: 4px; width: 1.5px; height: 40px; border-radius: 2px; background: #E2E8F0; }
 .nav-back:hover .nav-pill, .nav-back:focus-visible .nav-pill { background: #E2E8F0; color: #0F172A; }
 .nav-back:focus-visible { outline: 2px solid #059669; outline-offset: 2px; border-radius: 12px; }
-.nav-back .nav-l { font-size: 11px; }
-/* จอแคบ (≤ 380px): เมนูหลัก 3 อันหดลงเพื่อให้แถบไม่ล้นจอเมื่อมีปุ่ม "<" เพิ่ม */
-@media (max-width: 380px) { .nav-in .nav-i:not(.nav-back) { min-width: 0; flex: 1 1 0; } }
 /* บังคับให้ลูกๆ ของเมนู Nav ทะลุการคลิก */
 nav a * { pointer-events: none !important; }
 
