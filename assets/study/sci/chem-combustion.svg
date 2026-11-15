@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 416" role="img" aria-label="เปรียบเทียบการเผาไหม้ การเผาไหม้สมบูรณ์เปลวไฟสีฟ้า ออกซิเจนพอ ได้คาร์บอนไดออกไซด์กับน้ำ ส่วนการเผาไหม้ไม่สมบูรณ์เปลวไฟสีเหลืองส้ม ออกซิเจนไม่พอ ได้คาร์บอนมอนอกไซด์ น้ำ และเขม่า">
+  <defs><marker id="ar" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#475569"/></marker></defs>
+  <rect width="480" height="416" rx="22" fill="#FFFFFF"/>
+  <g font-family="Prompt, 'Noto Sans Thai', 'Leelawadee UI', Tahoma, sans-serif" text-anchor="middle">
+
+    <rect x="14" y="14" width="452" height="190" rx="18" fill="#E0F2FE" stroke="#0284C7" stroke-width="2.5"/>
+    <text x="240" y="48" font-size="22" font-weight="800" fill="#0C4A6E" text-anchor="middle">เผาไหม้สมบูรณ์</text>
+    <g transform="translate(112 114) scale(0.9)"><path d="M0 -50C22 -26 32 -6 32 16A32 32 0 0 1 -32 16C-32 -6 -22 -26 0 -50Z" fill="#38BDF8"/><path d="M0 -20C12 -8 17 4 17 16A17 17 0 0 1 -17 16C-17 4 -12 -8 0 -20Z" fill="#E0F2FE"/></g>
+    <text x="112" y="190" font-size="17" font-weight="700" fill="#0C4A6E" text-anchor="middle">ออกซิเจนเพียงพอ</text>
+    <path d="M178 118H228" stroke="#475569" stroke-width="3.5" stroke-linecap="round" marker-end="url(#ar)"/>
+    <rect x="240" y="78" width="212" height="82" rx="14" fill="#FFFFFF" stroke="#0284C7" stroke-width="2"/>
+    <text x="346" y="118" font-size="20" font-weight="800" fill="#0F172A" text-anchor="middle">CO<tspan baseline-shift="sub" font-size="70%">2</tspan> + H<tspan baseline-shift="sub" font-size="70%">2</tspan>O</text><text x="346" y="144" font-size="16" font-weight="700" fill="#0369A1" text-anchor="middle">+ พลังงานมาก</text>
+    <text x="346" y="190" font-size="17" font-weight="700" fill="#0C4A6E" text-anchor="middle">เปลวสีฟ้า ไม่มีเขม่า</text>
+    <rect x="14" y="212" width="452" height="190" rx="18" fill="#FEF3C7" stroke="#D97706" stroke-width="2.5"/>
+    <text x="240" y="246" font-size="22" font-weight="800" fill="#78350F" text-anchor="middle">เผาไหม้ไม่สมบูรณ์</text>
+    <g transform="translate(112 312) scale(0.9)"><path d="M0 -50C22 -26 32 -6 32 16A32 32 0 0 1 -32 16C-32 -6 -22 -26 0 -50Z" fill="#F59E0B"/><path d="M0 -20C12 -8 17 4 17 16A17 17 0 0 1 -17 16C-17 4 -12 -8 0 -20Z" fill="#FDE047"/></g><circle cx="66" cy="296" r="6" fill="#475569"/><circle cx="158" cy="304" r="5" fill="#64748B"/><circle cx="88" cy="278" r="4" fill="#94A3B8"/>
+    <text x="112" y="388" font-size="17" font-weight="700" fill="#78350F" text-anchor="middle">ออกซิเจนไม่พอ</text>
+    <path d="M178 316H228" stroke="#475569" stroke-width="3.5" stroke-linecap="round" marker-end="url(#ar)"/>
+    <rect x="240" y="276" width="212" height="82" rx="14" fill="#FFFFFF" stroke="#D97706" stroke-width="2"/>
+    <text x="346" y="316" font-size="20" font-weight="800" fill="#0F172A" text-anchor="middle">CO + H<tspan baseline-shift="sub" font-size="70%">2</tspan>O</text><text x="346" y="342" font-size="16" font-weight="700" fill="#B45309" text-anchor="middle">+ เขม่า + ควันดำ</text>
+    <text x="346" y="388" font-size="17" font-weight="700" fill="#78350F" text-anchor="middle">CO เป็นแก๊สพิษ</text>
+  </g>
+</svg>

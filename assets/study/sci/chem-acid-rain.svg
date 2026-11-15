@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 520" role="img" aria-label="ฝนกรด แก๊สซัลเฟอร์ไดออกไซด์จากโรงงานและไนโตรเจนออกไซด์จากรถยนต์ ลอยขึ้นไปทำปฏิกิริยากับน้ำและออกซิเจนในอากาศ ได้กรดซัลฟิวริกและกรดไนตริก ตกลงมาพร้อมฝนที่มีค่า pH ต่ำกว่า 5.6">
+  <defs><marker id="ar" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#475569"/></marker></defs>
+  <rect width="480" height="520" rx="22" fill="#FFFFFF"/>
+  <g font-family="Prompt, 'Noto Sans Thai', 'Leelawadee UI', Tahoma, sans-serif" text-anchor="middle">
+<text x="240" y="38" font-size="24" font-weight="800" fill="#0F172A" text-anchor="middle">ฝนกรดเกิดได้อย่างไร</text>
+    <g transform="translate(40 78)"><rect x="0" y="22" width="86" height="48" fill="#64748B"/><rect x="10" y="0" width="14" height="30" fill="#475569"/><rect x="40" y="6" width="14" height="24" fill="#475569"/><rect x="12" y="40" width="12" height="12" fill="#FDE68A"/><rect x="36" y="40" width="12" height="12" fill="#FDE68A"/><rect x="60" y="40" width="12" height="12" fill="#FDE68A"/><circle cx="18" cy="-10" r="8" fill="#CBD5E1"/><circle cx="48" cy="-4" r="7" fill="#CBD5E1"/></g><g transform="translate(300 96)"><path d="M0 30H100V18Q100 12 92 10L74 6Q66 -8 52 -8H34Q22 -8 16 6L8 10Q0 12 0 18Z" fill="#EF4444"/><circle cx="24" cy="32" r="10" fill="#1E293B"/><circle cx="78" cy="32" r="10" fill="#1E293B"/><path d="M28 4H48V-4H34Z" fill="#E0F2FE"/><circle cx="110" cy="30" r="6" fill="#CBD5E1"/></g>
+    <text x="84" y="184" font-size="18" font-weight="800" fill="#475569" text-anchor="middle">SO<tspan baseline-shift="sub" font-size="70%">2</tspan></text><text x="350" y="184" font-size="18" font-weight="800" fill="#475569" text-anchor="middle">NOx</text>
+    <path d="M84 196L160 240M350 196L300 240" stroke="#475569" stroke-width="3.5" stroke-linecap="round" marker-end="url(#ar)"/>
+    <g transform="translate(240 262)"><circle cx="-46" cy="6" r="30" fill="#94A3B8"/><circle cx="-8" cy="-12" r="38" fill="#94A3B8"/><circle cx="36" cy="2" r="32" fill="#94A3B8"/><rect x="-76" y="6" width="140" height="28" rx="14" fill="#94A3B8"/></g>
+    <text x="240" y="322" font-size="17" font-weight="700" fill="#334155" text-anchor="middle">+ น้ำ (H<tspan baseline-shift="sub" font-size="70%">2</tspan>O) + ออกซิเจน (O<tspan baseline-shift="sub" font-size="70%">2</tspan>)</text>
+    <path d="M240 334V366" stroke="#475569" stroke-width="3.5" stroke-linecap="round" marker-end="url(#ar)"/>
+    <rect x="30" y="372" width="196" height="74" rx="14" fill="#FEE2E2" stroke="#DC2626" stroke-width="2.5"/>
+    <text x="128" y="402" font-size="18" font-weight="800" fill="#991B1B" text-anchor="middle">กรดซัลฟิวริก</text><text x="128" y="430" font-size="19" font-weight="800" fill="#991B1B" text-anchor="middle">H<tspan baseline-shift="sub" font-size="70%">2</tspan>SO<tspan baseline-shift="sub" font-size="70%">4</tspan></text>
+    <rect x="254" y="372" width="196" height="74" rx="14" fill="#FFEDD5" stroke="#EA580C" stroke-width="2.5"/>
+    <text x="352" y="402" font-size="18" font-weight="800" fill="#9A3412" text-anchor="middle">กรดไนตริก</text><text x="352" y="430" font-size="19" font-weight="800" fill="#9A3412" text-anchor="middle">HNO<tspan baseline-shift="sub" font-size="70%">3</tspan></text>
+    <rect x="90" y="462" width="300" height="42" rx="21" fill="#0F172A"/>
+    <text x="240" y="490" font-size="19" font-weight="800" fill="#FDE047" text-anchor="middle">ตกลงมาพร้อมฝน  pH &lt; 5.6</text>
+  </g>
+</svg>

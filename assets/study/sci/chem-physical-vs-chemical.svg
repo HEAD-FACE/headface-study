@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 440" role="img" aria-label="ตารางเปรียบเทียบการเปลี่ยนแปลงทางกายภาพกับทางเคมี ทางกายภาพไม่เกิดสารใหม่ สูตรเคมีไม่เปลี่ยน ย้อนกลับง่าย พลังงานไม่เด่น เช่น หลอมละลาย ส่วนทางเคมีเกิดสารใหม่ สูตรเปลี่ยน ย้อนกลับยาก พลังงานเปลี่ยนชัดเจน เช่น เผาไหม้ เป็นสนิม">
+  <defs></defs>
+  <rect width="480" height="440" rx="22" fill="#FFFFFF"/>
+  <g font-family="Prompt, 'Noto Sans Thai', 'Leelawadee UI', Tahoma, sans-serif" text-anchor="middle">
+<text x="240" y="38" font-size="24" font-weight="800" fill="#0F172A" text-anchor="middle">การเปลี่ยนแปลงทางกายภาพ vs ทางเคมี</text>
+    <rect x="150" y="60" width="150" height="46" rx="12" fill="#2563EB"/><text x="225" y="90" font-size="19" font-weight="800" fill="#FFFFFF" text-anchor="middle">กายภาพ</text>
+    <rect x="312" y="60" width="154" height="46" rx="12" fill="#DC2626"/><text x="389" y="90" font-size="19" font-weight="800" fill="#FFFFFF" text-anchor="middle">เคมี</text>    <rect x="14" y="118" width="452" height="54" rx="12" fill="#F1F5F9"/>
+    <text x="26" y="152" font-size="18" font-weight="800" fill="#0F172A" text-anchor="start">สารใหม่</text>
+    <text x="225" y="152" font-size="17" font-weight="700" fill="#1D4ED8" text-anchor="middle">✗  ไม่เกิด</text><text x="389" y="152" font-size="17" font-weight="700" fill="#B91C1C" text-anchor="middle">✓  เกิด</text>
+    <rect x="14" y="180" width="452" height="54" rx="12" fill="#F8FAFC"/>
+    <text x="26" y="214" font-size="18" font-weight="800" fill="#0F172A" text-anchor="start">สูตรเคมีเปลี่ยน</text>
+    <text x="225" y="214" font-size="17" font-weight="700" fill="#1D4ED8" text-anchor="middle">✗  ไม่เปลี่ยน</text><text x="389" y="214" font-size="17" font-weight="700" fill="#B91C1C" text-anchor="middle">✓  เปลี่ยน</text>
+    <rect x="14" y="242" width="452" height="54" rx="12" fill="#F1F5F9"/>
+    <text x="26" y="276" font-size="18" font-weight="800" fill="#0F172A" text-anchor="start">ย้อนกลับ</text>
+    <text x="225" y="276" font-size="17" font-weight="700" fill="#1D4ED8" text-anchor="middle">ทำได้ง่าย</text><text x="389" y="276" font-size="17" font-weight="700" fill="#B91C1C" text-anchor="middle">ทำได้ยาก</text>
+    <rect x="14" y="304" width="452" height="54" rx="12" fill="#F8FAFC"/>
+    <text x="26" y="338" font-size="18" font-weight="800" fill="#0F172A" text-anchor="start">พลังงาน</text>
+    <text x="225" y="338" font-size="17" font-weight="700" fill="#1D4ED8" text-anchor="middle">ไม่เด่นชัด</text><text x="389" y="338" font-size="17" font-weight="700" fill="#B91C1C" text-anchor="middle">เปลี่ยนชัดเจน</text>
+    <rect x="14" y="366" width="452" height="54" rx="12" fill="#F1F5F9"/>
+    <text x="26" y="400" font-size="18" font-weight="800" fill="#0F172A" text-anchor="start">ตัวอย่าง</text>
+    <text x="225" y="400" font-size="17" font-weight="700" fill="#1D4ED8" text-anchor="middle">หลอม ละลาย</text><text x="389" y="400" font-size="17" font-weight="700" fill="#B91C1C" text-anchor="middle">เผาไหม้ เป็นสนิม</text>
+
+  </g>
+</svg>

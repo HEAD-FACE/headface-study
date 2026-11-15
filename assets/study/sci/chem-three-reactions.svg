@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 470" role="img" aria-label="สรุปสามปฏิกิริยา สะเทินคือกรดกับเบสได้เกลือและน้ำ เอสเทอริฟิเคชันคือกรดกับแอลกอฮอล์ได้เอสเทอร์และน้ำ สะปอนนิฟิเคชันคือเอสเทอร์หรือไขมันกับเบสได้สบู่และกลีเซอรอล">
+  <defs><marker id="ar" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#475569"/></marker></defs>
+  <rect width="480" height="470" rx="22" fill="#FFFFFF"/>
+  <g font-family="Prompt, 'Noto Sans Thai', 'Leelawadee UI', Tahoma, sans-serif" text-anchor="middle">
+<text x="240" y="38" font-size="24" font-weight="800" fill="#0F172A" text-anchor="middle">สรุป 3 ปฏิกิริยาที่เกี่ยวข้องกัน</text>
+    
+    <rect x="14" y="56" width="452" height="124" rx="16" fill="#FEE2E2" stroke="#DC2626" stroke-width="2.5"/>
+    <text x="30" y="90" font-size="20" font-weight="800" fill="#991B1B" text-anchor="start">สะเทิน</text>
+    <rect x="26" y="106" width="170" height="52" rx="12" fill="#FFFFFF" stroke="#DC2626" stroke-width="2"/><text x="111" y="139" font-size="17" font-weight="800" fill="#0F172A" text-anchor="middle">กรด + เบส</text>
+    <path d="M200 132H252" stroke="#475569" stroke-width="3.5" stroke-linecap="round" marker-end="url(#ar)"/>
+    <rect x="260" y="106" width="190" height="52" rx="12" fill="#FFFFFF" stroke="#DC2626" stroke-width="2"/><text x="355" y="139" font-size="17" font-weight="800" fill="#0F172A" text-anchor="middle">เกลือ + น้ำ</text>
+    <text x="450" y="90" font-size="15" font-weight="700" fill="#991B1B" text-anchor="end">ลดความเป็นกรด–เบส</text>
+    
+    <rect x="14" y="192" width="452" height="124" rx="16" fill="#FCE7F3" stroke="#DB2777" stroke-width="2.5"/>
+    <text x="30" y="226" font-size="20" font-weight="800" fill="#9D174D" text-anchor="start">เอสเทอริฟิเคชัน</text>
+    <rect x="26" y="242" width="170" height="52" rx="12" fill="#FFFFFF" stroke="#DB2777" stroke-width="2"/><text x="111" y="275" font-size="17" font-weight="800" fill="#0F172A" text-anchor="middle">กรด + แอลกอฮอล์</text>
+    <path d="M200 268H252" stroke="#475569" stroke-width="3.5" stroke-linecap="round" marker-end="url(#ar)"/>
+    <rect x="260" y="242" width="190" height="52" rx="12" fill="#FFFFFF" stroke="#DB2777" stroke-width="2"/><text x="355" y="275" font-size="17" font-weight="800" fill="#0F172A" text-anchor="middle">เอสเทอร์ + น้ำ</text>
+    <text x="450" y="226" font-size="15" font-weight="700" fill="#9D174D" text-anchor="end">ได้กลิ่นหอม</text>
+    
+    <rect x="14" y="328" width="452" height="124" rx="16" fill="#E0F2FE" stroke="#0284C7" stroke-width="2.5"/>
+    <text x="30" y="362" font-size="20" font-weight="800" fill="#0C4A6E" text-anchor="start">สะปอนนิฟิเคชัน</text>
+    <rect x="26" y="378" width="170" height="52" rx="12" fill="#FFFFFF" stroke="#0284C7" stroke-width="2"/><text x="111" y="411" font-size="17" font-weight="800" fill="#0F172A" text-anchor="middle">เอสเทอร์ + เบส</text>
+    <path d="M200 404H252" stroke="#475569" stroke-width="3.5" stroke-linecap="round" marker-end="url(#ar)"/>
+    <rect x="260" y="378" width="190" height="52" rx="12" fill="#FFFFFF" stroke="#0284C7" stroke-width="2"/><text x="355" y="411" font-size="17" font-weight="800" fill="#0F172A" text-anchor="middle">สบู่ + กลีเซอรอล</text>
+    <text x="450" y="362" font-size="15" font-weight="700" fill="#0C4A6E" text-anchor="end">ทำสบู่</text>
+  </g>
+</svg>
