@@ -1,0 +1,13 @@
+/* ปรับธีมรางวัลเฉพาะจุดที่การแทนสีอัตโนมัติ (scripts/gen-skins-css.mjs) ทำไม่ได้ — ต่อท้าย css/skins.css ตามลำดับนี้ */
+
+/* พื้นหน้าเว็บ: โทนของธีม (หน้า Tailwind ใช้คลาส bg-[#EEF4F8] บน wrapper) */
+html[data-hf-skin]:not([data-theme="dark"]) body,
+html[data-hf-skin]:not([data-theme="dark"]) [data-barba="wrapper"],
+html[data-hf-skin]:not([data-theme="dark"]) [class~="bg-[#EEF4F8]"] { background-color: var(--sk-page); }
+html[data-hf-skin][data-theme="dark"],
+html[data-hf-skin][data-theme="dark"] body,
+html[data-hf-skin][data-theme="dark"] [data-barba="wrapper"],
+html[data-hf-skin][data-theme="dark"] [class~="bg-[#EEF4F8]"] { background-color: var(--sk-d-bg); }
+
+/* ข้อความที่ถูกเลือก และเส้นโฟกัส */
+html[data-hf-skin] ::selection { background: rgb(var(--sk-rgb) / .28); }

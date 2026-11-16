@@ -1,0 +1,456 @@
+/* css/skins.css — ธีมรางวัลของ HEADFACE บน Study (สร้างอัตโนมัติ ห้ามแก้ตรงนี้)
+   แหล่งที่มา: css/*.css + css/dark.css (สีเขียวของแบรนด์ถูกแทนด้วยตัวแปรของธีมโดย scripts/gen-skins-css.mjs)
+   + scripts/skin-themes.mjs (สีและลายของแต่ละธีม ชุดเดียวกับเว็บหลัก) + scripts/skins-manual.css (ปรับเฉพาะจุด)
+   สร้างใหม่: node scripts/gen-skins-css.mjs   ·   ใช้เฉพาะเมื่อ <html data-hf-skin="..."> (js/theme.js ตั้งค่านี้ก่อนวาดหน้า)
+   ไม่มี attribute = หน้าตาปกติของ Study ทุกจุด */
+
+/* ══════════ 1. สีและลายของแต่ละธีม (--sk-* เหมือนเว็บหลัก, --k-xxxxxx = สีที่ใช้แทนสีเขียว #xxxxxx ของ Study) ══════════ */
+/* ทะเลยามเช้า (morning sea): sea-green blue with a warm early light */
+html[data-hf-skin="ocean"] {
+  --sk-50: #ebf8fa;
+  --sk-100: #d4f0f3;
+  --sk-200: #aee3ea;
+  --sk-400: #3db3c2;
+  --sk-500: #1597ab;
+  --sk-600: #0b7f95;
+  --sk-700: #08687a;
+  --sk-rgb: 11 127 149;
+  --sk-200-rgb: 174 227 234;
+  --sk-light-rgb: 120 214 226;
+  --sk-text-dark: #7fd6e3;
+  --sk-page: #eef6f7;
+  --sk-meta: #0b7f95;
+  --sk-glow: #2fb0b5;
+  --sk-spark: #5cc2cc;
+  --sk-lx-accent: #0b7f95;
+  --sk-lx-hover: #096d80;
+  --sk-lx-text: #08687a;
+  --sk-paper-2: #deeef0;
+  --sk-paper-3: #e4f1f3;
+  --sk-line: #c7e2e6;
+  --sk-line-2: #aad2da;
+  --sk-paper-2-rgb: 222 238 240;
+  --sk-d-bg: #07131a;
+  --sk-d-s1: #0d1c24;
+  --sk-d-s2: #12252e;
+  --sk-d-s3: #193039;
+  --sk-d-s4: #213b45;
+  --sk-d-line-2: #374f58;
+  --sk-d-soft: #083844;
+  --sk-d-hover: #a5e2eb;
+  --sk-d-s1-rgb: 13 28 36;
+  --sk-d-s2-rgb: 18 37 46;
+  --sk-d-s3-rgb: 25 48 57;
+  --sk-i1: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 60' preserveAspectRatio='none'%3E%3Cpath d='M0 36C150 18 300 18 450 36S750 56 900 36 1100 18 1200 28' fill='none' stroke='%23fff' stroke-opacity='.2' stroke-width='2'/%3E%3Cpath d='M0 47C200 30 350 33 500 45S800 59 1000 45 1150 37 1200 41' fill='none' stroke='%23fff' stroke-opacity='.11' stroke-width='2'/%3E%3C/svg%3E");
+  --sk-i2: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 60' preserveAspectRatio='none'%3E%3Cpath d='M0 36C150 18 300 18 450 36S750 56 900 36 1100 18 1200 28' fill='none' stroke='%23fff' stroke-opacity='.1' stroke-width='2'/%3E%3C/svg%3E");
+  --sk-base: radial-gradient(130% 160% at 92% -30%, rgba(255, 214, 170, .55), rgba(255, 214, 170, 0) 52%), linear-gradient(160deg, #0a6a80 0%, #0f8aa0 48%, #2fb0b5 100%);
+  --sk-base-dark: radial-gradient(130% 160% at 92% -30%, rgba(255, 196, 150, .16), rgba(255, 196, 150, 0) 52%), linear-gradient(160deg, #052a36 0%, #0a4352 50%, #0e5b67 100%);
+  --sk-band: var(--sk-i1) left bottom / 100% 54px no-repeat, var(--sk-base);
+  --sk-band-dark: var(--sk-i2) left bottom / 100% 54px no-repeat, var(--sk-base-dark);
+  --sk-mini: var(--sk-i1) left bottom / 100% 60% no-repeat, var(--sk-base);
+  --sk-mini-dark: var(--sk-i2) left bottom / 100% 60% no-repeat, var(--sk-base-dark);
+  --k-022c22: 3 40 46;
+  --k-047857: 8 104 122;
+  --k-059669: 11 127 149;
+  --k-064e3b: 5 62 73;
+  --k-065f46: 6 81 95;
+  --k-10b981: 21 151 171;
+  --k-14b8a6: 23 152 172;
+  --k-183f2d: 22 53 60;
+  --k-1c4a32: 28 67 74;
+  --k-255a41: 40 84 93;
+  --k-295b44: 45 86 93;
+  --k-2dd4bf: 57 176 192;
+  --k-346e57: 55 101 110;
+  --k-34d399: 61 179 194;
+  --k-62edc2: 114 201 212;
+  --k-6ee7b7: 118 203 214;
+  --k-7bf0cf: 136 211 220;
+  --k-90efd4: 152 218 226;
+  --k-9ff0da: 165 223 231;
+  --k-a7f3d0: 174 227 234;
+  --k-d1fae5: 212 240 243;
+  --k-e6fbf5: 230 245 247;
+  --k-ecfdf5: 235 248 250;
+}
+
+/* แสงเหนือ (aurora) · PLUS: a night sky in amethyst with slow aurora ribbons and twinkling stars (the art and motion: part 4 below). */
+html[data-hf-skin="aurora"] {
+  --sk-50: #f4effd;
+  --sk-100: #e9defb;
+  --sk-200: #d5c2f6;
+  --sk-400: #a57ee8;
+  --sk-500: #8a5cdb;
+  --sk-600: #7442c8;
+  --sk-700: #5f33a8;
+  --sk-rgb: 116 66 200;
+  --sk-200-rgb: 213 194 246;
+  --sk-light-rgb: 190 160 245;
+  --sk-text-dark: #cbb4ff;
+  --sk-page: #f5f2fc;
+  --sk-meta: #1f1050;
+  --sk-glow: #a57ee8;
+  --sk-spark: #7cf2d4;
+  --sk-lx-accent: #7442c8;
+  --sk-lx-hover: #6439ac;
+  --sk-lx-text: #5f33a8;
+  --sk-paper-2: #ece6f8;
+  --sk-paper-3: #efeafa;
+  --sk-line: #dfd4f3;
+  --sk-line-2: #cebdec;
+  --sk-paper-2-rgb: 236 230 248;
+  --sk-d-bg: #0c0a1a;
+  --sk-d-s1: #141127;
+  --sk-d-s2: #1a1631;
+  --sk-d-s3: #221d3d;
+  --sk-d-s4: #2b2549;
+  --sk-d-line-2: #403b5b;
+  --sk-d-soft: #2f1d55;
+  --sk-d-hover: #dbcbff;
+  --sk-d-s1-rgb: 20 17 39;
+  --sk-d-s2-rgb: 26 22 49;
+  --sk-d-s3-rgb: 34 29 61;
+  --sk-i1: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 260 130'%3E%3Ccircle cx='12' cy='18' r='0.9' fill='%23fff' fill-opacity='0.7'/%3E%3Ccircle cx='48' cy='62' r='0.6' fill='%23fff' fill-opacity='0.45'/%3E%3Ccircle cx='83' cy='24' r='1.1' fill='%23fff' fill-opacity='0.8'/%3E%3Ccircle cx='120' cy='90' r='0.7' fill='%23fff' fill-opacity='0.5'/%3E%3Ccircle cx='150' cy='40' r='0.8' fill='%23fff' fill-opacity='0.6'/%3E%3Ccircle cx='188' cy='14' r='0.6' fill='%23fff' fill-opacity='0.45'/%3E%3Ccircle cx='212' cy='70' r='1' fill='%23fff' fill-opacity='0.7'/%3E%3Ccircle cx='240' cy='108' r='0.7' fill='%23fff' fill-opacity='0.45'/%3E%3Ccircle cx='30' cy='104' r='0.8' fill='%23fff' fill-opacity='0.55'/%3E%3Ccircle cx='100' cy='120' r='0.5' fill='%23fff' fill-opacity='0.4'/%3E%3Ccircle cx='170' cy='100' r='0.6' fill='%23fff' fill-opacity='0.45'/%3E%3Ccircle cx='250' cy='36' r='0.5' fill='%23fff' fill-opacity='0.4'/%3E%3C/svg%3E");
+  --sk-i2: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 250' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='a' x1='0' x2='1' y1='0' y2='0'%3E%3Cstop offset='0' stop-color='%237cf2d4' stop-opacity='0'/%3E%3Cstop offset='.2' stop-color='%237cf2d4'/%3E%3Cstop offset='.55' stop-color='%23a99bff'/%3E%3Cstop offset='.82' stop-color='%23ff9fd8'/%3E%3Cstop offset='1' stop-color='%23ff9fd8' stop-opacity='0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cg fill='none' stroke='url(%23a)' stroke-linecap='round'%3E%3Cpath stroke-width='62' stroke-opacity='0.1' d='M-50 206C200 152 420 238 700 192S1150 150 1650 202'/%3E%3Cpath stroke-width='50.8' stroke-opacity='0.1' d='M-50 206C200 152 420 238 700 192S1150 150 1650 202'/%3E%3Cpath stroke-width='40.9' stroke-opacity='0.1' d='M-50 206C200 152 420 238 700 192S1150 150 1650 202'/%3E%3Cpath stroke-width='31' stroke-opacity='0.1' d='M-50 206C200 152 420 238 700 192S1150 150 1650 202'/%3E%3Cpath stroke-width='22.3' stroke-opacity='0.1' d='M-50 206C200 152 420 238 700 192S1150 150 1650 202'/%3E%3Cpath stroke-width='14.9' stroke-opacity='0.1' d='M-50 206C200 152 420 238 700 192S1150 150 1650 202'/%3E%3Cpath stroke-width='8.1' stroke-opacity='0.1' d='M-50 206C200 152 420 238 700 192S1150 150 1650 202'/%3E%3Cpath stroke-width='48' stroke-opacity='0.065' d='M-50 112C260 52 520 150 820 96S1300 32 1650 102'/%3E%3Cpath stroke-width='39.4' stroke-opacity='0.065' d='M-50 112C260 52 520 150 820 96S1300 32 1650 102'/%3E%3Cpath stroke-width='31.7' stroke-opacity='0.065' d='M-50 112C260 52 520 150 820 96S1300 32 1650 102'/%3E%3Cpath stroke-width='24' stroke-opacity='0.065' d='M-50 112C260 52 520 150 820 96S1300 32 1650 102'/%3E%3Cpath stroke-width='17.3' stroke-opacity='0.065' d='M-50 112C260 52 520 150 820 96S1300 32 1650 102'/%3E%3Cpath stroke-width='11.5' stroke-opacity='0.065' d='M-50 112C260 52 520 150 820 96S1300 32 1650 102'/%3E%3Cpath stroke-width='6.2' stroke-opacity='0.065' d='M-50 112C260 52 520 150 820 96S1300 32 1650 102'/%3E%3Cpath stroke-width='3' stroke-opacity='.5' d='M-50 200C210 150 425 230 700 188S1150 150 1650 198'/%3E%3C/g%3E%3C/svg%3E");
+  --sk-i3: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 380 180'%3E%3Cpath d='M40 26.1L40.9 29.1L43.9 30L40.9 30.9L40 33.9L39.1 30.9L36.1 30L39.1 29.1Z' fill='%23fff'/%3E%3Cpath d='M210 19L210.7 21.3L213 22L210.7 22.7L210 25L209.3 22.7L207 22L209.3 21.3Z' fill='%23fff'/%3E%3Cpath d='M320 59.5L321.1 63L324.5 64L321.1 65.1L320 68.5L319 65.1L315.5 64L319 63Z' fill='%23fff'/%3E%3Cpath d='M130 117.3L130.6 119.4L132.7 120L130.6 120.6L130 122.7L129.4 120.6L127.3 120L129.4 119.4Z' fill='%23fff'/%3E%3Cpath d='M270 146.7L270.8 149.2L273.3 150L270.8 150.8L270 153.3L269.2 150.8L266.7 150L269.2 149.2Z' fill='%23fff'/%3E%3Ccircle cx='96' cy='58' r='1.2' fill='%23fff'/%3E%3Ccircle cx='356' cy='132' r='1' fill='%23fff'/%3E%3Ccircle cx='18' cy='150' r='.9' fill='%23fff'/%3E%3C/svg%3E");
+  --sk-base: radial-gradient(120% 150% at 86% -25%, rgba(124, 242, 212, .3), rgba(124, 242, 212, 0) 55%), radial-gradient(90% 130% at 8% 125%, rgba(255, 150, 211, .26), rgba(255, 150, 211, 0) 60%), linear-gradient(165deg, #150c3c 0%, #2a1564 46%, #4b2594 100%);
+  --sk-base-dark: radial-gradient(120% 150% at 86% -25%, rgba(124, 242, 212, .18), rgba(124, 242, 212, 0) 55%), radial-gradient(90% 130% at 8% 125%, rgba(255, 150, 211, .14), rgba(255, 150, 211, 0) 60%), linear-gradient(165deg, #0b0726 0%, #190d42 50%, #2b1663 100%);
+  --sk-band: var(--sk-i1) 0 0 / 260px 130px repeat, var(--sk-base);
+  --sk-band-dark: var(--sk-i1) 0 0 / 260px 130px repeat, var(--sk-base-dark);
+  --sk-mini: var(--sk-i1) 0 0 / 130px 65px repeat, var(--sk-base);
+  --sk-mini-dark: var(--sk-i1) 0 0 / 130px 65px repeat, var(--sk-base-dark);
+  --k-022c22: 36 19 64;
+  --k-047857: 95 51 168;
+  --k-059669: 116 66 200;
+  --k-064e3b: 57 31 101;
+  --k-065f46: 74 40 131;
+  --k-10b981: 138 92 219;
+  --k-14b8a6: 139 94 220;
+  --k-183f2d: 65 51 88;
+  --k-1c4a32: 81 63 110;
+  --k-255a41: 105 85 138;
+  --k-295b44: 109 91 140;
+  --k-2dd4bf: 162 123 231;
+  --k-346e57: 130 111 162;
+  --k-34d399: 165 126 232;
+  --k-62edc2: 187 157 238;
+  --k-6ee7b7: 189 160 239;
+  --k-7bf0cf: 197 171 241;
+  --k-90efd4: 204 181 243;
+  --k-9ff0da: 209 189 245;
+  --k-a7f3d0: 213 194 246;
+  --k-d1fae5: 233 222 251;
+  --k-e6fbf5: 241 235 251;
+  --k-ecfdf5: 244 239 253;
+}
+
+/* ราตรีทองคำ (midnight gold) · MAX: fine gold line art on a midnight sky, a sheen of light now and then, rising gold dust. */
+html[data-hf-skin="gold"] {
+  --sk-50: #fbf6ea;
+  --sk-100: #f5ead0;
+  --sk-200: #ead5a3;
+  --sk-400: #c9a24f;
+  --sk-500: #b38a35;
+  --sk-600: #977226;
+  --sk-700: #7b5b1c;
+  --sk-rgb: 151 114 38;
+  --sk-200-rgb: 234 213 163;
+  --sk-light-rgb: 230 200 130;
+  --sk-text-dark: #e7c97e;
+  --sk-page: #f8f5ee;
+  --sk-meta: #101221;
+  --sk-glow: #e7c97e;
+  --sk-spark: #f3d98f;
+  --sk-lx-accent: #8f6c24;
+  --sk-lx-hover: #7b5d1f;
+  --sk-lx-text: #7b5b1c;
+  --sk-paper-2: #f1ece0;
+  --sk-paper-3: #f4efe5;
+  --sk-line: #e8dfcc;
+  --sk-line-2: #dbceb2;
+  --sk-paper-2-rgb: 241 236 224;
+  --sk-d-bg: #0b0c14;
+  --sk-d-s1: #12141f;
+  --sk-d-s2: #181a28;
+  --sk-d-s3: #1f2132;
+  --sk-d-s4: #282a3d;
+  --sk-d-line-2: #3e3f50;
+  --sk-d-soft: #3b2f1a;
+  --sk-d-hover: #eed9a5;
+  --sk-d-s1-rgb: 18 20 31;
+  --sk-d-s2-rgb: 24 26 40;
+  --sk-d-s3-rgb: 31 33 50;
+  --sk-i1: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 420 260'%3E%3Cg fill='none' stroke='%23e7c97e' stroke-width='1.2'%3E%3Ccircle cx='420' cy='260' r='70' stroke-opacity='0.5'/%3E%3Ccircle cx='420' cy='260' r='110' stroke-opacity='0.38'/%3E%3Ccircle cx='420' cy='260' r='150' stroke-opacity='0.3'/%3E%3Ccircle cx='420' cy='260' r='190' stroke-opacity='0.22'/%3E%3Ccircle cx='420' cy='260' r='230' stroke-opacity='0.15'/%3E%3Cpath stroke-opacity='.16' d='M350 260L190 260'/%3E%3Cpath stroke-opacity='.16' d='M350.9 249L192.8 224'/%3E%3Cpath stroke-opacity='.16' d='M353.4 238.4L201.3 188.9'/%3E%3Cpath stroke-opacity='.16' d='M357.6 228.2L215.1 155.6'/%3E%3Cpath stroke-opacity='.16' d='M363.4 218.9L233.9 124.8'/%3E%3Cpath stroke-opacity='.16' d='M370.5 210.5L257.4 97.4'/%3E%3Cpath stroke-opacity='.16' d='M378.9 203.4L284.8 73.9'/%3E%3Cpath stroke-opacity='.16' d='M388.2 197.6L315.6 55.1'/%3E%3Cpath stroke-opacity='.16' d='M398.4 193.4L348.9 41.3'/%3E%3Cpath stroke-opacity='.16' d='M409 190.9L384 32.8'/%3E%3Cpath stroke-opacity='.16' d='M420 190L420 30'/%3E%3C/g%3E%3Cpath fill='%23e7c97e' fill-opacity='.7' stroke='none' d='M313.9 150.9L316.9 153.9L313.9 156.9L310.9 153.9Z'/%3E%3Cpath fill='%23e7c97e' fill-opacity='.7' stroke='none' d='M250.7 170.7L253.7 173.7L250.7 176.7L247.7 173.7Z'/%3E%3Cpath fill='%23e7c97e' fill-opacity='.7' stroke='none' d='M370.1 159L373.1 162L370.1 165L367.1 162Z'/%3E%3C/svg%3E");
+  --sk-i2: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 420 260'%3E%3Cg fill='none' stroke='%23e7c97e' stroke-width='1.2'%3E%3Ccircle cx='0' cy='260' r='70' stroke-opacity='0.5'/%3E%3Ccircle cx='0' cy='260' r='110' stroke-opacity='0.38'/%3E%3Ccircle cx='0' cy='260' r='150' stroke-opacity='0.3'/%3E%3Ccircle cx='0' cy='260' r='190' stroke-opacity='0.22'/%3E%3Ccircle cx='0' cy='260' r='230' stroke-opacity='0.15'/%3E%3Cpath stroke-opacity='.16' d='M70 260L230 260'/%3E%3Cpath stroke-opacity='.16' d='M69.1 249L227.2 224'/%3E%3Cpath stroke-opacity='.16' d='M66.6 238.4L218.7 188.9'/%3E%3Cpath stroke-opacity='.16' d='M62.4 228.2L204.9 155.6'/%3E%3Cpath stroke-opacity='.16' d='M56.6 218.9L186.1 124.8'/%3E%3Cpath stroke-opacity='.16' d='M49.5 210.5L162.6 97.4'/%3E%3Cpath stroke-opacity='.16' d='M41.1 203.4L135.2 73.9'/%3E%3Cpath stroke-opacity='.16' d='M31.8 197.6L104.4 55.1'/%3E%3Cpath stroke-opacity='.16' d='M21.6 193.4L71.1 41.3'/%3E%3Cpath stroke-opacity='.16' d='M11 190.9L36 32.8'/%3E%3Cpath stroke-opacity='.16' d='M0 190L0 30'/%3E%3C/g%3E%3Cpath fill='%23e7c97e' fill-opacity='.7' stroke='none' d='M106.1 150.9L109.1 153.9L106.1 156.9L103.1 153.9Z'/%3E%3Cpath fill='%23e7c97e' fill-opacity='.7' stroke='none' d='M169.3 170.7L172.3 173.7L169.3 176.7L166.3 173.7Z'/%3E%3Cpath fill='%23e7c97e' fill-opacity='.7' stroke='none' d='M49.9 159L52.9 162L49.9 165L46.9 162Z'/%3E%3C/svg%3E");
+  --sk-i3: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 160'%3E%3Ccircle cx='14' cy='20' r='1.2' fill='%23f3d98f' fill-opacity='0.7'/%3E%3Ccircle cx='62' cy='88' r='0.8' fill='%23f3d98f' fill-opacity='0.5'/%3E%3Ccircle cx='110' cy='30' r='1.5' fill='%23f3d98f' fill-opacity='0.55'/%3E%3Ccircle cx='150' cy='130' r='0.9' fill='%23f3d98f' fill-opacity='0.6'/%3E%3Ccircle cx='196' cy='64' r='1.1' fill='%23f3d98f' fill-opacity='0.45'/%3E%3Ccircle cx='240' cy='18' r='0.7' fill='%23f3d98f' fill-opacity='0.5'/%3E%3Ccircle cx='276' cy='110' r='1.3' fill='%23f3d98f' fill-opacity='0.6'/%3E%3Ccircle cx='40' cy='146' r='0.7' fill='%23f3d98f' fill-opacity='0.4'/%3E%3Ccircle cx='222' cy='150' r='0.6' fill='%23f3d98f' fill-opacity='0.45'/%3E%3Ccircle cx='90' cy='140' r='1' fill='%23f3d98f' fill-opacity='0.35'/%3E%3Ccircle cx='130' cy='74' r='0.6' fill='%23f3d98f' fill-opacity='0.5'/%3E%3Ccircle cx='290' cy='58' r='0.8' fill='%23f3d98f' fill-opacity='0.4'/%3E%3C/svg%3E");
+  --sk-base: radial-gradient(110% 150% at 88% -30%, rgba(231, 201, 126, .26), rgba(231, 201, 126, 0) 55%), linear-gradient(165deg, #0f1222 0%, #1a1c33 50%, #2a2540 100%);
+  --sk-base-dark: radial-gradient(110% 150% at 88% -30%, rgba(231, 201, 126, .16), rgba(231, 201, 126, 0) 55%), linear-gradient(165deg, #07080f 0%, #0e1020 50%, #181629 100%);
+  --sk-band: var(--sk-i1) right bottom / auto 200px no-repeat, var(--sk-i2) left bottom / auto 124px no-repeat, var(--sk-base);
+  --sk-band-dark: var(--sk-i1) right bottom / auto 200px no-repeat, var(--sk-i2) left bottom / auto 124px no-repeat, var(--sk-base-dark);
+  --sk-mini: var(--sk-i1) right bottom / auto 100% no-repeat, var(--sk-i2) left bottom / auto 62% no-repeat, var(--sk-base);
+  --sk-mini-dark: var(--sk-i1) right bottom / auto 100% no-repeat, var(--sk-i2) left bottom / auto 62% no-repeat, var(--sk-base-dark);
+  --k-022c22: 47 35 11;
+  --k-047857: 123 91 28;
+  --k-059669: 151 114 38;
+  --k-064e3b: 74 55 17;
+  --k-065f46: 96 71 22;
+  --k-10b981: 179 138 53;
+  --k-14b8a6: 180 139 54;
+  --k-183f2d: 64 53 32;
+  --k-1c4a32: 79 66 40;
+  --k-255a41: 99 84 56;
+  --k-295b44: 101 87 60;
+  --k-2dd4bf: 199 160 76;
+  --k-346e57: 120 105 75;
+  --k-34d399: 201 162 79;
+  --k-62edc2: 217 186 118;
+  --k-6ee7b7: 218 188 121;
+  --k-7bf0cf: 223 196 134;
+  --k-90efd4: 228 203 147;
+  --k-9ff0da: 231 209 156;
+  --k-a7f3d0: 234 213 163;
+  --k-d1fae5: 245 234 208;
+  --k-e6fbf5: 248 242 228;
+  --k-ecfdf5: 251 246 234;
+}
+
+/* ══════════ 2. หัวหน้าเว็บ: ลายของธีม (ขนาดคงที่เป็น px ยึดกับขอบบน/ล่าง: หัวยืดหดได้โดยไม่ต้องวาดลายใหม่ทุกเฟรม) ══════════ */
+html[data-hf-skin] #mainBlueBg, html[data-hf-skin] .header-bg-shell { background: var(--sk-band); }
+html[data-hf-skin][data-theme="dark"] #mainBlueBg, html[data-hf-skin][data-theme="dark"] .header-bg-shell { background: var(--sk-band-dark); }
+html[data-hf-skin] .flow-shell { background: var(--sk-base); }
+html[data-hf-skin][data-theme="dark"] .flow-shell { background: var(--sk-base-dark); }
+
+html[data-hf-skin="aurora"] #mainBlueBg, html[data-hf-skin="gold"] #mainBlueBg { overflow: hidden; }
+html[data-hf-skin="aurora"] #mainBlueBg::before,
+html[data-hf-skin="gold"] #mainBlueBg::before,
+html[data-hf-skin="aurora"] #mainBlueBg::after,
+html[data-hf-skin="gold"] #mainBlueBg::after { content: ""; position: absolute; pointer-events: none; will-change: transform, opacity; }
+
+/* aurora: the ribbons drift and breathe, the bright stars twinkle */
+html[data-hf-skin="aurora"] #mainBlueBg::before { left: -25%; width: 150%; bottom: 0; height: 250px; }
+html[data-hf-skin="aurora"] #mainBlueBg::before { background: var(--sk-i2) center / 100% 100% no-repeat; animation: hf-sk-aurora 26s ease-in-out infinite alternate; }
+html[data-hf-skin="aurora"] #mainBlueBg::after { top: 0; left: 0; right: 0; height: 380px; background: var(--sk-i3) 40px 8px / 380px 180px repeat; }
+html[data-hf-skin="aurora"] #mainBlueBg::after { animation: hf-sk-twinkle 3.8s ease-in-out infinite alternate; }
+@keyframes hf-sk-aurora {
+  0% { transform: translate3d(-6%, 3px, 0); opacity: .66; }
+  50% { transform: translate3d(2%, -5px, 0); opacity: 1; }
+  100% { transform: translate3d(8%, 2px, 0); opacity: .76; }
+}
+@keyframes hf-sk-twinkle { 0% { opacity: .2; } 60% { opacity: .85; } 100% { opacity: .45; } }
+
+/* gold: a gold hairline along the curve, a sheen of light now and then, gold dust rising */
+html[data-hf-skin="gold"] #mainBlueBg { box-shadow: inset 0 -1.5px 0 rgba(231, 201, 126, .55), 0 10px 24px -16px rgba(13, 15, 28, .7); }
+html[data-hf-skin="gold"] #mainBlueBg::before { top: 0; left: 0; width: 45%; height: 380px; }
+html[data-hf-skin="gold"] #mainBlueBg::before {
+  background: linear-gradient(105deg, rgba(255, 226, 160, 0) 30%, rgba(255, 226, 160, .17) 50%, rgba(255, 226, 160, 0) 70%);
+  transform: translate3d(-110%, 0, 0); animation: hf-sk-sheen 9s cubic-bezier(.45, .05, .35, 1) infinite;
+}
+html[data-hf-skin="gold"] #mainBlueBg::after { top: 0; left: 0; right: 0; height: 540px; background: var(--sk-i3) 0 0 / 300px 160px repeat; animation: hf-sk-rise 22s linear infinite; }
+html[data-hf-skin="gold"] #mainBlueBg::after { opacity: .75; }
+@keyframes hf-sk-sheen { 0% { transform: translate3d(-110%, 0, 0); } 45%, 100% { transform: translate3d(330%, 0, 0); } }
+@keyframes hf-sk-rise { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(0, -160px, 0); } }
+
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-hf-skin="aurora"] #mainBlueBg::before, html[data-hf-skin="aurora"] #mainBlueBg::after, html[data-hf-skin="gold"] #mainBlueBg::before, html[data-hf-skin="gold"] #mainBlueBg::after { animation: none; }
+  html[data-hf-skin="gold"] #mainBlueBg::before { display: none; }
+}
+
+/* ══════════ 3. แอนิเมชันที่มีสีเขียวของแบรนด์ (สำเนาที่ใช้สีของธีม) ══════════ */
+@keyframes sk-barNear { from { box-shadow: 0 0 0 0 transparent; filter: brightness(1); } to { box-shadow: 0 0 10px 2px var(--bar, rgb(var(--k-34d399))); filter: brightness(1.12); } }
+@keyframes sk-meRing { 0%, 100% { box-shadow: 0 0 0 4px #fff, 0 0 0 8px rgb(var(--k-10b981)), 0 6px 14px rgb(var(--k-10b981) / 0.45); } 50% { box-shadow: 0 0 0 4px #fff, 0 0 0 11px rgb(var(--k-10b981) / 0.55), 0 6px 18px rgb(var(--k-10b981) / 0.55); } }
+@keyframes sk-meRow { 0%, 100% { background-color: rgb(var(--k-ecfdf5)); } 50% { background-color: rgb(var(--k-d1fae5)); } }
+
+/* ══════════ 4. สีเขียวของแบรนด์ → สีของธีม (ธีมสว่างและสีที่ใช้ทั้งสองโหมด) ══════════ */
+/* ── จาก css/style.css ── */
+:where(html[data-hf-skin]) { --color-mint-primary: rgb(var(--k-10b981)); --color-mint-light: rgb(var(--k-e6fbf5)); --color-mint-dark: rgb(var(--k-059669)); }
+:where(html[data-hf-skin]) :focus-visible { outline: 3px solid rgb(var(--k-047857)); }
+:where(html[data-hf-skin]) .brand-name { color: rgb(var(--k-ecfdf5)); }
+:where(html[data-hf-skin]) .pill-dark { background: rgb(var(--k-022c22) / 0.45); }
+:where(html[data-hf-skin]) .menu-a:hover { background: rgb(var(--k-ecfdf5)); color: rgb(var(--k-047857)); }
+:where(html[data-hf-skin]) .menu-a:hover svg { color: rgb(var(--k-059669)); }
+:where(html[data-hf-skin]) .chip-g { background: rgb(var(--k-ecfdf5)); color: rgb(var(--k-065f46)); border: 1.5px solid rgb(var(--k-a7f3d0)); }
+:where(html[data-hf-skin]) .bar > i { background: rgb(var(--k-059669)); }
+:where(html[data-hf-skin]) .card-mint { border-color: rgb(var(--k-10b981)); box-shadow: 0 4px 0 rgb(var(--k-a7f3d0)); }
+:where(html[data-hf-skin]) .btn { background: rgb(var(--k-047857)); box-shadow: 0 4px 0 rgb(var(--k-064e3b)); }
+:where(html[data-hf-skin]) .btn:active { box-shadow: 0 1px 0 rgb(var(--k-064e3b)); }
+:where(html[data-hf-skin]) .btn-ghost { color: rgb(var(--k-065f46)); border: 2px solid rgb(var(--k-a7f3d0)); box-shadow: 0 4px 0 rgb(var(--k-a7f3d0)); }
+:where(html[data-hf-skin]) .btn-ghost:active { box-shadow: 0 1px 0 rgb(var(--k-a7f3d0)); }
+:where(html[data-hf-skin]) .exp-val .num { color: rgb(var(--k-047857)); }
+:where(html[data-hf-skin]) .sec-link { color: rgb(var(--k-047857)); }
+:where(html[data-hf-skin]) .search:focus-within { border-color: rgb(var(--k-047857)); box-shadow: 0 3px 0 rgb(var(--k-a7f3d0)); }
+:where(html[data-hf-skin]) .fchip.on { background: rgb(var(--k-047857)); border-color: rgb(var(--k-047857)); box-shadow: 0 3px 0 rgb(var(--k-064e3b)); }
+:where(html[data-hf-skin]) .pod { background: linear-gradient(180deg, #F0F9FF 0%, rgb(var(--k-ecfdf5)) 100%); }
+:where(html[data-hf-skin]) .me { background: linear-gradient(90deg, rgb(var(--k-065f46)), rgb(var(--k-047857))); border: 2px solid rgb(var(--k-10b981)); box-shadow: 0 4px 0 rgb(var(--k-064e3b)); }
+:where(html[data-hf-skin]) .me-rank { background: rgb(var(--k-022c22) / 0.4); }
+:where(html[data-hf-skin]) .me-chip { color: rgb(var(--k-065f46)); }
+:where(html[data-hf-skin]) .me-sub { color: rgb(var(--k-d1fae5)); }
+:where(html[data-hf-skin]) .me-cap { color: rgb(var(--k-d1fae5)); }
+:where(html[data-hf-skin]) .nav-i.on { color: rgb(var(--k-065f46)); }
+:where(html[data-hf-skin]) .nav-i.on .nav-pill { background: rgb(var(--k-d1fae5)); }
+:where(html[data-hf-skin]) .nav-back:focus-visible { outline: 2px solid rgb(var(--k-059669)); }
+:where(html[data-hf-skin]) .wk-empty { border: 2px dashed rgb(var(--k-a7f3d0)); color: rgb(var(--k-065f46)); }
+:where(html[data-hf-skin]) .mp-card { border: 2px solid rgb(var(--k-a7f3d0)); box-shadow: 0 4px 0 rgb(var(--k-6ee7b7)); }
+:where(html[data-hf-skin]) .mp-pct .num { color: rgb(var(--k-047857)); }
+:where(html[data-hf-skin]) .tcta { border: 2px solid rgb(var(--k-a7f3d0)); box-shadow: 0 4px 0 rgb(var(--k-a7f3d0)); }
+:where(html[data-hf-skin]) .tcta:active { box-shadow: 0 1px 0 rgb(var(--k-a7f3d0)); }
+:where(html[data-hf-skin]) .tcta-orb { background: radial-gradient(circle at 35% 30%, rgb(var(--k-a7f3d0)) 0, rgb(var(--k-34d399)) 36%, rgb(var(--k-059669)) 72%, rgb(var(--k-047857)) 100%); box-shadow: 0 6px 14px rgb(var(--k-059669) / 0.3), inset 0 -4px 8px rgb(var(--k-022c22) / 0.25); }
+:where(html[data-hf-skin]) .tt-chip { background: rgb(var(--k-ecfdf5)); border: 1.5px solid rgb(var(--k-a7f3d0)); color: rgb(var(--k-065f46)); }
+:where(html[data-hf-skin]) .tt-chip:active { background: rgb(var(--k-d1fae5)); }
+
+/* ── จาก css/course.css ── */
+:where(html[data-hf-skin]) .cp-back { background: rgb(var(--k-022c22) / 0.35); }
+:where(html[data-hf-skin]) .cp-back:hover { background: rgb(var(--k-022c22) / 0.5); }
+:where(html[data-hf-skin]) .cp-eyebrow { color: rgb(var(--k-d1fae5)); }
+:where(html[data-hf-skin]) .cp-meta { color: rgb(var(--k-ecfdf5)); }
+:where(html[data-hf-skin]) .cp-emoji { filter: drop-shadow(0 6px 8px rgb(var(--k-022c22) / 0.25)); }
+:where(html[data-hf-skin]) .cp-cta { box-shadow: 0 5px 0 rgb(var(--k-022c22) / 0.38), 0 10px 22px rgb(var(--k-047857) / 0.22); }
+:where(html[data-hf-skin]) .cp-cta:active { box-shadow: 0 1px 0 rgb(var(--k-022c22) / 0.38); }
+:where(html[data-hf-skin]) .cp-banner { box-shadow: 0 5px 0 rgb(var(--k-022c22) / 0.28), 0 12px 24px rgb(var(--k-047857) / 0.2); }
+
+/* ── จาก css/delight.css ── */
+:where(html[data-hf-skin]) .bar.near > i { animation: sk-barNear 1.5s ease-in-out infinite alternate; }
+:where(html[data-hf-skin]) .btn-ghost .rpl { background: rgb(var(--k-10b981) / 0.28); }
+:where(html[data-hf-skin]) .btn-line .rpl { background: rgb(var(--k-10b981) / 0.28); }
+:where(html[data-hf-skin]) .lb-more .rpl { background: rgb(var(--k-10b981) / 0.28); }
+
+/* ── จาก css/flow.css ── */
+:where(html[data-hf-skin]) .back { background: rgb(var(--k-022c22) / 0.35); }
+:where(html[data-hf-skin]) .eyebrow { color: rgb(var(--k-ecfdf5)); }
+:where(html[data-hf-skin]) .unit-badge.done { background: rgb(var(--k-059669)); border-color: rgb(var(--k-059669)); }
+:where(html[data-hf-skin]) .st-done { color: rgb(var(--k-047857)); }
+:where(html[data-hf-skin]) .st-now { color: rgb(var(--k-047857)); }
+:where(html[data-hf-skin]) .fback { background: linear-gradient(180deg, var(--bar, rgb(var(--k-10b981))), var(--strong, rgb(var(--k-047857)))); box-shadow: 0 3px 0 rgb(var(--k-022c22) / 0.32); }
+:where(html[data-hf-skin]) .fback:active { box-shadow: 0 0 0 rgb(var(--k-022c22) / 0.32); }
+:where(html[data-hf-skin]) .fbar-e { color: var(--strong, rgb(var(--k-047857))); }
+:where(html[data-hf-skin]) .fbar-e:not(:empty)::before { background: var(--bar, rgb(var(--k-10b981))); box-shadow: 0 0 0 3px var(--chip, rgb(var(--k-d1fae5))); }
+:where(html[data-hf-skin]) .checks svg { color: rgb(var(--k-059669)); }
+:where(html[data-hf-skin]) .btn-done { background: rgb(var(--k-ecfdf5)); color: rgb(var(--k-065f46)); border: 2px solid rgb(var(--k-a7f3d0)); box-shadow: 0 4px 0 rgb(var(--k-a7f3d0)); }
+:where(html[data-hf-skin]) .lr-n.st-done { background: rgb(var(--k-059669)); }
+:where(html[data-hf-skin]) body.flow .btn:not([disabled]) { background: linear-gradient(180deg, var(--bar, rgb(var(--k-059669))), var(--strong, rgb(var(--k-047857)))); box-shadow: 0 5px 0 rgb(var(--k-022c22) / 0.32); }
+:where(html[data-hf-skin]) body.flow .btn:not([disabled]):active { box-shadow: 0 1px 0 rgb(var(--k-022c22) / 0.32); }
+:where(html[data-hf-skin]) body.flow .btn.btn-line:not([disabled]) { color: var(--strong, rgb(var(--k-047857))); border: 2px solid var(--bd, rgb(var(--k-a7f3d0))); box-shadow: 0 4px 0 var(--edge, rgb(var(--k-a7f3d0))); }
+:where(html[data-hf-skin]) body.flow .btn.btn-line:not([disabled]):active { box-shadow: 0 1px 0 var(--edge, rgb(var(--k-a7f3d0))); }
+:where(html[data-hf-skin]) .linkbtn { color: var(--strong, rgb(var(--k-047857))); }
+
+/* ── จาก css/formats.css ── */
+
+
+/* ── จาก css/fx.css ── */
+
+
+/* ── จาก css/identity.css ── */
+
+
+/* ── จาก css/settings.css ── */
+:where(html[data-hf-skin]) .st-h3 { color: rgb(var(--k-047857)); }
+:where(html[data-hf-skin]) .st-link:hover { border-color: rgb(var(--k-6ee7b7)); }
+:where(html[data-hf-skin]) .st-link:focus-visible { border-color: rgb(var(--k-6ee7b7)); }
+:where(html[data-hf-skin]) .st-install-btn { background: rgb(var(--k-047857)); }
+:where(html[data-hf-skin]) .st-steps { background: rgb(var(--k-ecfdf5)); border: 1px solid rgb(var(--k-a7f3d0)); color: rgb(var(--k-065f46)); }
+:where(html[data-hf-skin]) .st-seg button[aria-checked="true"] { color: rgb(var(--k-047857)); }
+
+/* ── จาก css/loading.css ── */
+:where(html[data-hf-skin]) { --ld-accent: rgb(var(--k-10b981)); }
+:where(html[data-hf-skin]) .lb-more.is-busy::after { border: .18em solid rgb(var(--k-059669) / 0.28); border-top-color: rgb(var(--k-059669)); }
+
+/* ── จาก css/ranking.css ── */
+:where(html[data-hf-skin]) .pod { background: radial-gradient(120% 80% at 50% 0%, #FEF9C3 0%, #E0F2FE 46%, rgb(var(--k-ecfdf5)) 100%); }
+:where(html[data-hf-skin]) .pod-col.is-me .pod-av img { box-shadow: 0 0 0 4px #fff, 0 0 0 8px rgb(var(--k-10b981)), 0 6px 14px rgb(var(--k-10b981) / 0.45); animation: sk-meRing 1.8s ease-in-out infinite; }
+:where(html[data-hf-skin]) .pod-col.is-me .pod-name { color: rgb(var(--k-047857)); }
+:where(html[data-hf-skin]) .lb-me { background: rgb(var(--k-10b981)); }
+:where(html[data-hf-skin]) .lb-row.is-me { background: linear-gradient(90deg, rgb(var(--k-d1fae5)), rgb(var(--k-ecfdf5)) 70%); box-shadow: inset 6px 0 0 rgb(var(--k-10b981)); animation: sk-meRow 2.4s ease-in-out infinite; }
+:where(html[data-hf-skin]) .lb-row.is-me .lb-t h3 { color: rgb(var(--k-064e3b)); }
+:where(html[data-hf-skin]) .lb-row.is-me .lb-rank { color: rgb(var(--k-047857)); }
+:where(html[data-hf-skin]) .lb-row.is-me .lb-av { box-shadow: 0 0 0 3px rgb(var(--k-10b981)); }
+:where(html[data-hf-skin]) .lb-more { color: rgb(var(--k-047857)); border: 2px solid rgb(var(--k-a7f3d0)); box-shadow: 0 3px 0 rgb(var(--k-a7f3d0)); }
+:where(html[data-hf-skin]) .lb-more:active:not([disabled]) { box-shadow: 0 1px 0 rgb(var(--k-a7f3d0)); }
+:where(html[data-hf-skin]) .lb-float { background: linear-gradient(95deg, rgb(var(--k-064e3b)), rgb(var(--k-047857)) 55%, rgb(var(--k-059669))); border: 2px solid rgb(var(--k-34d399)); box-shadow: 0 8px 22px rgb(var(--k-047857) / 0.45), 0 3px 0 rgb(var(--k-064e3b)); }
+:where(html[data-hf-skin]) .lf-rank { background: rgb(var(--k-022c22) / 0.45); }
+:where(html[data-hf-skin]) .lf-sub { color: rgb(var(--k-d1fae5)); }
+
+/* ── จาก css/tutor.css ── */
+:where(html[data-hf-skin]) .tt-credit { background: rgb(var(--k-ecfdf5)); border: 1.5px solid rgb(var(--k-a7f3d0)); color: rgb(var(--k-065f46)); }
+:where(html[data-hf-skin]) .tt-orb { --c1: rgb(var(--k-d1fae5)); --c2: rgb(var(--k-34d399)); --c3: rgb(var(--k-14b8a6)); }
+:where(html[data-hf-skin]) .tt-orb .body { box-shadow: 0 18px 38px rgb(var(--k-059669) / 0.28), inset 0 -10px 22px rgb(var(--k-022c22) / 0.22), inset 0 8px 16px rgba(255, 255, 255, .35); }
+:where(html[data-hf-skin]) .tt-orb[data-state="speaking"] { --c3: rgb(var(--k-2dd4bf)); }
+:where(html[data-hf-skin]) .tt-orb[data-state="connecting"] { --c2: rgb(var(--k-a7f3d0)); }
+:where(html[data-hf-skin]) .tt-orb[data-state="starting"] { --c2: rgb(var(--k-a7f3d0)); }
+:where(html[data-hf-skin]) .tt-mode input:focus-visible + .in { outline: 3px solid rgb(var(--k-047857)); }
+:where(html[data-hf-skin]) .tt-opt input:focus-visible + .in { outline: 3px solid rgb(var(--k-047857)); }
+:where(html[data-hf-skin]) .tt-perks svg { color: rgb(var(--k-059669)); }
+:where(html[data-hf-skin]) .tt-feed:focus-visible { outline: 3px solid rgb(var(--k-047857)); }
+:where(html[data-hf-skin]) .tt-line.you { color: rgb(var(--k-047857)); }
+:where(html[data-hf-skin]) .tt-line.ai.partial .tt-t::after { background: var(--bar, rgb(var(--k-10b981))); }
+:where(html[data-hf-skin]) .tt-turn.past .tt-line.you { color: rgb(var(--k-047857)); }
+:where(html[data-hf-skin]) .tt-turn.past .tt-line.you::before { background: rgb(var(--k-d1fae5)); }
+:where(html[data-hf-skin]) .tt-latest { background: linear-gradient(180deg, var(--bar, rgb(var(--k-10b981))), var(--strong, rgb(var(--k-047857)))); box-shadow: 0 3px 0 rgb(var(--k-022c22) / 0.32), 0 10px 22px rgba(15, 23, 42, .18); }
+:where(html[data-hf-skin]) .tt-text input:focus-visible { outline: 3px solid rgb(var(--k-047857)); }
+:where(html[data-hf-skin]) .tt-text button { background: linear-gradient(180deg, var(--bar, rgb(var(--k-10b981))), var(--strong, rgb(var(--k-047857)))); box-shadow: 0 3px 0 rgb(var(--k-022c22) / 0.32); }
+:where(html[data-hf-skin]) .tt-text button:active { box-shadow: 0 1px 0 rgb(var(--k-022c22) / 0.32); }
+:where(html[data-hf-skin]) .tt-b[aria-pressed="true"] { background: var(--chip, rgb(var(--k-d1fae5))); color: var(--strong, rgb(var(--k-047857))); box-shadow: inset 0 0 0 2px var(--bd, rgb(var(--k-a7f3d0))); }
+:where(html[data-hf-skin]) .tt-b:focus-visible { outline: 3px solid rgb(var(--k-047857)); }
+:where(html[data-hf-skin]) .tt-b.tt-mic { background: linear-gradient(180deg, var(--bar, rgb(var(--k-10b981))), var(--strong, rgb(var(--k-047857)))); box-shadow: 0 4px 0 rgb(var(--k-022c22) / 0.34); }
+:where(html[data-hf-skin]) .tt-b.tt-mic:active:not(:disabled) { box-shadow: 0 1px 0 rgb(var(--k-022c22) / 0.34); }
+
+/* ══════════ 5. เช่นเดียวกัน สำหรับธีมมืด (จาก css/dark.css) ══════════ */
+:where(html[data-hf-skin][data-theme="dark"]) .menu-a:hover { background: rgb(var(--k-183f2d)); color: rgb(var(--k-7bf0cf)); }
+:where(html[data-hf-skin][data-theme="dark"]) .menu-a:hover svg { color: rgb(var(--k-62edc2)); }
+:where(html[data-hf-skin][data-theme="dark"]) .chip-g { background: rgb(var(--k-183f2d)); color: rgb(var(--k-90efd4)); border: 1.5px solid rgb(var(--k-295b44)); }
+:where(html[data-hf-skin][data-theme="dark"]) .card-mint { box-shadow: 0 4px 0 rgb(var(--k-295b44)); }
+:where(html[data-hf-skin][data-theme="dark"]) .btn-ghost { color: rgb(var(--k-90efd4)); border: 2px solid rgb(var(--k-295b44)); box-shadow: 0 4px 0 rgb(var(--k-295b44)); }
+:where(html[data-hf-skin][data-theme="dark"]) .btn-ghost:active { box-shadow: 0 1px 0 rgb(var(--k-295b44)); }
+:where(html[data-hf-skin][data-theme="dark"]) .exp-val .num { color: rgb(var(--k-7bf0cf)); }
+:where(html[data-hf-skin][data-theme="dark"]) .sec-link { color: rgb(var(--k-7bf0cf)); }
+:where(html[data-hf-skin][data-theme="dark"]) .search:focus-within { box-shadow: 0 3px 0 rgb(var(--k-295b44)); }
+:where(html[data-hf-skin][data-theme="dark"]) .pod { background: linear-gradient(180deg, #132F41 0%, rgb(var(--k-183f2d)) 100%); }
+:where(html[data-hf-skin][data-theme="dark"]) .me-chip { color: rgb(var(--k-90efd4)); }
+:where(html[data-hf-skin][data-theme="dark"]) .nav-i.on { color: rgb(var(--k-90efd4)); }
+:where(html[data-hf-skin][data-theme="dark"]) .nav-i.on .nav-pill { background: rgb(var(--k-1c4a32)); }
+:where(html[data-hf-skin][data-theme="dark"]) .wk-empty { border: 2px dashed rgb(var(--k-295b44)); color: rgb(var(--k-90efd4)); }
+:where(html[data-hf-skin][data-theme="dark"]) .mp-card { border: 2px solid rgb(var(--k-295b44)); }
+:where(html[data-hf-skin][data-theme="dark"]) .mp-pct .num { color: rgb(var(--k-7bf0cf)); }
+:where(html[data-hf-skin][data-theme="dark"]) .tcta { border: 2px solid rgb(var(--k-295b44)); box-shadow: 0 4px 0 rgb(var(--k-295b44)); }
+:where(html[data-hf-skin][data-theme="dark"]) .tcta:active { box-shadow: 0 1px 0 rgb(var(--k-295b44)); }
+:where(html[data-hf-skin][data-theme="dark"]) .tcta-orb { background: radial-gradient(circle at 35% 30%, rgb(var(--k-255a41)) 0, rgb(var(--k-34d399)) 36%, rgb(var(--k-059669)) 72%, rgb(var(--k-047857)) 100%); }
+:where(html[data-hf-skin][data-theme="dark"]) .tt-chip { background: rgb(var(--k-183f2d)); border: 1.5px solid rgb(var(--k-295b44)); color: rgb(var(--k-90efd4)); }
+:where(html[data-hf-skin][data-theme="dark"]) .tt-chip:active { background: rgb(var(--k-1c4a32)); }
+:where(html[data-hf-skin][data-theme="dark"]) .st-done { color: rgb(var(--k-7bf0cf)); }
+:where(html[data-hf-skin][data-theme="dark"]) .st-now { color: rgb(var(--k-7bf0cf)); }
+:where(html[data-hf-skin][data-theme="dark"]) .checks svg { color: rgb(var(--k-62edc2)); }
+:where(html[data-hf-skin][data-theme="dark"]) .btn-done { background: rgb(var(--k-183f2d)); color: rgb(var(--k-90efd4)); border: 2px solid rgb(var(--k-295b44)); box-shadow: 0 4px 0 rgb(var(--k-295b44)); }
+:where(html[data-hf-skin][data-theme="dark"]) .st-h3 { color: rgb(var(--k-7bf0cf)); }
+:where(html[data-hf-skin][data-theme="dark"]) .st-link:hover { border-color: rgb(var(--k-346e57)); }
+:where(html[data-hf-skin][data-theme="dark"]) .st-link:focus-visible { border-color: rgb(var(--k-346e57)); }
+:where(html[data-hf-skin][data-theme="dark"]) .st-steps { background: rgb(var(--k-183f2d)); border: 1px solid rgb(var(--k-295b44)); color: rgb(var(--k-90efd4)); }
+:where(html[data-hf-skin][data-theme="dark"]) .st-seg button[aria-checked="true"] { color: rgb(var(--k-7bf0cf)); }
+:where(html[data-hf-skin][data-theme="dark"]) .pod { background: radial-gradient(120% 80% at 50% 0%, #524D19 0%, #163346 46%, rgb(var(--k-183f2d)) 100%); }
+:where(html[data-hf-skin][data-theme="dark"]) .pod-col.is-me .pod-av img { box-shadow: 0 0 0 4px #222D3E, 0 0 0 8px rgb(var(--k-10b981)), 0 6px 14px rgb(var(--k-10b981) / 0.45); }
+:where(html[data-hf-skin][data-theme="dark"]) .pod-col.is-me .pod-name { color: rgb(var(--k-7bf0cf)); }
+:where(html[data-hf-skin][data-theme="dark"]) .lb-row.is-me { background: linear-gradient(90deg, rgb(var(--k-1c4a32)), rgb(var(--k-183f2d)) 70%); }
+:where(html[data-hf-skin][data-theme="dark"]) .lb-row.is-me .lb-t h3 { color: rgb(var(--k-9ff0da)); }
+:where(html[data-hf-skin][data-theme="dark"]) .lb-row.is-me .lb-rank { color: rgb(var(--k-7bf0cf)); }
+:where(html[data-hf-skin][data-theme="dark"]) .lb-more { color: rgb(var(--k-7bf0cf)); border: 2px solid rgb(var(--k-295b44)); box-shadow: 0 3px 0 rgb(var(--k-295b44)); }
+:where(html[data-hf-skin][data-theme="dark"]) .lb-more:active:not([disabled]) { box-shadow: 0 1px 0 rgb(var(--k-295b44)); }
+:where(html[data-hf-skin][data-theme="dark"]) .tt-credit { background: rgb(var(--k-183f2d)); border: 1.5px solid rgb(var(--k-295b44)); color: rgb(var(--k-90efd4)); }
+:where(html[data-hf-skin][data-theme="dark"]) .tt-perks svg { color: rgb(var(--k-62edc2)); }
+:where(html[data-hf-skin][data-theme="dark"]) .tt-line.you { color: rgb(var(--k-7bf0cf)); }
+:where(html[data-hf-skin][data-theme="dark"]) .tt-turn.past .tt-line.you { color: rgb(var(--k-7bf0cf)); }
+:where(html[data-hf-skin][data-theme="dark"]) .tt-turn.past .tt-line.you::before { background: rgb(var(--k-1c4a32)); }
+:where(html[data-hf-skin][data-theme="dark"]) [style*="color:#047857"] { color: rgb(var(--k-6ee7b7)) !important; }
+:where(html[data-hf-skin][data-theme="dark"]) .st-seg button[aria-checked="true"] { color: rgb(var(--k-6ee7b7)); }
+
+/* ══════════ 6. จาก scripts/skins-manual.css ══════════ */
+/* ปรับธีมรางวัลเฉพาะจุดที่การแทนสีอัตโนมัติ (scripts/gen-skins-css.mjs) ทำไม่ได้ — ต่อท้าย css/skins.css ตามลำดับนี้ */
+
+/* พื้นหน้าเว็บ: โทนของธีม (หน้า Tailwind ใช้คลาส bg-[#EEF4F8] บน wrapper) */
+html[data-hf-skin]:not([data-theme="dark"]) body,
+html[data-hf-skin]:not([data-theme="dark"]) [data-barba="wrapper"],
+html[data-hf-skin]:not([data-theme="dark"]) [class~="bg-[#EEF4F8]"] { background-color: var(--sk-page); }
+html[data-hf-skin][data-theme="dark"],
+html[data-hf-skin][data-theme="dark"] body,
+html[data-hf-skin][data-theme="dark"] [data-barba="wrapper"],
+html[data-hf-skin][data-theme="dark"] [class~="bg-[#EEF4F8]"] { background-color: var(--sk-d-bg); }
+
+/* ข้อความที่ถูกเลือก และเส้นโฟกัส */
+html[data-hf-skin] ::selection { background: rgb(var(--sk-rgb) / .28); }

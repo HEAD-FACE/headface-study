@@ -5,9 +5,15 @@
 // รูปแบบใน HTML:
 //   <span class="hf-ring-host" data-hf-ring data-ring-surface="on-color"><img data-hf-avatar class="skl" ...></span>
 //   <span data-hf-plan-chip hidden class="hf-plan-tag"></span>
+//
+// ธีมรางวัล: คำตอบเดียวกันบอกด้วยว่านักเรียนใส่ธีมอะไร (theme.key) → window.HFTheme.setSkin (js/theme.js) วาดทั้งหน้าและจำไว้ในคุกกี้
+// ให้การเปิดหน้าครั้งถัดไปได้สีที่ถูกตั้งแต่ก่อนวาด เซิร์ฟเวอร์เป็นผู้ตัดสินว่าใส่ธีมไหนได้ (ธีมของ PLUS/MAX หมดไปพร้อมแพลน)
 
 const PLAN_TIERS = ['free', 'plus', 'max'];
 const PLAN_LABELS = { plus: 'PLUS', max: 'MAX' };
+// ธีมที่ css/skins.css รู้จัก และแพลนที่ธีมของแพลนต้องมี (ตรงกับ SKIN_KEYS / SKIN_PLANS ใน js/profile-avatar.js ของเว็บหลัก)
+export const SKIN_KEYS = ['ocean', 'aurora', 'gold'];
+export const SKIN_PLANS = { aurora: 'plus', gold: 'max' };
 const BADGE_SESSION_KEY = 'study_plan_badge';
 const BADGE_START_DELAY_MS = 700;
 const BADGE_LIFETIME_MS = 3800;
@@ -33,10 +39,36 @@ export function normalizeIdentity(data) {
     if (!data || typeof data !== 'object' || !data.plan || !data.avatar) return null;
     const url = data.avatar.url;
     if (typeof url !== 'string' || !/^https:\/\//i.test(url) && !/^http:\/\/(localhost|127\.0\.0\.1)(:|\/)/i.test(url)) return null;
-    return {
+    const identity = {
         plan: { id: String(data.plan.id || 'free'), display_name: String(data.plan.display_name || '') },
         avatar: { url },
     };
+    // เซิร์ฟเวอร์รุ่นที่รู้จักธีมส่ง theme มาเสมอ (null = ไม่ใส่); รุ่นเก่าไม่มีฟิลด์นี้ → ไม่แตะธีมของหน้า
+    if (data.theme !== undefined) {
+        const key = data.theme && typeof data.theme === 'object' ? String(data.theme.key || '') : '';
+        identity.theme = SKIN_KEYS.includes(key) ? { key } : null;
+        const ends = Number(data.plan.expires_at);
+        identity.plan.expires_at = Number.isFinite(ends) && ends > 0 ? ends : null;
+    }
+    return identity;
+}
+
+/** ธีมที่ต้องวาดตอนนี้ ("" = หน้าตาปกติ): ธีมของ PLUS/MAX ต้องมีแพลนถึงและยังไม่หมดอายุ */
+export function skinOf(identity, now = Date.now()) {
+    const key = identity?.theme?.key || '';
+    if (!SKIN_KEYS.includes(key)) return '';
+    const need = SKIN_PLANS[key];
+    if (!need) return key;
+    if (PLAN_TIERS.indexOf(planTierOf(identity)) < PLAN_TIERS.indexOf(need)) return '';
+    const ends = Number(identity.plan?.expires_at);
+    return ends > 0 && now >= ends ? '' : key;
+}
+
+/** วาดธีมรางวัลทั้งหน้าและจำไว้ (js/theme.js) — ไม่ทำอะไรถ้าเซิร์ฟเวอร์ไม่ได้บอกเรื่องธีม */
+export function applySkin(identity, theme = typeof window !== 'undefined' ? window.HFTheme : null) {
+    if (!identity || identity.theme === undefined || !theme || typeof theme.setSkin !== 'function') return null;
+    const key = skinOf(identity);
+    return theme.setSkin(key, key && SKIN_PLANS[key] ? identity.plan?.expires_at || 0 : 0);
 }
 
 export function avatarSrcOf(identity) {
@@ -124,6 +156,7 @@ export async function initIdentity({ fetcher, root } = {}) {
         return null;
     }
     applyIdentity(identity, root);
+    try { applySkin(identity); } catch (_) { /* ธีมเป็นเพียงสี: หน้าใช้งานได้ตามปกติ */ }
     setTimeout(() => { try { showPlanBadge(identity); } catch (_) { /* เพียงลูกเล่น */ } }, BADGE_START_DELAY_MS);
     return identity;
 }

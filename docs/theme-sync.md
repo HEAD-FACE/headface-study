@@ -53,3 +53,18 @@ function writeCookie(mode) {
 
 ## ความเป็นส่วนตัว
 คุกกี้มีแค่คำว่า `light`/`dark` ไม่ผูกกับบัญชีและไม่มีข้อมูลส่วนตัว
+
+## ธีมรางวัล (ทะเลยามเช้า / แสงเหนือ / ราตรีทองคำ) — ทำแล้วทั้งสองฝั่ง
+นักเรียนเลือกธีมที่หน้าโปรไฟล์ของเว็บหลัก แล้วทั้งแอปรวม Study เปลี่ยนสี (`css/skins.css`, สร้างจาก `scripts/gen-skins-css.mjs`)
+
+| รายการ | ค่า |
+|---|---|
+| ชื่อคุกกี้ | `hf_skin` (production) / `hf_skin_beta` (preview และ localhost) |
+| ค่า | `<ชื่อธีม>.<เวลาที่แพลนหมดอายุเป็น ms หรือ 0>` เช่น `gold.1794000000000`, `ocean.0` (ไม่ใส่ธีม = ไม่มีคุกกี้) |
+| โดเมน / พาธ | `Domain=.headface.app; Path=/; SameSite=Lax; Secure; Max-Age=31536000` |
+| ใครเขียน | เว็บหลัก (`js/theme-init.js` ทุกครั้งที่โหลดหน้า และเมื่อเลือกธีม) และ Study (`js/theme.js` `HFTheme.setSkin` เมื่อเซิร์ฟเวอร์ตอบ) |
+| ใครอ่าน | `js/theme.js` ของ Study ก่อนวาดหน้า → `<html data-hf-skin="...">` |
+
+ผู้ตัดสินจริงคือเซิร์ฟเวอร์: `js/study-identity.js` อ่าน `theme.key` จาก `GET /api/profile/identity` ทุกครั้งที่เปิดหน้า แล้วแก้คุกกี้ให้ตรง
+(ธีมของ PLUS/MAX หมดไปพร้อมแพลน; คุกกี้มีเวลาหมดแพลนไว้ด้วย หน้าแรกจึงไม่วาดธีมที่หมดสิทธิ์แล้ว)
+เพิ่มธีมใหม่: ใส่ใน `scripts/skin-themes.mjs` (ชุดเดียวกับเว็บหลัก) + `SKINS` ใน `js/theme.js` + `SKIN_KEYS` ใน `js/study-identity.js` แล้วรัน `node scripts/gen-skins-css.mjs`

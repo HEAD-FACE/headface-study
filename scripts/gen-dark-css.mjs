@@ -22,7 +22,7 @@ const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DARK = ':where(html[data-theme="dark"])';
 
 // ───────────── สี ─────────────
-function parseColor(token) {
+export function parseColor(token) {
     let m = /^#([0-9a-f]{3,8})$/i.exec(token);
     if (m) {
         let h = m[1];
@@ -35,7 +35,7 @@ function parseColor(token) {
     return null;
 }
 
-function toHsl({ r, g, b }) {
+export function toHsl({ r, g, b }) {
     r /= 255; g /= 255; b /= 255;
     const max = Math.max(r, g, b);
     const min = Math.min(r, g, b);
@@ -50,7 +50,7 @@ function toHsl({ r, g, b }) {
     return { h: h * 60, s, l };
 }
 
-function fromHsl({ h, s, l }) {
+export function fromHsl({ h, s, l }) {
     const c = (1 - Math.abs(2 * l - 1)) * s;
     const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
     const m = l - c / 2;
@@ -145,7 +145,7 @@ function roleOf(prop) {
 }
 
 // ───────────── ตัวอ่าน CSS แบบย่อ ─────────────
-function stripComments(css) {
+export function stripComments(css) {
     let out = '';
     for (let i = 0; i < css.length; i += 1) {
         const ch = css[i];
@@ -164,7 +164,7 @@ function stripComments(css) {
 }
 
 /** ตัด string ตามตัวคั่นเฉพาะที่ระดับนอกสุด (ไม่ตัดในวงเล็บ/เครื่องหมายคำพูด) */
-function splitTop(text, sep) {
+export function splitTop(text, sep) {
     const parts = [];
     let depth = 0;
     let quote = null;
@@ -182,7 +182,7 @@ function splitTop(text, sep) {
 }
 
 /** อ่านเป็นต้นไม้: { type: 'rule', selector, body } | { type: 'at', prelude, children?, body? } */
-function parseBlocks(css) {
+export function parseBlocks(css) {
     const nodes = [];
     let i = 0;
     const n = css.length;
@@ -234,7 +234,7 @@ function parseBlocks(css) {
     return nodes;
 }
 
-function parseDecls(body) {
+export function parseDecls(body) {
     return splitTop(body, ';').map((d) => d.trim()).filter(Boolean).map((d) => {
         const idx = d.indexOf(':');
         if (idx < 0) return null;

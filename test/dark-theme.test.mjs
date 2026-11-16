@@ -125,8 +125,8 @@ describe('css/dark.css', () => {
         for (const sel of selectors) for (const part of sel.split(',')) assert.match(part.trim(), /^(:where\(html\[data-theme="dark"\]\)|html\[data-theme="dark"\])/, part);
     });
 
-    test('ครอบคลุมทุกไฟล์ CSS ของ Study (ยกเว้น dark.css เอง) — เพิ่มไฟล์ใหม่ต้องใส่ใน SOURCES', () => {
-        const all = fs.readdirSync(path.join(root, 'css')).filter((f) => f.endsWith('.css') && f !== 'dark.css').sort();
+    test('ครอบคลุมทุกไฟล์ CSS ของ Study (ยกเว้นไฟล์ที่สร้างอัตโนมัติ: dark.css และ skins.css) — เพิ่มไฟล์ใหม่ต้องใส่ใน SOURCES', () => {
+        const all = fs.readdirSync(path.join(root, 'css')).filter((f) => f.endsWith('.css') && f !== 'dark.css' && f !== 'skins.css').sort();
         assert.deepEqual([...SOURCES].sort(), all);
     });
 
@@ -161,7 +161,7 @@ describe('css/dark.css', () => {
 
 describe('หน้าทั้งหมด', () => {
     for (const page of PAGES) {
-        test(`${page}: โหลด theme.js ใน <head> ก่อนสไตล์ และ dark.css เป็นสไตล์สุดท้าย`, () => {
+        test(`${page}: โหลด theme.js ใน <head> ก่อนสไตล์ และ dark.css ตามด้วย skins.css (ธีมรางวัล) เป็นสไตล์สุดท้าย`, () => {
             const html = norm(read(page));
             const head = html.slice(html.indexOf('<head>'), html.indexOf('</head>'));
             const themeAt = head.indexOf('src="/js/theme.js"');
@@ -170,7 +170,7 @@ describe('หน้าทั้งหมด', () => {
             const firstCss = head.indexOf('rel="stylesheet" href="css/');
             assert.ok(firstCss > themeAt, 'theme.js ต้องมาก่อนสไตล์แรก');
             const links = [...head.matchAll(/<link rel="stylesheet" href="(css\/[^"]+)"/g)].map((m) => m[1]);
-            assert.equal(links.at(-1), 'css/dark.css');
+            assert.deepEqual(links.slice(-2), ['css/dark.css', 'css/skins.css'], 'ธีมมืดต้องมาหลังสไตล์สว่างทั้งหมด และธีมรางวัลมาหลังธีมมืด');
         });
     }
 
