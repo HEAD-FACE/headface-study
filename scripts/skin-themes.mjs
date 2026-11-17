@@ -1,5 +1,6 @@
-// The three themes as data: colours, art (readable SVG, encoded for CSS) and the tokens derived from them.
-// Used by gen-main.mjs (headface/css/skins.css) and gen-study.mjs (headface-study/css/skins.css) so both sites wear the same tone.
+// The themes as data: colours, art (readable SVG, encoded for CSS) and the tokens derived from them.
+// Used by gen-skins-css.mjs (this site) and, for the main site, by hand / a one-off script (headface/css/skins.css parts 1 and 4) so
+// both sites wear the same tone (test/skins.test.mjs checks that the colours agree).
 
 export const enc = (svg) => `url("data:image/svg+xml,${svg.replace(/\s+/g, ' ').replace(/> </g, '><').trim()
   .replace(/%/g, '%25').replace(/#/g, '%23').replace(/</g, '%3C').replace(/>/g, '%3E').replace(/"/g, "'").replace(/\{/g, '%7B').replace(/\}/g, '%7D')}")`;
@@ -57,6 +58,38 @@ const fan = (mirror) => {
 };
 const goldDust = stars(300, 160, [[14, 20, 1.2, .7], [62, 88, .8, .5], [110, 30, 1.5, .55], [150, 130, .9, .6], [196, 64, 1.1, .45], [240, 18, .7, .5], [276, 110, 1.3, .6], [40, 146, .7, .4], [222, 150, .6, .45], [90, 140, 1, .35], [130, 74, .6, .5], [290, 58, .8, .4]], '#f3d98f');
 
+// neon: a night city. The floor is a glowing grid in perspective (fixed size, fastened to the bottom of the band), a skyline with a
+// magenta rim stands on it, and the lit windows / signs of the same skyline are a layer of their own that flickers (opacity only).
+const neonGrid = (() => {
+  const W = 1600, H = 60, vx = 800, vy = -70;
+  const rows = [0, 4, 9, 15, 23, 33, 46, 60].map((y, i) => `<path stroke-opacity="${r(.22 + i * .07)}" d="M0 ${y}H${W}"/>`).join('');
+  const cols = [];
+  for (let k = -16; k <= 16; k += 1) {
+    const xb = vx + k * 100;
+    const xt = vx + (xb - vx) * (-vy / (H - vy));
+    cols.push(`<path d="M${r(xt)} 0L${xb} ${H}"/>`);
+  }
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><g fill="none" stroke="#22e4ff" stroke-width="1.2">${rows}<g stroke-opacity=".38">${cols.join('')}</g></g><path d="M0 .8H${W}" stroke="#ff4fd8" stroke-opacity=".8" stroke-width="1.6"/></svg>`;
+})();
+// the skyline: [x, width, height] of each block on a 520 x 96 tile (repeats sideways seamlessly: nothing touches the edges)
+const NEON_BLOCKS = [[6, 34, 52], [44, 22, 74], [70, 40, 40], [114, 26, 88], [144, 46, 58], [194, 18, 70], [216, 38, 46], [258, 30, 92], [292, 44, 62], [340, 20, 80], [364, 42, 50], [410, 28, 84], [442, 36, 56], [482, 30, 68]];
+const neonSkyline = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 96"><g fill="#0a0420" fill-opacity=".92" stroke="#ff4fd8" stroke-opacity=".55" stroke-width="1">${NEON_BLOCKS.map(([x, w, h]) => `<path d="M${x} 96V${96 - h}H${x + w}V96"/>`).join('')}</g><path d="M128 8V14M128 8l-3 4h6z" stroke="#ff4fd8" stroke-opacity=".7" fill="none"/></svg>`;
+const neonLights = (() => {
+  const out = [];
+  NEON_BLOCKS.forEach(([x, w, h], i) => {
+    for (let row = 0; row < Math.floor((h - 10) / 11); row += 1) {
+      for (let col = 0; col < Math.floor((w - 6) / 8); col += 1) {
+        if ((i * 7 + row * 3 + col * 5) % 4 !== 0) continue;
+        const cyan = (i + row + col) % 3 !== 0;
+        out.push(`<rect x="${x + 4 + col * 8}" y="${96 - h + 7 + row * 11}" width="3" height="4" fill="${cyan ? '#22e4ff' : '#ff8ae0'}" fill-opacity="${cyan ? '.8' : '.75'}"/>`);
+      }
+    }
+  });
+  // two signs: a cyan bar on one roof, a magenta bar on the side of another
+  out.push('<rect x="262" y="8" width="22" height="2.5" rx="1" fill="#22e4ff"/>', '<rect x="301" y="40" width="2.5" height="14" rx="1" fill="#ff4fd8"/>');
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 96">${out.join('')}</svg>`;
+})();
+
 // ---------------------------------------------------------------- the themes
 // ramp: 50 100 200 400 500 600 700 (600 = the main colour). dark: the dark mode surfaces bg s1 s2 s3 s4.
 // images: i1.. (the art). band / mini: the art layers of the header band (fixed pixel sizes: nothing is drawn again when the band grows)
@@ -96,8 +129,22 @@ export const THEMES = {
     bandDark: 'var(--sk-i1) right bottom / auto 200px no-repeat, var(--sk-i2) left bottom / auto 124px no-repeat',
     mini: 'var(--sk-i1) right bottom / auto 100% no-repeat, var(--sk-i2) left bottom / auto 62% no-repeat',
     miniDark: 'var(--sk-i1) right bottom / auto 100% no-repeat, var(--sk-i2) left bottom / auto 62% no-repeat'
+  },
+  neon: {
+    title: 'นีออนซิตี้ (neon city): a night city in hot pink and cyan: a glowing grid floor, a skyline with a neon rim, a scan of light now and then,\n   windows and signs that flicker, HUD corners on the homework cards (part 6). A REWARD theme like ocean (sold, won or given).',
+    ramp: { 50: '#fdf0fb', 100: '#f9dcf3', 200: '#f2b5e6', 400: '#e05cc6', 500: '#cc35ad', 600: '#b0218f', 700: '#8f1873' },
+    lightRgb: '255 140 225', textDark: '#ff8ae0', page: '#f7f3fa', meta: '#0b0620', glow: '#22e4ff', spark: '#22e4ff',
+    dark: ['#08060f', '#0f0c1a', '#151124', '#1c172f', '#251e3b'],
+    images: { i1: neonGrid, i2: neonSkyline, i3: neonLights },
+    base: 'radial-gradient(90% 120% at 86% -12%, rgba(255, 46, 196, .5), rgba(255, 46, 196, 0) 56%), radial-gradient(80% 120% at 4% 118%, rgba(34, 228, 255, .3), rgba(34, 228, 255, 0) 60%), linear-gradient(170deg, #06031a 0%, #12073a 55%, #250850 100%)',
+    baseDark: 'radial-gradient(90% 120% at 86% -12%, rgba(255, 46, 196, .34), rgba(255, 46, 196, 0) 56%), radial-gradient(80% 120% at 4% 118%, rgba(34, 228, 255, .2), rgba(34, 228, 255, 0) 60%), linear-gradient(170deg, #04020f 0%, #0b0526 55%, #170536 100%)',
+    band: 'var(--sk-i2) left bottom 44px / 520px 96px repeat-x, var(--sk-i1) center bottom / 1600px 46px no-repeat',
+    bandDark: 'var(--sk-i2) left bottom 44px / 520px 96px repeat-x, var(--sk-i1) center bottom / 1600px 46px no-repeat',
+    mini: 'var(--sk-i2) left bottom / 208px 38px repeat-x', miniDark: 'var(--sk-i2) left bottom / 208px 38px repeat-x'
   }
 };
+/** The themes whose header band moves (part 4 / the motion section). */
+export const MOVING = ['aurora', 'gold', 'neon'];
 
 /** The variables of one theme, as CSS declarations (no selector). `withArt` false = colours only. */
 export function themeVars(key, { withArt = true } = {}) {
@@ -146,9 +193,9 @@ export function themeVars(key, { withArt = true } = {}) {
  */
 export function motionCss({ band, preview = null, pauseWhen = [] }) {
   const list = (key, pseudo) => [band(key) + pseudo, preview ? preview(key) + pseudo : ''].filter(Boolean).join(', ');
-  const all = (pseudo) => ['aurora', 'gold'].map((k) => list(k, pseudo)).join(',\n');
+  const all = (pseudo) => MOVING.map((k) => list(k, pseudo)).join(',\n');
   const mini = (css) => (preview ? css + '\n' : '');
-  return `${[band('aurora'), band('gold'), ...(preview ? [preview('aurora'), preview('gold')] : [])].join(', ')} { overflow: hidden; }
+  return `${[...MOVING.map(band), ...(preview ? MOVING.map(preview) : [])].join(', ')} { overflow: hidden; }
 ${all('::before')},
 ${all('::after')} { content: ""; position: absolute; pointer-events: none; will-change: transform, opacity; }
 
@@ -176,6 +223,17 @@ ${mini(`${preview ? preview('gold') : ''}::after { top: 0; left: 0; right: 0; he
 @keyframes hf-sk-sheen { 0% { transform: translate3d(-110%, 0, 0); } 45%, 100% { transform: translate3d(330%, 0, 0); } }
 @keyframes hf-sk-rise { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(0, -160px, 0); } }
 ${mini('@keyframes hf-sk-rise-mini { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(0, -80px, 0); } }')}
+/* neon: a neon line under the band, a scan of light running down now and then, the lit windows and signs flicker */
+${band('neon')} { box-shadow: inset 0 -2px 0 rgba(255, 79, 216, .75), 0 12px 30px -14px rgba(255, 46, 196, .6); }
+${band('neon')}::before { top: 0; left: 0; right: 0; height: 110px; }
+${mini(`${preview ? preview('neon') : ''}::before { top: 0; left: 0; right: 0; height: 60%; }`)}${list('neon', '::before')} {
+  background: linear-gradient(180deg, rgba(34, 228, 255, 0) 0%, rgba(34, 228, 255, .07) 38%, rgba(34, 228, 255, .22) 49%, rgba(225, 252, 255, .5) 50%, rgba(255, 79, 216, .16) 52%, rgba(255, 79, 216, 0) 68%);
+  transform: translate3d(0, -120px, 0); animation: hf-sk-scan 7s cubic-bezier(.5, 0, .5, 1) infinite;
+}
+${mini(`${preview ? preview('neon') : ''}::before { transform: translate3d(0, -100%, 0); animation-name: hf-sk-scan-mini; }
+@keyframes hf-sk-scan-mini { 0% { transform: translate3d(0, -100%, 0); } 55%, 100% { transform: translate3d(0, 280%, 0); } }`)}${band('neon')}::after { left: 0; right: 0; bottom: 44px; height: 96px; background: var(--sk-i3) left top / 520px 96px repeat-x; animation: hf-sk-flicker 6s steps(1, end) infinite; }
+${mini(`${preview ? preview('neon') : ''}::after { left: 0; right: 0; bottom: 0; height: 38px; background: var(--sk-i3) left top / 208px 38px repeat-x; animation: hf-sk-flicker 6s steps(1, end) infinite; }`)}@keyframes hf-sk-scan { 0% { transform: translate3d(0, -120px, 0); } 55%, 100% { transform: translate3d(0, 480px, 0); } }
+@keyframes hf-sk-flicker { 0% { opacity: .95; } 7% { opacity: .35; } 9% { opacity: .95; } 46% { opacity: .8; } 48% { opacity: .2; } 50% { opacity: .9; } 52% { opacity: .5; } 54% { opacity: 1; } 88% { opacity: .85; } }
 ${mini(`/* a small preview moves only while it is the one chosen (or under the pointer): a window full of previews stays still */
 [data-hf-skin-preview] .sk-band::before, [data-hf-skin-preview] .sk-band::after { animation-play-state: paused; }
 .is-selected > .cp-preview [data-hf-skin-preview] .sk-band::before, .is-selected > .cp-preview [data-hf-skin-preview] .sk-band::after,
@@ -183,9 +241,9 @@ ${mini(`/* a small preview moves only while it is the one chosen (or under the p
 ${pauseWhen.map((sel) => `${sel}::before, ${sel}::after`).join(',\n')} { animation-play-state: paused; }
 ` : ''}
 @media (prefers-reduced-motion: reduce) {
-  ${[band('aurora'), band('gold')].flatMap((b) => [`${b}::before`, `${b}::after`]).join(', ')}${preview ? `,
+  ${MOVING.map(band).flatMap((b) => [`${b}::before`, `${b}::after`]).join(', ')}${preview ? `,
   [data-hf-skin-preview] .sk-band::before, [data-hf-skin-preview] .sk-band::after` : ''} { animation: none; }
-  ${[band('gold') + '::before', preview ? preview('gold') + '::before' : ''].filter(Boolean).join(', ')} { display: none; }
+  ${['gold', 'neon'].flatMap((k) => [band(k) + '::before', preview ? preview(k) + '::before' : '']).filter(Boolean).join(', ')} { display: none; }
 }
 `;
 }

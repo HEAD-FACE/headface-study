@@ -71,7 +71,7 @@
   }
 
   // ───── ธีมรางวัล: ชื่อธีมที่ css/skins.css รู้จัก และสีแถบสถานะของแต่ละธีม (ต้องตรงกับ SKINS ใน js/theme-init.js ของเว็บหลัก) ─────
-  var SKINS = { ocean: "#0b7f95", aurora: "#1f1050", gold: "#101221" };
+  var SKINS = { ocean: "#0b7f95", aurora: "#1f1050", gold: "#101221", neon: "#0b0620" };
 
   // production (study.headface.app) กับ preview (beta-study.headface.app, localhost) ใช้คุกกี้คนละชื่อ เหมือนคุกกี้ล็อกอิน
   function skinCookieName() {

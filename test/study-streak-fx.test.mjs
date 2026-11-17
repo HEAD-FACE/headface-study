@@ -34,10 +34,11 @@ const reply = (body) => ({ ok: true, status: 200, json: async () => body });
 
 describe('เติมไฟ: ข้อความและธง', () => {
     test('วันแรก / ต่อเนื่องหลายวัน', () => {
-        assert.deepEqual(S.litMessage({ current: 1, extended: false }), { title: 'ได้รับไฟแล้ววันนี้!', sub: 'เริ่มนับ Streak วันแรกแล้ว!', days: 1 });
-        assert.deepEqual(S.litMessage({ current: 6, extended: true }), { title: 'ได้รับไฟแล้ววันนี้!', sub: 'ต่อเนื่อง 6 วันแล้ว รักษาไฟไว้ให้ได้นะ', days: 6 });
+        assert.deepEqual(S.litMessage({ current: 1, extended: false }), { title: 'ได้รับไฟแล้ววันนี้!', sub: 'เริ่มนับ Streak วันแรกแล้ว!', days: 1, won: 0 });
+        assert.deepEqual(S.litMessage({ current: 6, extended: true }), { title: 'ได้รับไฟแล้ววันนี้!', sub: 'ต่อเนื่อง 6 วันแล้ว รักษาไฟไว้ให้ได้นะ', days: 6, won: 0 });
         assert.equal(S.litMessage(null).days, 1);
         assert.equal(S.litMessage({ current: 'x' }).days, 1);
+        assert.equal(S.litMessage({ current: 7, extended: true, activityAwards: 1 }).sub, 'ต่อเนื่อง 7 วันแล้ว รักษาไฟไว้ให้ได้นะ · ได้รางวัลกิจกรรม กดรับได้ที่ HEADFACE', 'a HEADFACE activity paid today: say where to claim it');
     });
     test('ธง "เพิ่งติดไฟ": ตั้งแล้วอ่านได้ครั้งเดียว', () => {
         store.clear();

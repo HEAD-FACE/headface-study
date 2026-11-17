@@ -214,17 +214,89 @@ html[data-hf-skin="gold"] {
   --k-ecfdf5: 251 246 234;
 }
 
+/* นีออนซิตี้ (neon city): a night city in hot pink and cyan: a glowing grid floor, a skyline with a neon rim, a scan of light now and then, */
+html[data-hf-skin="neon"] {
+  --sk-50: #fdf0fb;
+  --sk-100: #f9dcf3;
+  --sk-200: #f2b5e6;
+  --sk-400: #e05cc6;
+  --sk-500: #cc35ad;
+  --sk-600: #b0218f;
+  --sk-700: #8f1873;
+  --sk-rgb: 176 33 143;
+  --sk-200-rgb: 242 181 230;
+  --sk-light-rgb: 255 140 225;
+  --sk-text-dark: #ff8ae0;
+  --sk-page: #f7f3fa;
+  --sk-meta: #0b0620;
+  --sk-glow: #22e4ff;
+  --sk-spark: #22e4ff;
+  --sk-lx-accent: #b0218f;
+  --sk-lx-hover: #971c7b;
+  --sk-lx-text: #8f1873;
+  --sk-paper-2: #f2e4f3;
+  --sk-paper-3: #f4eaf5;
+  --sk-line: #ebcfe8;
+  --sk-line-2: #e2b4da;
+  --sk-paper-2-rgb: 242 228 243;
+  --sk-d-bg: #08060f;
+  --sk-d-s1: #0f0c1a;
+  --sk-d-s2: #151124;
+  --sk-d-s3: #1c172f;
+  --sk-d-s4: #251e3b;
+  --sk-d-line-2: #3b354f;
+  --sk-d-soft: #410f3b;
+  --sk-d-hover: #ffade9;
+  --sk-d-s1-rgb: 15 12 26;
+  --sk-d-s2-rgb: 21 17 36;
+  --sk-d-s3-rgb: 28 23 47;
+  --sk-i1: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 60' preserveAspectRatio='none'%3E%3Cg fill='none' stroke='%2322e4ff' stroke-width='1.2'%3E%3Cpath stroke-opacity='0.2' d='M0 0H1600'/%3E%3Cpath stroke-opacity='0.3' d='M0 4H1600'/%3E%3Cpath stroke-opacity='0.4' d='M0 9H1600'/%3E%3Cpath stroke-opacity='0.4' d='M0 15H1600'/%3E%3Cpath stroke-opacity='0.5' d='M0 23H1600'/%3E%3Cpath stroke-opacity='0.6' d='M0 33H1600'/%3E%3Cpath stroke-opacity='0.6' d='M0 46H1600'/%3E%3Cpath stroke-opacity='0.7' d='M0 60H1600'/%3E%3Cg stroke-opacity='.38'%3E%3Cpath d='M-61.5 0L-800 60'/%3E%3Cpath d='M-7.7 0L-700 60'/%3E%3Cpath d='M46.2 0L-600 60'/%3E%3Cpath d='M100 0L-500 60'/%3E%3Cpath d='M153.8 0L-400 60'/%3E%3Cpath d='M207.7 0L-300 60'/%3E%3Cpath d='M261.5 0L-200 60'/%3E%3Cpath d='M315.4 0L-100 60'/%3E%3Cpath d='M369.2 0L0 60'/%3E%3Cpath d='M423.1 0L100 60'/%3E%3Cpath d='M476.9 0L200 60'/%3E%3Cpath d='M530.8 0L300 60'/%3E%3Cpath d='M584.6 0L400 60'/%3E%3Cpath d='M638.5 0L500 60'/%3E%3Cpath d='M692.3 0L600 60'/%3E%3Cpath d='M746.2 0L700 60'/%3E%3Cpath d='M800 0L800 60'/%3E%3Cpath d='M853.8 0L900 60'/%3E%3Cpath d='M907.7 0L1000 60'/%3E%3Cpath d='M961.5 0L1100 60'/%3E%3Cpath d='M1015.4 0L1200 60'/%3E%3Cpath d='M1069.2 0L1300 60'/%3E%3Cpath d='M1123.1 0L1400 60'/%3E%3Cpath d='M1176.9 0L1500 60'/%3E%3Cpath d='M1230.8 0L1600 60'/%3E%3Cpath d='M1284.6 0L1700 60'/%3E%3Cpath d='M1338.5 0L1800 60'/%3E%3Cpath d='M1392.3 0L1900 60'/%3E%3Cpath d='M1446.2 0L2000 60'/%3E%3Cpath d='M1500 0L2100 60'/%3E%3Cpath d='M1553.8 0L2200 60'/%3E%3Cpath d='M1607.7 0L2300 60'/%3E%3Cpath d='M1661.5 0L2400 60'/%3E%3C/g%3E%3C/g%3E%3Cpath d='M0 .8H1600' stroke='%23ff4fd8' stroke-opacity='.8' stroke-width='1.6'/%3E%3C/svg%3E");
+  --sk-i2: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 520 96'%3E%3Cg fill='%230a0420' fill-opacity='.92' stroke='%23ff4fd8' stroke-opacity='.55' stroke-width='1'%3E%3Cpath d='M6 96V44H40V96'/%3E%3Cpath d='M44 96V22H66V96'/%3E%3Cpath d='M70 96V56H110V96'/%3E%3Cpath d='M114 96V8H140V96'/%3E%3Cpath d='M144 96V38H190V96'/%3E%3Cpath d='M194 96V26H212V96'/%3E%3Cpath d='M216 96V50H254V96'/%3E%3Cpath d='M258 96V4H288V96'/%3E%3Cpath d='M292 96V34H336V96'/%3E%3Cpath d='M340 96V16H360V96'/%3E%3Cpath d='M364 96V46H406V96'/%3E%3Cpath d='M410 96V12H438V96'/%3E%3Cpath d='M442 96V40H478V96'/%3E%3Cpath d='M482 96V28H512V96'/%3E%3C/g%3E%3Cpath d='M128 8V14M128 8l-3 4h6z' stroke='%23ff4fd8' stroke-opacity='.7' fill='none'/%3E%3C/svg%3E");
+  --sk-i3: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 520 96'%3E%3Crect x='10' y='51' width='3' height='4' fill='%23ff8ae0' fill-opacity='.75'/%3E%3Crect x='18' y='62' width='3' height='4' fill='%2322e4ff' fill-opacity='.8'/%3E%3Crect x='26' y='73' width='3' height='4' fill='%2322e4ff' fill-opacity='.8'/%3E%3Crect x='56' y='29' width='3' height='4' fill='%2322e4ff' fill-opacity='.8'/%3E%3Crect x='48' y='62' width='3' height='4' fill='%2322e4ff' fill-opacity='.8'/%3E%3Crect x='56' y='73' width='3' height='4' fill='%23ff8ae0' fill-opacity='.75'/%3E%3Crect x='90' y='63' width='3' height='4' fill='%2322e4ff' fill-opacity='.8'/%3E%3Crect x='98' y='74' width='3' height='4' fill='%23ff8ae0' fill-opacity='.75'/%3E%3Crect x='118' y='26' width='3' height='4' fill='%2322e4ff' fill-opacity='.8'/%3E%3Crect x='126' y='37' width='3' height='4' fill='%23ff8ae0' fill-opacity='.75'/%3E%3Crect x='118' y='70' width='3' height='4' fill='%2322e4ff' fill-opacity='.8'/%3E%3Crect x='126' y='81' width='3' height='4' fill='%2322e4ff' fill-opacity='.8'/%3E%3Crect x='148' y='45' width='3' height='4' fill='%2322e4ff' fill-opacity='.8'/%3E%3Crect x='180' y='45' width='3' height='4' fill='%2322e4ff' fill-opacity='.8'/%3E%3Crect x='156' y='56' width='3' height='4' fill='%23ff8ae0' fill-opacity='.75'/%3E%3Crect x='164' y='67' width='3' height='4' fill='%2322e4ff' fill-opacity='.8'/%3E%3Crect x='172' y='78' width='3' height='4' fill='%2322e4ff' fill-opacity='.8'/%3E%3Crect x='198' y='66' width='3' height='4' fill='%2322e4ff' fill-opacity='.8'/%3E%3Crect x='236' y='57' width='3' height='4' fill='%2322e4ff' fill-opacity='.8'/%3E%3Crect x='244' y='68' width='3' height='4' fill='%2322e4ff' fill-opacity='.8'/%3E%3Crect x='220' y='79' width='3' height='4' fill='%2322e4ff' fill-opacity='.8'/%3E%3Crect x='262' y='22' width='3' height='4' fill='%2322e4ff' fill-opacity='.8'/%3E%3Crect x='270' y='33' width='3' height='4' fill='%2322e4ff' fill-opacity='.8'/%3E%3Crect x='278' y='44' width='3' height='4' fill='%23ff8ae0' fill-opacity='.75'/%3E%3Crect x='262' y='66' width='3' height='4' fill='%23ff8ae0' fill-opacity='.75'/%3E%3Crect x='270' y='77' width='3' height='4' fill='%2322e4ff' fill-opacity='.8'/%3E%3Crect x='296' y='41' width='3' height='4' fill='%2322e4ff' fill-opacity='.8'/%3E%3Crect x='304' y='52' width='3' height='4' fill='%2322e4ff' fill-opacity='.8'/%3E%3Crect x='312' y='63' width='3' height='4' fill='%23ff8ae0' fill-opacity='.75'/%3E%3Crect x='320' y='74' width='3' height='4' fill='%2322e4ff' fill-opacity='.8'/%3E%3Crect x='344' y='56' width='3' height='4' fill='%23ff8ae0' fill-opacity='.75'/%3E%3Crect x='384' y='53' width='3' height='4' fill='%23ff8ae0' fill-opacity='.75'/%3E%3Crect x='392' y='64' width='3' height='4' fill='%2322e4ff' fill-opacity='.8'/%3E%3Crect x='368' y='75' width='3' height='4' fill='%23ff8ae0' fill-opacity='.75'/%3E%3Crect x='414' y='30' width='3' height='4' fill='%23ff8ae0' fill-opacity='.75'/%3E%3Crect x='422' y='41' width='3' height='4' fill='%2322e4ff' fill-opacity='.8'/%3E%3Crect x='414' y='74' width='3' height='4' fill='%2322e4ff' fill-opacity='.8'/%3E%3Crect x='446' y='47' width='3' height='4' fill='%23ff8ae0' fill-opacity='.75'/%3E%3Crect x='454' y='58' width='3' height='4' fill='%2322e4ff' fill-opacity='.8'/%3E%3Crect x='462' y='69' width='3' height='4' fill='%2322e4ff' fill-opacity='.8'/%3E%3Crect x='494' y='35' width='3' height='4' fill='%2322e4ff' fill-opacity='.8'/%3E%3Crect x='502' y='46' width='3' height='4' fill='%2322e4ff' fill-opacity='.8'/%3E%3Crect x='486' y='68' width='3' height='4' fill='%2322e4ff' fill-opacity='.8'/%3E%3Crect x='494' y='79' width='3' height='4' fill='%23ff8ae0' fill-opacity='.75'/%3E%3Crect x='262' y='8' width='22' height='2.5' rx='1' fill='%2322e4ff'/%3E%3Crect x='301' y='40' width='2.5' height='14' rx='1' fill='%23ff4fd8'/%3E%3C/svg%3E");
+  --sk-base: radial-gradient(90% 120% at 86% -12%, rgba(255, 46, 196, .5), rgba(255, 46, 196, 0) 56%), radial-gradient(80% 120% at 4% 118%, rgba(34, 228, 255, .3), rgba(34, 228, 255, 0) 60%), linear-gradient(170deg, #06031a 0%, #12073a 55%, #250850 100%);
+  --sk-base-dark: radial-gradient(90% 120% at 86% -12%, rgba(255, 46, 196, .34), rgba(255, 46, 196, 0) 56%), radial-gradient(80% 120% at 4% 118%, rgba(34, 228, 255, .2), rgba(34, 228, 255, 0) 60%), linear-gradient(170deg, #04020f 0%, #0b0526 55%, #170536 100%);
+  --sk-band: var(--sk-i2) left bottom 44px / 520px 96px repeat-x, var(--sk-i1) center bottom / 1600px 46px no-repeat, var(--sk-base);
+  --sk-band-dark: var(--sk-i2) left bottom 44px / 520px 96px repeat-x, var(--sk-i1) center bottom / 1600px 46px no-repeat, var(--sk-base-dark);
+  --sk-mini: var(--sk-i2) left bottom / 208px 38px repeat-x, var(--sk-base);
+  --sk-mini-dark: var(--sk-i2) left bottom / 208px 38px repeat-x, var(--sk-base-dark);
+  --k-022c22: 54 9 44;
+  --k-047857: 143 24 115;
+  --k-059669: 176 33 143;
+  --k-064e3b: 86 14 69;
+  --k-065f46: 112 19 90;
+  --k-10b981: 204 53 173;
+  --k-14b8a6: 205 55 174;
+  --k-183f2d: 73 33 63;
+  --k-1c4a32: 90 42 79;
+  --k-255a41: 112 59 100;
+  --k-295b44: 115 63 102;
+  --k-2dd4bf: 222 88 196;
+  --k-346e57: 136 80 124;
+  --k-34d399: 224 92 198;
+  --k-62edc2: 232 134 213;
+  --k-6ee7b7: 233 137 214;
+  --k-7bf0cf: 236 151 219;
+  --k-90efd4: 238 164 224;
+  --k-9ff0da: 241 174 227;
+  --k-a7f3d0: 242 181 230;
+  --k-d1fae5: 249 220 243;
+  --k-e6fbf5: 251 236 248;
+  --k-ecfdf5: 253 240 251;
+}
+
 /* ══════════ 2. หัวหน้าเว็บ: ลายของธีม (ขนาดคงที่เป็น px ยึดกับขอบบน/ล่าง: หัวยืดหดได้โดยไม่ต้องวาดลายใหม่ทุกเฟรม) ══════════ */
 html[data-hf-skin] #mainBlueBg, html[data-hf-skin] .header-bg-shell { background: var(--sk-band); }
 html[data-hf-skin][data-theme="dark"] #mainBlueBg, html[data-hf-skin][data-theme="dark"] .header-bg-shell { background: var(--sk-band-dark); }
 html[data-hf-skin] .flow-shell { background: var(--sk-base); }
 html[data-hf-skin][data-theme="dark"] .flow-shell { background: var(--sk-base-dark); }
 
-html[data-hf-skin="aurora"] #mainBlueBg, html[data-hf-skin="gold"] #mainBlueBg { overflow: hidden; }
+html[data-hf-skin="aurora"] #mainBlueBg, html[data-hf-skin="gold"] #mainBlueBg, html[data-hf-skin="neon"] #mainBlueBg { overflow: hidden; }
 html[data-hf-skin="aurora"] #mainBlueBg::before,
 html[data-hf-skin="gold"] #mainBlueBg::before,
+html[data-hf-skin="neon"] #mainBlueBg::before,
 html[data-hf-skin="aurora"] #mainBlueBg::after,
-html[data-hf-skin="gold"] #mainBlueBg::after { content: ""; position: absolute; pointer-events: none; will-change: transform, opacity; }
+html[data-hf-skin="gold"] #mainBlueBg::after,
+html[data-hf-skin="neon"] #mainBlueBg::after { content: ""; position: absolute; pointer-events: none; will-change: transform, opacity; }
 
 /* aurora: the ribbons drift and breathe, the bright stars twinkle */
 html[data-hf-skin="aurora"] #mainBlueBg::before { left: -25%; width: 150%; bottom: 0; height: 250px; }
@@ -250,10 +322,20 @@ html[data-hf-skin="gold"] #mainBlueBg::after { opacity: .75; }
 @keyframes hf-sk-sheen { 0% { transform: translate3d(-110%, 0, 0); } 45%, 100% { transform: translate3d(330%, 0, 0); } }
 @keyframes hf-sk-rise { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(0, -160px, 0); } }
 
+/* neon: a neon line under the band, a scan of light running down now and then, the lit windows and signs flicker */
+html[data-hf-skin="neon"] #mainBlueBg { box-shadow: inset 0 -2px 0 rgba(255, 79, 216, .75), 0 12px 30px -14px rgba(255, 46, 196, .6); }
+html[data-hf-skin="neon"] #mainBlueBg::before { top: 0; left: 0; right: 0; height: 110px; }
+html[data-hf-skin="neon"] #mainBlueBg::before {
+  background: linear-gradient(180deg, rgba(34, 228, 255, 0) 0%, rgba(34, 228, 255, .07) 38%, rgba(34, 228, 255, .22) 49%, rgba(225, 252, 255, .5) 50%, rgba(255, 79, 216, .16) 52%, rgba(255, 79, 216, 0) 68%);
+  transform: translate3d(0, -120px, 0); animation: hf-sk-scan 7s cubic-bezier(.5, 0, .5, 1) infinite;
+}
+html[data-hf-skin="neon"] #mainBlueBg::after { left: 0; right: 0; bottom: 44px; height: 96px; background: var(--sk-i3) left top / 520px 96px repeat-x; animation: hf-sk-flicker 6s steps(1, end) infinite; }
+@keyframes hf-sk-scan { 0% { transform: translate3d(0, -120px, 0); } 55%, 100% { transform: translate3d(0, 480px, 0); } }
+@keyframes hf-sk-flicker { 0% { opacity: .95; } 7% { opacity: .35; } 9% { opacity: .95; } 46% { opacity: .8; } 48% { opacity: .2; } 50% { opacity: .9; } 52% { opacity: .5; } 54% { opacity: 1; } 88% { opacity: .85; } }
 
 @media (prefers-reduced-motion: reduce) {
-  html[data-hf-skin="aurora"] #mainBlueBg::before, html[data-hf-skin="aurora"] #mainBlueBg::after, html[data-hf-skin="gold"] #mainBlueBg::before, html[data-hf-skin="gold"] #mainBlueBg::after { animation: none; }
-  html[data-hf-skin="gold"] #mainBlueBg::before { display: none; }
+  html[data-hf-skin="aurora"] #mainBlueBg::before, html[data-hf-skin="aurora"] #mainBlueBg::after, html[data-hf-skin="gold"] #mainBlueBg::before, html[data-hf-skin="gold"] #mainBlueBg::after, html[data-hf-skin="neon"] #mainBlueBg::before, html[data-hf-skin="neon"] #mainBlueBg::after { animation: none; }
+  html[data-hf-skin="gold"] #mainBlueBg::before, html[data-hf-skin="neon"] #mainBlueBg::before { display: none; }
 }
 
 /* ══════════ 3. แอนิเมชันที่มีสีเขียวของแบรนด์ (สำเนาที่ใช้สีของธีม) ══════════ */

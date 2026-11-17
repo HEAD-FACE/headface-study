@@ -12,7 +12,7 @@
 const PLAN_TIERS = ['free', 'plus', 'max'];
 const PLAN_LABELS = { plus: 'PLUS', max: 'MAX' };
 // ธีมที่ css/skins.css รู้จัก และแพลนที่ธีมของแพลนต้องมี (ตรงกับ SKIN_KEYS / SKIN_PLANS ใน js/profile-avatar.js ของเว็บหลัก)
-export const SKIN_KEYS = ['ocean', 'aurora', 'gold'];
+export const SKIN_KEYS = ['ocean', 'aurora', 'gold', 'neon'];
 export const SKIN_PLANS = { aurora: 'plus', gold: 'max' };
 const BADGE_SESSION_KEY = 'study_plan_badge';
 const BADGE_START_DELAY_MS = 700;

@@ -20,10 +20,14 @@ export const flameSvg = (id, size = 44) => `<svg class="sk-flame" width="${size}
 /** ข้อความของป้าย: วันแรก / ต่อเนื่องกี่วัน */
 export function litMessage(up) {
     const days = Math.max(1, Math.floor(Number(up && up.current) || 1));
+    const sub = up && up.extended && days > 1 ? `ต่อเนื่อง ${days} วันแล้ว รักษาไฟไว้ให้ได้นะ` : 'เริ่มนับ Streak วันแรกแล้ว!';
+    // กิจกรรม "Streak การเรียนใน Study" ของ HEADFACE ให้รางวัลวันนี้ (backend: streakUp.activityAwards) รางวัลรอให้กดรับที่เว็บหลัก
+    const won = Math.max(0, Math.floor(Number(up && up.activityAwards) || 0));
     return {
         title: 'ได้รับไฟแล้ววันนี้!',
-        sub: up && up.extended && days > 1 ? `ต่อเนื่อง ${days} วันแล้ว รักษาไฟไว้ให้ได้นะ` : 'เริ่มนับ Streak วันแรกแล้ว!',
+        sub: won ? `${sub} · ได้รางวัลกิจกรรม กดรับได้ที่ HEADFACE` : sub,
         days,
+        won,
     };
 }
 

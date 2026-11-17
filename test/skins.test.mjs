@@ -12,7 +12,7 @@ import { THEMES, contrast, rgbToHex } from '../scripts/skin-themes.mjs';
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (f) => fs.readFileSync(path.join(root, f), 'utf8').replace(/\r\n/g, '\n');
 const css = read('css/skins.css');
-const KEYS = ['ocean', 'aurora', 'gold'];
+const KEYS = ['ocean', 'aurora', 'gold', 'neon'];
 const PAGES = ['index.html', 'subject.html', 'progress.html', 'course.html', 'lesson.html', 'mock-exam.html', 'report.html', 'tutor.html'];
 const I = await import('../js/study-identity.js');
 
@@ -65,7 +65,7 @@ describe('css/skins.css', () => {
         assert.ok(selectors.length > 150, `มีกฎจริง (${selectors.length})`);
         for (const list of selectors) {
             for (const sel of list.split(/,\s*\n?/).map((s) => s.trim()).filter(Boolean)) {
-                assert.match(sel, /^(:where\(html\[data-hf-skin\](\[data-theme="dark"\])?\)|html\[data-hf-skin(="(ocean|aurora|gold)")?\])/, `ต้องขึ้นต้นด้วยเงื่อนไขธีม: ${sel.slice(0, 90)}`);
+                assert.match(sel, /^(:where\(html\[data-hf-skin\](\[data-theme="dark"\])?\)|html\[data-hf-skin(="(ocean|aurora|gold|neon)")?\])/, `ต้องขึ้นต้นด้วยเงื่อนไขธีม: ${sel.slice(0, 90)}`);
             }
         }
     });
@@ -134,14 +134,14 @@ describe('css/skins.css', () => {
     test('ลายของหัวหน้าเว็บวาดได้ถูก: ขนาดคงที่เป็น px ไม่มี blur / blend และหยุดเมื่อผู้ใช้ขอลดการเคลื่อนไหว', () => {
         assert.doesNotMatch(css, /mix-blend-mode|feGaussianBlur|backdrop-filter/, 'ไม่มีฟิลเตอร์หรือ blend ในลายของธีม');
         const layers = new Map(); // ตัวเลือก → declaration ทั้งหมดของชั้นนั้น (เขียนแยกเป็นสองกฎ: ขนาด และลาย)
-        for (const m of css.matchAll(/^(html\[data-hf-skin="(?:aurora|gold)"\] #mainBlueBg::(?:before|after)) \{([^}]*)\}/gm)) layers.set(m[1], (layers.get(m[1]) || '') + m[2]);
-        assert.equal(layers.size, 4, 'สี่ชั้นที่เคลื่อนไหว');
+        for (const m of css.matchAll(/^(html\[data-hf-skin="(?:aurora|gold|neon)"\] #mainBlueBg::(?:before|after)) \{([^}]*)\}/gm)) layers.set(m[1], (layers.get(m[1]) || '') + m[2]);
+        assert.equal(layers.size, 6, 'หกชั้นที่เคลื่อนไหว (แสงเหนือ ราตรีทองคำ นีออนซิตี้ ธีมละสองชั้น)');
         for (const [sel, body] of layers) {
             assert.match(body, /height: \d+px;/, `${sel}: สูงคงที่เป็น px (หัวยืดหดได้โดยไม่ต้องวาดใหม่)`);
             assert.ok(!(/top: 0/.test(body) && /bottom: 0/.test(body)) && !/inset:/.test(body), `${sel}: ไม่ยืดตามความสูงของหัว`);
         }
         const frames = [...css.matchAll(/@keyframes hf-sk-[\w-]+ \{([\s\S]*?)\}\n/g)].map((m) => m[1]);
-        assert.equal(frames.length, 4);
+        assert.equal(frames.length, 6);
         for (const body of frames) for (const [, prop] of body.matchAll(/([a-z-]+):/g)) assert.ok(prop === 'transform' || prop === 'opacity', `เคลื่อนไหวเฉพาะ transform / opacity (${prop})`);
         assert.match(css, /@media \(prefers-reduced-motion: reduce\) \{[\s\S]*animation: none;/);
         assert.ok(css.includes('html[data-hf-skin] #mainBlueBg, html[data-hf-skin] .header-bg-shell { background: var(--sk-band); }'));
