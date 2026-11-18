@@ -141,7 +141,9 @@ describe('css/skins.css', () => {
             assert.ok(!(/top: 0/.test(body) && /bottom: 0/.test(body)) && !/inset:/.test(body), `${sel}: ไม่ยืดตามความสูงของหัว`);
         }
         const frames = [...css.matchAll(/@keyframes hf-sk-[\w-]+ \{([\s\S]*?)\}\n/g)].map((m) => m[1]);
-        assert.equal(frames.length, 6);
+        assert.equal(frames.length, 5, 'ห้าแอนิเมชัน (แสงเหนือ ดาวกะพริบ แสงทอง ฝุ่นทอง และแสงไฟรถของนีออนซิตี้)');
+        assert.doesNotMatch(css, /steps\(1|hf-sk-flicker|hf-sk-scan/, 'นีออนซิตี้: ไม่มีไฟกะพริบแบบกระตุกและเส้นสแกนที่กระโดดอีกแล้ว');
+        assert.match(css, /html\[data-hf-skin="neon"\] #mainBlueBg::after \{ left: -900px; right: 0; bottom: 30px; height: 12px; background: var\(--sk-i2\) left top \/ 900px 12px repeat-x; animation: hf-sk-trails 16s linear infinite; \}/, 'แสงไฟรถเลื่อนต่อเนื่อง (หนึ่งแผ่นต่อรอบ)');
         for (const body of frames) for (const [, prop] of body.matchAll(/([a-z-]+):/g)) assert.ok(prop === 'transform' || prop === 'opacity', `เคลื่อนไหวเฉพาะ transform / opacity (${prop})`);
         assert.match(css, /@media \(prefers-reduced-motion: reduce\) \{[\s\S]*animation: none;/);
         assert.ok(css.includes('html[data-hf-skin] #mainBlueBg, html[data-hf-skin] .header-bg-shell { background: var(--sk-band); }'));

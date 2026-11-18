@@ -58,37 +58,97 @@ const fan = (mirror) => {
 };
 const goldDust = stars(300, 160, [[14, 20, 1.2, .7], [62, 88, .8, .5], [110, 30, 1.5, .55], [150, 130, .9, .6], [196, 64, 1.1, .45], [240, 18, .7, .5], [276, 110, 1.3, .6], [40, 146, .7, .4], [222, 150, .6, .45], [90, 140, 1, .35], [130, 74, .6, .5], [290, 58, .8, .4]], '#f3d98f');
 
-// neon: a night city. The floor is a glowing grid in perspective (fixed size, fastened to the bottom of the band), a skyline with a
-// magenta rim stands on it, and the lit windows / signs of the same skyline are a layer of their own that flickers (opacity only).
-const neonGrid = (() => {
-  const W = 1600, H = 60, vx = 800, vy = -70;
-  const rows = [0, 4, 9, 15, 23, 33, 46, 60].map((y, i) => `<path stroke-opacity="${r(.22 + i * .07)}" d="M0 ${y}H${W}"/>`).join('');
-  const cols = [];
-  for (let k = -16; k <= 16; k += 1) {
-    const xb = vx + k * 100;
-    const xt = vx + (xb - vx) * (-vy / (H - vy));
-    cols.push(`<path d="M${r(xt)} 0L${xb} ${H}"/>`);
+// neon (night city, redrawn 18 Nov 2026): ONE wide picture (2400 x 150, never tiled, so no block repeats on a wide screen): a far
+// skyline in violet haze, a near skyline in ink with a few warm / cyan / pink windows and two thin neon roof lines, a horizon that
+// glows, and a fine floor grid that fades towards the horizon. What moves is light only: car light trails gliding along the horizon
+// (one strip, translateX, seamless) and a slow twinkle of the sky (opacity, eased: no hard flicker).
+const seeded = (seed) => () => { seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+const NEON_W = 2400, NEON_H = 150, HORIZON = 118;
+/** A skyline as one path: towers of random width / height, some with a setback top or a mast. Returns { d, towers }. */
+function skyline(rand, { minW, maxW, minH, maxH, gap, masts }) {
+  let x = -10;
+  const parts = [];
+  const towers = [];
+  while (x < NEON_W + 10) {
+    const w = Math.round(minW + rand() * (maxW - minW));
+    const h = Math.round(minH + rand() * (maxH - minH));
+    const top = HORIZON - h;
+    let d = `M${x} ${HORIZON}V${top}`;
+    if (rand() < 0.3 && w > 26) { // a setback: a narrower crown
+      const inset = Math.round(w * (0.18 + rand() * 0.14));
+      const crown = Math.round(8 + rand() * 16);
+      d += `H${x + inset}V${top - crown}H${x + w - inset}V${top}`;
+      towers.push({ x, w, top: top - crown, inset });
+    } else {
+      towers.push({ x, w, top, inset: 0 });
+    }
+    d += `H${x + w}V${HORIZON}Z`;
+    if (masts && rand() < 0.18) {
+      const mx = x + Math.round(w / 2);
+      const t = towers[towers.length - 1].top;
+      d += `M${mx - .6} ${t}V${t - 10 - Math.round(rand() * 10)}H${mx + .6}V${t}Z`;
+    }
+    parts.push(d);
+    x += w + Math.round(rand() * gap);
   }
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><g fill="none" stroke="#22e4ff" stroke-width="1.2">${rows}<g stroke-opacity=".38">${cols.join('')}</g></g><path d="M0 .8H${W}" stroke="#ff4fd8" stroke-opacity=".8" stroke-width="1.6"/></svg>`;
-})();
-// the skyline: [x, width, height] of each block on a 520 x 96 tile (repeats sideways seamlessly: nothing touches the edges)
-const NEON_BLOCKS = [[6, 34, 52], [44, 22, 74], [70, 40, 40], [114, 26, 88], [144, 46, 58], [194, 18, 70], [216, 38, 46], [258, 30, 92], [292, 44, 62], [340, 20, 80], [364, 42, 50], [410, 28, 84], [442, 36, 56], [482, 30, 68]];
-const neonSkyline = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 96"><g fill="#0a0420" fill-opacity=".92" stroke="#ff4fd8" stroke-opacity=".55" stroke-width="1">${NEON_BLOCKS.map(([x, w, h]) => `<path d="M${x} 96V${96 - h}H${x + w}V96"/>`).join('')}</g><path d="M128 8V14M128 8l-3 4h6z" stroke="#ff4fd8" stroke-opacity=".7" fill="none"/></svg>`;
-const neonLights = (() => {
-  const out = [];
-  NEON_BLOCKS.forEach(([x, w, h], i) => {
-    for (let row = 0; row < Math.floor((h - 10) / 11); row += 1) {
-      for (let col = 0; col < Math.floor((w - 6) / 8); col += 1) {
-        if ((i * 7 + row * 3 + col * 5) % 4 !== 0) continue;
-        const cyan = (i + row + col) % 3 !== 0;
-        out.push(`<rect x="${x + 4 + col * 8}" y="${96 - h + 7 + row * 11}" width="3" height="4" fill="${cyan ? '#22e4ff' : '#ff8ae0'}" fill-opacity="${cyan ? '.8' : '.75'}"/>`);
+  return { d: parts.join(''), towers };
+}
+const neonCity = (() => {
+  const rand = seeded(20261118);
+  const far = skyline(rand, { minW: 22, maxW: 58, minH: 34, maxH: 96, gap: 4, masts: true });
+  const near = skyline(rand, { minW: 30, maxW: 84, minH: 16, maxH: 62, gap: 10, masts: false });
+  // windows on the near skyline: a few lit ones in three colours, now and then a whole floor lit (an office working late)
+  const lit = { warm: [], cyan: [], pink: [] };
+  for (const t of near.towers) {
+    for (let y = t.top + 6; y < HORIZON - 6; y += 6) {
+      const floor = rand() < 0.05 && t.w > 30;
+      for (let x = t.x + 4; x < t.x + t.w - 4; x += 5) {
+        if (!floor && rand() > 0.1) continue;
+        const k = floor ? 0 : rand();
+        (k < 0.62 ? lit.warm : k < 0.86 ? lit.cyan : lit.pink).push(`M${x} ${y}h1.6v2.2h-1.6z`);
       }
     }
-  });
-  // two signs: a cyan bar on one roof, a magenta bar on the side of another
-  out.push('<rect x="262" y="8" width="22" height="2.5" rx="1" fill="#22e4ff"/>', '<rect x="301" y="40" width="2.5" height="14" rx="1" fill="#ff4fd8"/>');
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 96">${out.join('')}</svg>`;
+  }
+  // a thin neon line on a few near roofs
+  const roofs = near.towers.filter((_, i) => i % 7 === 3).map((t) => `M${t.x + t.inset + 3} ${t.top + .6}H${t.x + t.w - t.inset - 3}`).join('');
+  const roofs2 = near.towers.filter((_, i) => i % 11 === 6).map((t) => `M${t.x + t.inset + 3} ${t.top + .6}H${t.x + t.w - t.inset - 3}`).join('');
+  // the floor grid: rows closer together towards the horizon, columns running to a vanishing point in the middle
+  const rows = [121, 124.5, 129, 135, 142.5, 150].map((y) => `M0 ${y}H${NEON_W}`).join('');
+  const cols = [];
+  for (let k = -30; k <= 30; k += 1) {
+    const xb = NEON_W / 2 + k * 90;
+    const xt = NEON_W / 2 + (xb - NEON_W / 2) * 0.18;
+    cols.push(`M${r(xt)} ${HORIZON}L${xb} ${NEON_H}`);
+  }
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${NEON_W} ${NEON_H}">
+<defs>
+<linearGradient id="h" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#ff3fc8" stop-opacity="0"/><stop offset=".55" stop-color="#ff3fc8" stop-opacity=".1"/><stop offset=".79" stop-color="#ff3fc8" stop-opacity=".34"/><stop offset=".79" stop-color="#0b0522" stop-opacity="1"/><stop offset="1" stop-color="#05020f" stop-opacity="1"/></linearGradient>
+<linearGradient id="f" gradientUnits="userSpaceOnUse" x1="0" x2="0" y1="0" y2="${HORIZON}"><stop offset=".1" stop-color="#5a2aa8" stop-opacity=".38"/><stop offset="1" stop-color="#2a1262" stop-opacity=".88"/></linearGradient>
+<linearGradient id="z" gradientUnits="userSpaceOnUse" x1="0" x2="0" y1="40" y2="${HORIZON}"><stop offset="0" stop-color="#ff3fc8" stop-opacity="0"/><stop offset="1" stop-color="#ff3fc8" stop-opacity=".2"/></linearGradient>
+<linearGradient id="n" gradientUnits="userSpaceOnUse" x1="0" x2="0" y1="50" y2="${HORIZON}"><stop offset="0" stop-color="#171037"/><stop offset="1" stop-color="#07041b"/></linearGradient>
+<pattern id="w" width="5" height="6" patternUnits="userSpaceOnUse"><rect x="1.7" y="2" width="1.6" height="2.2" fill="#d9ccff" fill-opacity=".1"/></pattern>
+<pattern id="v" width="4" height="5" patternUnits="userSpaceOnUse"><rect x="1.4" y="1.6" width="1.2" height="1.8" fill="#e6dcff" fill-opacity=".055"/></pattern>
+<linearGradient id="g" gradientUnits="userSpaceOnUse" x1="0" x2="0" y1="${HORIZON}" y2="${NEON_H}"><stop offset="0" stop-color="#5ff0ff" stop-opacity=".05"/><stop offset="1" stop-color="#5ff0ff" stop-opacity=".42"/></linearGradient>
+</defs>
+<rect width="${NEON_W}" height="${NEON_H}" fill="url(#h)"/>
+<path fill="url(#f)" d="${far.d}"/>
+<path fill="url(#v)" d="${far.d}"/>
+<rect y="40" width="${NEON_W}" height="${HORIZON - 40}" fill="url(#z)"/>
+<path fill="url(#n)" stroke="#ff7ae0" stroke-opacity=".2" stroke-width="1" d="${near.d}"/>
+<path fill="url(#w)" d="${near.d}"/>
+<path fill="#ffd9a8" fill-opacity=".72" d="${lit.warm.join('')}"/>
+<path fill="#8ff6ff" fill-opacity=".7" d="${lit.cyan.join('')}"/>
+<path fill="#ffa6ea" fill-opacity=".7" d="${lit.pink.join('')}"/>
+<g fill="none" stroke-width="1.2"><path stroke="#5ff0ff" stroke-opacity=".85" d="${roofs}"/><path stroke="#ff6fdc" stroke-opacity=".85" d="${roofs2}"/></g>
+<g fill="none" stroke="url(#g)" stroke-width="1"><path d="${rows}"/><path d="${cols.join('')}"/></g>
+<g fill="none" stroke="#ff4fd8"><path stroke-width="7" stroke-opacity=".08" d="M0 ${HORIZON}H${NEON_W}"/><path stroke-width="3.5" stroke-opacity=".16" d="M0 ${HORIZON}H${NEON_W}"/><path stroke-width="1.2" stroke-opacity=".9" stroke="#ff8ae6" d="M0 ${HORIZON}H${NEON_W}"/></g>
+</svg>`;
 })();
+// light trails along the horizon: a 900 x 12 strip that repeats sideways and glides (one tile per loop: seamless)
+const neonTrail = (x, len, y, color, w, o) => `<linearGradient id="t${x}" x1="0" x2="1"><stop offset="0" stop-color="${color}" stop-opacity="0"/><stop offset=".85" stop-color="${color}" stop-opacity="${o}"/><stop offset="1" stop-color="#ffffff" stop-opacity="${o}"/></linearGradient><path stroke="url(#t${x})" stroke-width="${w}" stroke-linecap="round" d="M${x} ${y}H${x + len}"/>`;
+const neonTrails = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 12"><g fill="none">${neonTrail(40, 170, 4, '#5ff0ff', 1.6, .95)}${neonTrail(380, 120, 8, '#ff6fdc', 1.4, .85)}${neonTrail(640, 70, 5.5, '#ffd9a8', 1.1, .8)}</g></svg>`;
+// the sky: a few stars, a little brighter now and then (the whole layer breathes, eased)
+const neonStars = stars(320, 120, [[18, 14, .8, .7], [70, 52, .55, .45], [126, 22, 1, .8], [172, 76, .6, .45], [214, 10, .7, .6], [262, 44, .9, .7], [300, 92, .55, .4], [40, 96, .6, .45], [150, 104, .5, .35], [236, 112, .5, .35], [96, 6, .5, .5], [292, 18, .6, .5]], '#e9e4ff');
 
 // ---------------------------------------------------------------- the themes
 // ramp: 50 100 200 400 500 600 700 (600 = the main colour). dark: the dark mode surfaces bg s1 s2 s3 s4.
@@ -131,16 +191,16 @@ export const THEMES = {
     miniDark: 'var(--sk-i1) right bottom / auto 100% no-repeat, var(--sk-i2) left bottom / auto 62% no-repeat'
   },
   neon: {
-    title: 'นีออนซิตี้ (neon city): a night city in hot pink and cyan: a glowing grid floor, a skyline with a neon rim, a scan of light now and then,\n   windows and signs that flicker, HUD corners on the homework cards (part 6). A REWARD theme like ocean (sold, won or given).',
+    title: 'นีออนซิตี้ (neon city): a night city in one wide picture (far skyline in violet haze, near skyline in ink with a few lit windows,\n   a glowing horizon, a fine floor grid), car light trails gliding along the horizon and a softly twinkling sky; HUD corners on the\n   homework cards (part 6). A REWARD theme like ocean (sold, won or given).',
     ramp: { 50: '#fdf0fb', 100: '#f9dcf3', 200: '#f2b5e6', 400: '#e05cc6', 500: '#cc35ad', 600: '#b0218f', 700: '#8f1873' },
     lightRgb: '255 140 225', textDark: '#ff8ae0', page: '#f7f3fa', meta: '#0b0620', glow: '#22e4ff', spark: '#22e4ff',
     dark: ['#08060f', '#0f0c1a', '#151124', '#1c172f', '#251e3b'],
-    images: { i1: neonGrid, i2: neonSkyline, i3: neonLights },
-    base: 'radial-gradient(90% 120% at 86% -12%, rgba(255, 46, 196, .5), rgba(255, 46, 196, 0) 56%), radial-gradient(80% 120% at 4% 118%, rgba(34, 228, 255, .3), rgba(34, 228, 255, 0) 60%), linear-gradient(170deg, #06031a 0%, #12073a 55%, #250850 100%)',
-    baseDark: 'radial-gradient(90% 120% at 86% -12%, rgba(255, 46, 196, .34), rgba(255, 46, 196, 0) 56%), radial-gradient(80% 120% at 4% 118%, rgba(34, 228, 255, .2), rgba(34, 228, 255, 0) 60%), linear-gradient(170deg, #04020f 0%, #0b0526 55%, #170536 100%)',
-    band: 'var(--sk-i2) left bottom 44px / 520px 96px repeat-x, var(--sk-i1) center bottom / 1600px 46px no-repeat',
-    bandDark: 'var(--sk-i2) left bottom 44px / 520px 96px repeat-x, var(--sk-i1) center bottom / 1600px 46px no-repeat',
-    mini: 'var(--sk-i2) left bottom / 208px 38px repeat-x', miniDark: 'var(--sk-i2) left bottom / 208px 38px repeat-x'
+    images: { i1: neonCity, i2: neonTrails, i3: neonStars },
+    base: 'radial-gradient(70% 110% at 80% -20%, rgba(255, 46, 196, .42), rgba(255, 46, 196, 0) 60%), radial-gradient(60% 90% at 12% 120%, rgba(34, 228, 255, .22), rgba(34, 228, 255, 0) 62%), linear-gradient(180deg, #070320 0%, #120838 58%, #2a0c52 100%)',
+    baseDark: 'radial-gradient(70% 110% at 80% -20%, rgba(255, 46, 196, .3), rgba(255, 46, 196, 0) 60%), radial-gradient(60% 90% at 12% 120%, rgba(34, 228, 255, .14), rgba(34, 228, 255, 0) 62%), linear-gradient(180deg, #040212 0%, #0a0528 58%, #19073a 100%)',
+    band: 'var(--sk-i1) center bottom / 2400px 150px no-repeat',
+    bandDark: 'var(--sk-i1) center bottom / 2400px 150px no-repeat',
+    mini: 'var(--sk-i1) center bottom / 1200px 75px no-repeat', miniDark: 'var(--sk-i1) center bottom / 1200px 75px no-repeat'
   }
 };
 /** The themes whose header band moves (part 4 / the motion section). */
@@ -223,17 +283,13 @@ ${mini(`${preview ? preview('gold') : ''}::after { top: 0; left: 0; right: 0; he
 @keyframes hf-sk-sheen { 0% { transform: translate3d(-110%, 0, 0); } 45%, 100% { transform: translate3d(330%, 0, 0); } }
 @keyframes hf-sk-rise { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(0, -160px, 0); } }
 ${mini('@keyframes hf-sk-rise-mini { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(0, -80px, 0); } }')}
-/* neon: a neon line under the band, a scan of light running down now and then, the lit windows and signs flicker */
-${band('neon')} { box-shadow: inset 0 -2px 0 rgba(255, 79, 216, .75), 0 12px 30px -14px rgba(255, 46, 196, .6); }
-${band('neon')}::before { top: 0; left: 0; right: 0; height: 110px; }
-${mini(`${preview ? preview('neon') : ''}::before { top: 0; left: 0; right: 0; height: 60%; }`)}${list('neon', '::before')} {
-  background: linear-gradient(180deg, rgba(34, 228, 255, 0) 0%, rgba(34, 228, 255, .07) 38%, rgba(34, 228, 255, .22) 49%, rgba(225, 252, 255, .5) 50%, rgba(255, 79, 216, .16) 52%, rgba(255, 79, 216, 0) 68%);
-  transform: translate3d(0, -120px, 0); animation: hf-sk-scan 7s cubic-bezier(.5, 0, .5, 1) infinite;
-}
-${mini(`${preview ? preview('neon') : ''}::before { transform: translate3d(0, -100%, 0); animation-name: hf-sk-scan-mini; }
-@keyframes hf-sk-scan-mini { 0% { transform: translate3d(0, -100%, 0); } 55%, 100% { transform: translate3d(0, 280%, 0); } }`)}${band('neon')}::after { left: 0; right: 0; bottom: 44px; height: 96px; background: var(--sk-i3) left top / 520px 96px repeat-x; animation: hf-sk-flicker 6s steps(1, end) infinite; }
-${mini(`${preview ? preview('neon') : ''}::after { left: 0; right: 0; bottom: 0; height: 38px; background: var(--sk-i3) left top / 208px 38px repeat-x; animation: hf-sk-flicker 6s steps(1, end) infinite; }`)}@keyframes hf-sk-scan { 0% { transform: translate3d(0, -120px, 0); } 55%, 100% { transform: translate3d(0, 480px, 0); } }
-@keyframes hf-sk-flicker { 0% { opacity: .95; } 7% { opacity: .35; } 9% { opacity: .95; } 46% { opacity: .8; } 48% { opacity: .2; } 50% { opacity: .9; } 52% { opacity: .5; } 54% { opacity: 1; } 88% { opacity: .85; } }
+/* neon: a neon hairline under the band, car light trails gliding along the horizon (one strip, seamless), the sky twinkling softly */
+${band('neon')} { box-shadow: inset 0 -1px 0 rgba(255, 111, 220, .55), 0 10px 24px -20px rgba(255, 46, 196, .45); }
+${band('neon')}::before { top: 0; left: 0; right: 0; height: 160px; background: var(--sk-i3) 20px 6px / 320px 120px repeat; }
+${mini(`${preview ? preview('neon') : ''}::before { inset: 0; background: var(--sk-i3) 6px 2px / 160px 60px repeat; }`)}${list('neon', '::before')} { animation: hf-sk-twinkle 4.6s ease-in-out infinite alternate; }
+${band('neon')}::after { left: -900px; right: 0; bottom: 30px; height: 12px; background: var(--sk-i2) left top / 900px 12px repeat-x; animation: hf-sk-trails 16s linear infinite; }
+${mini(`${preview ? preview('neon') : ''}::after { left: -450px; right: 0; bottom: 15px; height: 6px; background: var(--sk-i2) left top / 450px 6px repeat-x; animation: hf-sk-trails-mini 16s linear infinite; }
+@keyframes hf-sk-trails-mini { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(450px, 0, 0); } }`)}@keyframes hf-sk-trails { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(900px, 0, 0); } }
 ${mini(`/* a small preview moves only while it is the one chosen (or under the pointer): a window full of previews stays still */
 [data-hf-skin-preview] .sk-band::before, [data-hf-skin-preview] .sk-band::after { animation-play-state: paused; }
 .is-selected > .cp-preview [data-hf-skin-preview] .sk-band::before, .is-selected > .cp-preview [data-hf-skin-preview] .sk-band::after,
@@ -243,7 +299,7 @@ ${pauseWhen.map((sel) => `${sel}::before, ${sel}::after`).join(',\n')} { animati
 @media (prefers-reduced-motion: reduce) {
   ${MOVING.map(band).flatMap((b) => [`${b}::before`, `${b}::after`]).join(', ')}${preview ? `,
   [data-hf-skin-preview] .sk-band::before, [data-hf-skin-preview] .sk-band::after` : ''} { animation: none; }
-  ${['gold', 'neon'].flatMap((k) => [band(k) + '::before', preview ? preview(k) + '::before' : '']).filter(Boolean).join(', ')} { display: none; }
+  ${['gold'].flatMap((k) => [band(k) + '::before', preview ? preview(k) + '::before' : '']).filter(Boolean).join(', ')} { display: none; }
 }
 `;
 }
