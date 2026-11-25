@@ -7,7 +7,9 @@ const HEADER_HEIGHTS = {
   'subject': 96,
   'progress': 244,
   // หน้าเส้นทางเรียน: ค่าเริ่มต้นก่อนข้อมูลมา (study-course.js ปรับให้พอดีกับส่วนหัวจริงผ่าน window.StudyShell.setHeaderHeight)
-  'course': 150
+  'course': 150,
+  // หน้าคลิปสอน: หัวเตี้ยแบบหน้ารายวิชา
+  'videos': 96
 };
 
 // แท็บเมนูล่างที่ต้องไฮไลต์ของแต่ละหน้า (หน้าเส้นทางเรียนอยู่ใต้แท็บ "รายวิชา")
@@ -15,7 +17,7 @@ const NAV_FOR_NAMESPACE = { course: 'subject' };
 
 // หน้ากิจกรรม (lesson) / Mock Exam / ผลการเรียน / คุยกับ AI Tutor (tutor) เป็นหน้าอิสระแบบเต็มจอที่ไม่ใช้ Barba — ให้เบราว์เซอร์เปิดหน้าตามปกติ
 // หน้าเส้นทางเรียนของวิชา (course) ใช้ Barba ร่วมกับหน้าหลัก: พื้นที่สีเขียวด้านบนจึงต่อเนื่องไปด้วยกัน
-const FLOW_PAGE_PATTERN = /\/(lesson|mock-exam|report|tutor)\.html(?:[?#]|$)/;
+const FLOW_PAGE_PATTERN = /\/(lesson|mock-exam|report|tutor|shorts|watch)\.html(?:[?#]|$)/;
 
 // 🖼️ Function จัดการ Fallback และตรวจจับภาพพื้นหลังการ์ดรายวิชาใน assets/ อัตโนมัติ (เน้น .webp)
 window.handleCardImgError = function(img, id, altName) {
@@ -48,6 +50,7 @@ window.handleCardImgError = function(img, id, altName) {
 function getNamespaceFromHref(href) {
   if (!href) return 'home';
   if (href.includes('course.html')) return 'course';
+  if (href.includes('videos.html')) return 'videos';
   if (href.includes('subject.html')) return 'subject';
   if (href.includes('progress.html')) return 'progress';
   if (href.includes('index.html') || href === '/' || href.endsWith('/')) return 'home';
@@ -63,6 +66,10 @@ const NAV_ICONS = {
   subject: {
     active: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-book"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M21.5 5.134a1 1 0 0 1 .493 .748l.007 .118v13a1 1 0 0 1 -1.5 .866a8 8 0 0 0 -7.5 -.266v-15.174a10 10 0 0 1 8.5 .708m-10.5 -.707l.001 15.174a8 8 0 0 0 -7.234 .117l-.327 .18l-.103 .044l-.049 .016l-.11 .026l-.061 .01l-.117 .006h-.042l-.11 -.012l-.077 -.014l-.108 -.032l-.126 -.056l-.095 -.056l-.089 -.067l-.06 -.056l-.073 -.082l-.064 -.089l-.022 -.036l-.032 -.06l-.044 -.103l-.016 -.049l-.026 -.11l-.01 -.061l-.004 -.049l-.002 -13.068a1 1 0 0 1 .5 -.866a10 10 0 0 1 8.5 -.707" /></svg>`,
     inactive: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-book"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0" /><path d="M3 6l0 13" /><path d="M12 6l0 13" /><path d="M21 6l0 13" /></svg>`
+  },
+  videos: {
+    active: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-video"><path d="M20.588 7.103a1 1 0 0 1 1.412 .897v8a1 1 0 0 1 -1.412 .897l-4.588 -2.294v-5.206z" /><path d="M13 6a3 3 0 0 1 3 3v6a3 3 0 0 1 -3 3h-8a3 3 0 0 1 -3 -3v-6a3 3 0 0 1 3 -3z" /></svg>`,
+    inactive: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-video"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 10l4.553 -2.276a1 1 0 0 1 1.447 .894v6.764a1 1 0 0 1 -1.447 .894l-4.553 -2.276v-4z" /><path d="M3 8a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z" /></svg>`
   },
   progress: {
     active: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" class="icon icon-tabler icons-tabler-filled icon-tabler-chart-bar-popular"><rect x="3.25" y="12" width="5.5" height="8" rx="1.2" fill="currentColor" stroke="#D1FAE5" stroke-width="1.8" /><rect x="9.25" y="8" width="5.5" height="12" rx="1.2" fill="currentColor" stroke="#D1FAE5" stroke-width="1.8" /><rect x="15.25" y="4" width="5.5" height="16" rx="1.2" fill="currentColor" stroke="#D1FAE5" stroke-width="1.8" /><path d="M3 20h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>`,
@@ -110,6 +117,16 @@ function initCoursePageIn(container, url) {
     .then((m) => m.initCoursePage(root, { url }))
     .then((controller) => { root.__courseCtl = controller; })
     .catch((err) => console.error('[Course] init failed:', err));
+}
+
+// หน้าคลิปสอน: เติมข้อมูลลง container ที่เพิ่งแสดง (โหลดตรง หรือ Barba สลับเข้ามา)
+function initVideosPageIn(container, url) {
+  const root = container.matches && container.matches('[data-barba-namespace="videos"]') ? container : container.querySelector && container.querySelector('[data-barba-namespace="videos"]');
+  if (!root) return;
+  import('./study-videos.js')
+    .then((m) => m.initVideosPage(root, { url }))
+    .then((controller) => { root.__videosCtl = controller; })
+    .catch((err) => console.error('[Videos] init failed:', err));
 }
 
 // Function สำหรับ Initialise ฟีเจอร์ในแต่ละหน้า
@@ -306,6 +323,7 @@ function initPageFeatures(container, url = location.href) {
   // ให้ js/study-hydrate.js เติมข้อมูลจริงลงหน้าที่เพิ่งแสดง (โหลดครั้งแรก และตอน Barba สลับหน้า)
   document.dispatchEvent(new CustomEvent('study:page', { detail: { container } }));
   initCoursePageIn(container, url);
+  initVideosPageIn(container, url);
 
   // การ์ดของหน้าหลักทยอยลอยเข้ามาทีละใบ (หน้าเส้นทางเรียนมีแอนิเมชันของตัวเองใน CSS)
   import('./study-fx.js').then((fx) => fx.staggerIn(container.querySelectorAll('.sc, .cc, .card, .exam, .it, .rank'), { delay: 40, ms: 420 })).catch(() => {});
@@ -357,7 +375,8 @@ function updateSharedHeader(ns) {
   const pageInfo = {
     'home': { title: 'หน้าแรกการเรียน', badge: '' },
     'subject': { title: 'คลังรายวิชาทั้งหมด', badge: '10 วิชา 🎒' },
-    'progress': { title: 'ความคืบหน้า & อันดับ', badge: '🏆 ซีซัน 1' }
+    'progress': { title: 'ความคืบหน้า & อันดับ', badge: '🏆 ซีซัน 1' },
+    'videos': { title: 'คลิปสอน', badge: '🎬 Shorts + คลิปยาว' }
   }[ns] || { title: 'หน้าแรกการเรียน', badge: '' };
 
   if (titleEl && titleEl.textContent !== pageInfo.title) {
@@ -677,7 +696,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initAuth();
 
   // Preload หน้าทั้งหมดลงแคช เพื่อให้ Barba สลับหน้าได้ทันที 0ms ไร้ดีเลย์
-  ['index.html', 'subject.html', 'progress.html'].forEach(page => {
+  ['index.html', 'subject.html', 'progress.html', 'videos.html'].forEach(page => {
     fetch(page, { cache: 'force-cache' }).catch(() => {});
   });
 
@@ -689,6 +708,7 @@ document.addEventListener('DOMContentLoaded', () => {
         leave(data) {
           // หน้าเส้นทางเรียน: ถอดตัวฟังเหตุการณ์ออกก่อนสลับหน้า
           if (data.current.container && data.current.container.__courseCtl) data.current.container.__courseCtl.dispose();
+          if (data.current.container && data.current.container.__videosCtl) data.current.container.__videosCtl.dispose();
           gsap.killTweensOf([
             data.current.container,
             '#mainBlueBg',

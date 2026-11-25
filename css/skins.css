@@ -471,6 +471,17 @@ html[data-hf-skin="neon"] #mainBlueBg::after { left: -900px; right: 0; bottom: 3
 :where(html[data-hf-skin]) .tt-b.tt-mic { background: linear-gradient(180deg, var(--bar, rgb(var(--k-10b981))), var(--strong, rgb(var(--k-047857)))); box-shadow: 0 4px 0 rgb(var(--k-022c22) / 0.34); }
 :where(html[data-hf-skin]) .tt-b.tt-mic:active:not(:disabled) { box-shadow: 0 1px 0 rgb(var(--k-022c22) / 0.34); }
 
+/* ── จาก css/videos.css ── */
+:where(html[data-hf-skin]) .vd-chip.on { background: rgb(var(--k-047857)); border-color: rgb(var(--k-047857)); box-shadow: 0 3px 0 rgb(var(--k-064e3b)); }
+:where(html[data-hf-skin]) .vd-h h2 svg { color: rgb(var(--k-047857)); }
+:where(html[data-hf-skin]) .vd-more { color: rgb(var(--k-047857)); }
+:where(html[data-hf-skin]) .vd-sub { color: rgb(var(--k-047857)); }
+:where(html[data-hf-skin]) .cp-vids { border: 2px solid rgb(var(--k-a7f3d0)); box-shadow: 0 4px 0 rgb(var(--k-a7f3d0)); }
+:where(html[data-hf-skin]) .cp-vids:active { box-shadow: 0 1px 0 rgb(var(--k-a7f3d0)); }
+:where(html[data-hf-skin]) .cp-vids-i { background: linear-gradient(180deg, rgb(var(--k-10b981)), rgb(var(--k-047857))); }
+:where(html[data-hf-skin]) .cp-vids-go { color: rgb(var(--k-047857)); }
+:where(html[data-hf-skin]) .wt-prog i { background: linear-gradient(90deg, rgb(var(--k-10b981)), rgb(var(--k-047857))); }
+
 /* ══════════ 5. เช่นเดียวกัน สำหรับธีมมืด (จาก css/dark.css) ══════════ */
 :where(html[data-hf-skin][data-theme="dark"]) .menu-a:hover { background: rgb(var(--k-183f2d)); color: rgb(var(--k-7bf0cf)); }
 :where(html[data-hf-skin][data-theme="dark"]) .menu-a:hover svg { color: rgb(var(--k-62edc2)); }
@@ -515,6 +526,12 @@ html[data-hf-skin="neon"] #mainBlueBg::after { left: -900px; right: 0; bottom: 3
 :where(html[data-hf-skin][data-theme="dark"]) .tt-line.you { color: rgb(var(--k-7bf0cf)); }
 :where(html[data-hf-skin][data-theme="dark"]) .tt-turn.past .tt-line.you { color: rgb(var(--k-7bf0cf)); }
 :where(html[data-hf-skin][data-theme="dark"]) .tt-turn.past .tt-line.you::before { background: rgb(var(--k-1c4a32)); }
+:where(html[data-hf-skin][data-theme="dark"]) .vd-h h2 svg { color: rgb(var(--k-7bf0cf)); }
+:where(html[data-hf-skin][data-theme="dark"]) .vd-more { color: rgb(var(--k-7bf0cf)); }
+:where(html[data-hf-skin][data-theme="dark"]) .vd-sub { color: rgb(var(--k-7bf0cf)); }
+:where(html[data-hf-skin][data-theme="dark"]) .cp-vids { border: 2px solid rgb(var(--k-295b44)); box-shadow: 0 4px 0 rgb(var(--k-295b44)); }
+:where(html[data-hf-skin][data-theme="dark"]) .cp-vids:active { box-shadow: 0 1px 0 rgb(var(--k-295b44)); }
+:where(html[data-hf-skin][data-theme="dark"]) .cp-vids-go { color: rgb(var(--k-7bf0cf)); }
 :where(html[data-hf-skin][data-theme="dark"]) [style*="color:#047857"] { color: rgb(var(--k-6ee7b7)) !important; }
 :where(html[data-hf-skin][data-theme="dark"]) .st-seg button[aria-checked="true"] { color: rgb(var(--k-6ee7b7)); }
 

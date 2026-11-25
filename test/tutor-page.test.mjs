@@ -274,7 +274,7 @@ describe('ไฟล์ของหน้า', () => {
     });
 
     test('Barba ปล่อย tutor.html เป็นหน้าแยก', () => {
-        assert.match(read('js/main.js'), /FLOW_PAGE_PATTERN = \/\\\/\(lesson\|mock-exam\|report\|tutor\)\\\.html/);
+        assert.match(read('js/main.js'), /FLOW_PAGE_PATTERN = \/\\\/\(lesson\|mock-exam\|report\|tutor\|shorts\|watch\)\\\.html/);
     });
 
     test('ปุ่มทางเข้า: หน้าแรกและหัวบทเรียนซ่อนไว้ก่อน และไม่มีใน Mock Exam (ห้ามมีผู้ช่วยระหว่างสอบจับเวลา)', () => {

@@ -1828,6 +1828,141 @@
   color: #BAC4D1;
 }
 
+/* ── จาก css/videos.css ── */
+:where(html[data-theme="dark"]) .vd-chip {
+  border: 2px solid #28354A;
+  background: #1A2332;
+  color: #CDD5E1;
+  box-shadow: 0 3px 0 #2D3C54;
+}
+:where(html[data-theme="dark"]) .vd-chip:active {
+  box-shadow: 0 1px 0 #2D3C54;
+}
+:where(html[data-theme="dark"]) .vd-quota {
+  background: #433A13;
+  border: 1.5px solid #7C692B;
+  color: #E4A27C;
+}
+:where(html[data-theme="dark"]) .vd-quota svg {
+  color: #E8902A;
+}
+:where(html[data-theme="dark"]) .vd-q.is-out {
+  color: #E05B80;
+}
+:where(html[data-theme="dark"]) .vd-q.is-off {
+  color: #BAC4D1;
+}
+:where(html[data-theme="dark"]) .vd-h h2 {
+  color: #EEF1F6;
+}
+:where(html[data-theme="dark"]) .vd-h h2 svg {
+  color: #7BF0CF;
+}
+:where(html[data-theme="dark"]) .vd-more {
+  color: #7BF0CF;
+}
+:where(html[data-theme="dark"]) .vd-count {
+  color: #A0ABBB;
+}
+:where(html[data-theme="dark"]) .vd-sc {
+  color: #EEF1F6;
+}
+:where(html[data-theme="dark"]) .vd-sc-pic {
+  box-shadow: 0 4px 0 #2D3C54;
+}
+:where(html[data-theme="dark"]) .vd-lc {
+  background: #1A2332;
+  border: 2px solid #28354A;
+  box-shadow: 0 3px 0 #2D3C54;
+  color: #EEF1F6;
+}
+:where(html[data-theme="dark"]) .vd-lc:active {
+  box-shadow: 0 1px 0 #2D3C54;
+}
+:where(html[data-theme="dark"]) .vd-lc-m {
+  color: #A0ABBB;
+}
+:where(html[data-theme="dark"]) .vd-sub {
+  color: #7BF0CF;
+}
+:where(html[data-theme="dark"]) .vd-exp {
+  background: #504519;
+  color: #E4A27C;
+}
+:where(html[data-theme="dark"]) .vd-exp.is-got {
+  background: #1A4629;
+  color: #9DE0B8;
+}
+:where(html[data-theme="dark"]) .vd-empty {
+  background: #1A2332;
+  border: 2px dashed #2D3C54;
+  color: #BAC4D1;
+}
+:where(html[data-theme="dark"]) .vd-empty h2 {
+  color: #EEF1F6;
+}
+:where(html[data-theme="dark"]) .cp-vids {
+  background: #1A2332;
+  border: 2px solid #295B44;
+  box-shadow: 0 4px 0 #295B44;
+  color: #EEF1F6;
+}
+:where(html[data-theme="dark"]) .cp-vids:active {
+  box-shadow: 0 1px 0 #295B44;
+}
+:where(html[data-theme="dark"]) .cp-vids-t span {
+  color: #A0ABBB;
+}
+:where(html[data-theme="dark"]) .cp-vids-go {
+  color: #7BF0CF;
+}
+:where(html[data-theme="dark"]) .sh-toast {
+  color: #F0C8A9;
+}
+:where(html[data-theme="dark"]) .wt-lock {
+  background: #1A2332;
+  border: 2px solid #28354A;
+}
+:where(html[data-theme="dark"]) .wt-lock h3 {
+  color: #EEF1F6;
+}
+:where(html[data-theme="dark"]) .wt-lock p {
+  color: #BAC4D1;
+}
+:where(html[data-theme="dark"]) .wt-title {
+  color: #EEF1F6;
+}
+:where(html[data-theme="dark"]) .wt-meta {
+  color: #A0ABBB;
+}
+:where(html[data-theme="dark"]) .wt-status {
+  background: #1A2332;
+  border: 2px solid #28354A;
+}
+:where(html[data-theme="dark"]) .wt-prog {
+  background: #212E41;
+}
+:where(html[data-theme="dark"]) .wt-prog-t {
+  color: #CDD5E1;
+}
+:where(html[data-theme="dark"]) .wt-exp {
+  background: #504519;
+  color: #E4A27C;
+}
+:where(html[data-theme="dark"]) .wt-exp.is-got {
+  background: #1A4629;
+  color: #9DE0B8;
+}
+:where(html[data-theme="dark"]) .wt-desc {
+  color: #CDD5E1;
+}
+:where(html[data-theme="dark"]) .wt-more h3 {
+  color: #EEF1F6;
+}
+:where(html[data-theme="dark"]) .wt-toast {
+  color: #F0C8A9;
+}
+
 /* ── จาก scripts/dark-manual.css ── */
 /* ปรับธีมมืดเฉพาะจุดที่การแปลงอัตโนมัติ (scripts/gen-dark-css.mjs) ทำไม่ได้หรือไม่พอ — ต่อท้าย css/dark.css ตามลำดับนี้ */
 

@@ -79,6 +79,14 @@ export function createStudyApi(send) {
         reportTutor: (sessionId, turns = []) => request(`/tutor/sessions/${seg(sessionId)}/usage`, { method: 'POST', body: { turns } }),
         // keepalive: ยังส่งได้แม้หน้ากำลังถูกปิด (pagehide)
         endTutor: (sessionId, body = {}, { keepalive = false } = {}) => request(`/tutor/sessions/${seg(sessionId)}/end`, { method: 'POST', body, keepalive }),
+        // คลิปสอน (docs/study-videos.md): รายการ (กรองวิชา/ชนิด แบ่งหน้า) · คลิปเดียว · เริ่มเล่น (ตรวจสิทธิ์รายวัน ได้รหัส YouTube) · รายงานตำแหน่งที่ดูถึง
+        listVideos: ({ subject, kind, offset, limit } = {}) => {
+            const q = [subject ? `subject=${seg(subject)}` : '', kind ? `kind=${seg(kind)}` : '', offset ? `offset=${Number(offset)}` : '', limit ? `limit=${Number(limit)}` : ''].filter(Boolean).join('&');
+            return request(`/videos${q ? `?${q}` : ''}`);
+        },
+        getVideo: (videoId) => request(`/videos/${seg(videoId)}`),
+        playVideo: (videoId) => request(`/videos/${seg(videoId)}/play`, { method: 'POST', body: {} }),
+        reportVideo: (videoId, body, { keepalive = false } = {}) => request(`/videos/${seg(videoId)}/progress`, { method: 'PUT', body, keepalive }),
     };
 }
 

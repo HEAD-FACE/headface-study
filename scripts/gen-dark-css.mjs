@@ -296,7 +296,7 @@ function emit(nodes, indent = '') {
     return lines;
 }
 
-export const SOURCES = ['style.css', 'course.css', 'delight.css', 'flow.css', 'formats.css', 'fx.css', 'identity.css', 'settings.css', 'loading.css', 'ranking.css', 'tutor.css'];
+export const SOURCES = ['style.css', 'course.css', 'delight.css', 'flow.css', 'formats.css', 'fx.css', 'identity.css', 'settings.css', 'loading.css', 'ranking.css', 'tutor.css', 'videos.css'];
 
 export function generateDarkCss(rootDir = root) {
     const parts = [];

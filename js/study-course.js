@@ -190,6 +190,15 @@ export function ctaView(data) {
     return { label: 'ทบทวนบทเรียน', href: nodeUrl(subject.id, first.no, first.nodes[0].id), sub: current ? '' : 'เรียนครบทุกบทแล้ว' };
 }
 
+/** ทางเข้า "คลิปสอนวิชานี้" (มีเมื่อวิชามีคลิปที่เผยแพร่แล้ว; videos = { short, long } จาก GET /subjects/:id) */
+export function videosEntryHtml(subjectId, videos) {
+    const short = Number(videos && videos.short) || 0;
+    const long = Number(videos && videos.long) || 0;
+    if (!short && !long) return '';
+    const parts = [short ? `Shorts ${short} คลิป` : '', long ? `คลิปยาว ${long} คลิป` : ''].filter(Boolean).join(' · ');
+    return `<a class="cp-vids" href="videos.html?s=${encodeURIComponent(subjectId)}"><span class="cp-vids-i" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M20.588 7.103a1 1 0 0 1 1.412 .897v8a1 1 0 0 1 -1.412 .897l-4.588 -2.294v-5.206z"/><path d="M13 6a3 3 0 0 1 3 3v6a3 3 0 0 1 -3 3h-8a3 3 0 0 1 -3 -3v-6a3 3 0 0 1 3 -3z"/></svg></span><span class="cp-vids-t"><b>คลิปสอนวิชานี้</b><span>${parts}</span></span><span class="cp-vids-go" aria-hidden="true">${glyph('next', 18, 3)}</span></a>`;
+}
+
 /** HTML ของเนื้อหาทั้งหน้า (ใต้ส่วนหัว) */
 export function courseBodyHtml(data) {
     const { subject, progress, units, mock } = data;
@@ -221,6 +230,7 @@ export function courseBodyHtml(data) {
         </div>
         ${cta ? `<a class="btn btn-lg btn-block cp-cta" href="${esc(cta.href)}"><span>${esc(cta.label)}</span>${glyph('next', 20, 3.2)}</a>` : ''}
       </section>
+      ${videosEntryHtml(subject.id, data.videos)}
       ${aboutRows.length ? `<details class="cp-about"><summary><span>เกี่ยวกับวิชานี้</span><span class="cp-chev">${glyph('down', 18, 2.8)}</span></summary><dl>${aboutRows.map(([t, dd]) => `<div><dt>${t}</dt>${dd}</div>`).join('')}</dl></details>` : ''}
       <div class="cp-path">${unitHtmls || '<p class="cp-empty">วิชานี้ยังไม่มีบทเรียน</p>'}${mockHtml(mock, subject.id)}</div>
     </div>`;

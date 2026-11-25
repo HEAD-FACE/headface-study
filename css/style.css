@@ -773,8 +773,8 @@ body {
   border-radius: 24px 24px 0 0;
   box-shadow: 0 -6px 24px rgba(15, 23, 42, .08);
 }
-/* 4 ช่องกว้างเท่ากัน (ปุ่มกลับ Dashboard + 3 เมนูของ Study): ไอคอน/ป้ายอยู่กึ่งกลางช่องของตัวเอง ระยะห่างสม่ำเสมอทุกขนาดจอ */
-.nav-in { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: start; max-width: 28rem; margin: 0 auto; }
+/* 5 ช่องกว้างเท่ากัน (ปุ่มกลับ Dashboard + 4 เมนูของ Study: หน้าแรก รายวิชา คลิป ความคืบหน้า): ไอคอน/ป้ายอยู่กึ่งกลางช่องของตัวเอง ระยะห่างสม่ำเสมอทุกขนาดจอ */
+.nav-in { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); align-items: start; max-width: 28rem; margin: 0 auto; }
 .nav-i { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 0; min-height: 56px; color: #475569; }
 .nav-i:active { transform: scale(.96); }
 .nav-pill { width: 56px; height: 32px; border-radius: 16px; display: flex; align-items: center; justify-content: center; transition: background-color .15s; }
@@ -782,6 +782,8 @@ body {
 .nav-i.on { color: #065F46; }
 .nav-i.on .nav-pill { background: #D1FAE5; }
 .nav-i.on .nav-l { font-weight: 700; }
+/* จอแคบ (เช่น 320px) 5 ช่องเหลือช่องละ ~58px: ย่อป้ายลงเล็กน้อยให้ "ความคืบหน้า" ไม่ถูกตัดเป็น "..." */
+@media (max-width: 359px) { .nav-l { font-size: 11px; letter-spacing: -.2px; } }
 /* ปุ่ม "<" กลับ Dashboard ของเว็บหลัก: ขนาดเท่าเมนูอื่น (ไม่เล็กกว่า ไม่ชิดขอบ) สีเทาเพราะไม่ใช่หน้าของ Study และมีเส้นบางคั่นจากเมนูของ Study */
 .nav-back { color: #64748B; }
 .nav-back .nav-pill { background: #F1F5F9; }
