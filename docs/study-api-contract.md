@@ -725,6 +725,22 @@ Streak เก็บที่ตาราง `study_streaks` (แถวเดี�
 
 **หมายเหตุความเป็นส่วนตัว:** เสียง ภาพ และไฟล์ของนักเรียนถูกส่งให้ Google Gemini ถ้าใช้คีย์ระดับฟรีของ Google AI Studio ข้อมูลอาจถูก Google นำไปปรับปรุงผลิตภัณฑ์ — ควรใช้คีย์ของโปรเจกต์ที่เปิดบิล (`GEMINI_LIVE_API_KEY`) ก่อนเปิดให้นักเรียนจริง
 
+### 2.17 คลิปสอน — Shorts + คลิปยาว แยกตามวิชา (v2.9, migration 0049)
+
+รายละเอียดเต็ม (Admin API, ตัวอย่าง, กติกา, **ข้อขัดกับนโยบาย YouTube ที่ต้องตัดสินก่อนขึ้น Production**) อยู่ที่ [study-videos.md](study-videos.md)
+
+| วิธี | เส้นทาง | สรุป |
+|---|---|---|
+| GET | `/videos?subject=&kind=short\|long&offset=&limit=` | `{ videos[], page {offset,limit,total}, subjects[] (มีคลิป + counts), quota }` เฉพาะคลิปที่เผยแพร่ ไม่มีรหัส YouTube |
+| GET | `/videos/:videoId` | `{ video, quota }` |
+| POST | `/videos/:videoId/play` | ตรวจสิทธิ์รายวัน (FREE: Shorts 10 / คลิปยาว 5 ต่อวัน, คลิปเดิมในวันเดียวกันนับครั้งเดียว) → `{ video, source {type:'youtube', id}, resumeAt, counted, quota }` · 429 `FEATURE_QUOTA_EXCEEDED` · 403 `FEATURE_FORBIDDEN` |
+| PUT | `/videos/:videoId/progress` body `{ position, ended? }` | `{ progress, completedNow, reward }` · ดูจบ = เครดิต ≥ 90% และถึง 5 วินาทีสุดท้าย (เครดิตต่อรายงาน ≤ เวลาจริง × 2 + 3 วิ) · EXP ที่แอดมินตั้งจ่ายครั้งเดียวตอนดูจบครั้งแรก · 409 `VIDEO_NOT_STARTED` |
+
+- `video.progress = { positionSec, watchedSec, pct, completed, completedAt }`, `video.expEarned` = EXP ที่ได้ไปแล้ว (null = ยังไม่ได้), `quota.short/long = { allowed, limit (null = ไม่จำกัด), used, left }`
+- `GET /subjects/:id` มี `videos: { short, long }` (จำนวนคลิปที่เผยแพร่; null ถ้ายังไม่รัน 0049) · `GET /progress` และ EXP รวมนับ EXP จากคลิปด้วย
+- การดูคลิปไม่นับ Streak
+- Admin: `GET|POST /admin/subjects/:subjectId/videos`, `GET|PUT|DELETE /admin/subjects/:subjectId/videos/:id`, `POST /admin/subjects/:subjectId/videos/:id/status {to}` (cookie admin + CSRF) — สร้างเป็น draft เสมอ, DELETE = archive
+
 ---
 
 ## 3. ผู้ดูแล (`requireAdmin`; ทุก endpoint เป็น POST + CSRF)
